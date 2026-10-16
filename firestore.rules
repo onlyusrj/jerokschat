@@ -1,0 +1,122 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isMember(cid) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/chats/$(cid))
+        && request.auth.uid in get(/databases/$(database)/documents/chats/$(cid)).data.members;
+    }
+
+    // Each person's own name + chat list (partner UID + shared code). Only that person can read/write it.
+    match /users/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name', 'phone', 'contacts', 'updatedAt'])
+        && (!('phone' in request.resource.data) || (request.resource.data.phone is string && request.resource.data.phone.size() <= 20))
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 60
+        && request.resource.data.contacts is list
+        && request.resource.data.contacts.size() <= 100;
+      allow delete: if false;
+      match /devices/{deviceId} {
+        allow read, delete: if signedIn() && request.auth.uid == uid;
+        allow create, update: if signedIn() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['token','updatedAt','userAgent'])
+          && request.resource.data.token is string
+          && request.resource.data.token.size() > 0
+          && request.resource.data.token.size() <= 2000;
+      }
+      match /period/config {
+        allow read, write: if signedIn() && request.auth.uid == uid;
+      }
+    }
+
+    // Phone directory: lets a partner find your account by number. Lookup of one number only, no listing.
+    // Doc id is a hash of the number. A number can be linked to one account (first come, first served).
+    match /phones/{h} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['uid', 'updatedAt'])
+        && request.resource.data.uid == request.auth.uid;
+      allow update: if signedIn()
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid', 'updatedAt'])
+        && request.resource.data.uid == request.auth.uid;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /statuses/{uid} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name','text','ts','updatedAt'])
+        && request.resource.data.name is string
+        && request.resource.data.text is string
+        && request.resource.data.text.size() <= 240
+        && request.resource.data.ts is int;
+      allow delete: if signedIn() && request.auth.uid == uid;
+    }
+
+    match /chats/{cid} {
+      // Non-members may only check a missing room; existing room metadata is members-only.
+      allow get: if signedIn() && (!exists(/databases/$(database)/documents/chats/$(cid)) || request.auth.uid in resource.data.members);
+      allow list: if false;
+      // Create a room once with the signed-in user and one partner UID.
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['members', 'createdAt'])
+        && request.resource.data.members is list
+        && request.resource.data.members.size() == 2
+        && request.auth.uid in request.resource.data.members
+        && request.resource.data.createdAt is int;
+      allow update, delete: if false;
+
+      match /messages/{mid} {
+        allow read: if isMember(cid);
+        allow create: if isMember(cid)
+          && request.resource.data.fromUid == request.auth.uid
+          && request.resource.data.keys().hasAll(['fromUid', 'from', 'ts', 'type']);
+        allow update: if isMember(cid)
+          && request.resource.data.fromUid == resource.data.fromUid
+          && request.resource.data.from == resource.data.from
+          && request.resource.data.ts == resource.data.ts
+          && request.resource.data.type == resource.data.type
+          && (
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['dlv', 'read', 'r', 'pinned'])
+            || (resource.data.fromUid == request.auth.uid
+                && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['dele', 'text', 'data', 'url', 'rep', 'r', 'dlv', 'read', 'edited', 'pinned']))
+            // Recipient may open a view-once photo/video exactly once: it marks it opened and wipes the media.
+            || (resource.data.fromUid != request.auth.uid
+                && resource.data.get('once', false) == true
+                && !('vo' in resource.data)
+                && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['vo', 'data', 'url'])
+                && request.resource.data.get('data', '') == ''
+                && request.resource.data.get('url', '') == '')
+          );
+        allow delete: if false;
+      }
+      // Screen share / whiteboard signalling (members only).
+      match /share/{sid} {
+        allow read, write: if isMember(cid);
+        match /ice/{iid} {
+          allow read, write: if isMember(cid);
+        }
+      }
+      // Real-time multiplayer games. Only chat members can see or change the shared game state.
+      match /games/{gid} {
+        allow read, write: if isMember(cid);
+      }
+      // Private shared couple hub: notes, moods, memories, dates, surprises, places, music and lists.
+      match /coupleHub/{hid} {
+        allow read, write: if isMember(cid);
+      }
+      match /presence/{pid} {
+        allow read: if isMember(cid);
+        allow create, update: if isMember(cid)
+          && pid == request.auth.uid
+          && request.resource.data.phoneKey == request.auth.uid;
+        allow delete: if isMember(cid) && pid == request.auth.uid;
+      }
+    }
+  }
+}

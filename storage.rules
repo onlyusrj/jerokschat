@@ -1,0 +1,18 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Only the two members of a chat can touch its media. Membership comes from the chat's Firestore document.
+    function member(cid) {
+      return request.auth != null
+        && request.auth.uid in firestore.get(/databases/(default)/documents/chats/$(cid)).data.members;
+    }
+    match /chats/{cid}/{uid}/{file} {
+      allow read, delete: if member(cid);
+      allow create: if member(cid)
+        && uid == request.auth.uid
+        && request.resource.size < 50 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*') || request.resource.contentType.matches('video/.*'));
+      allow update: if false;
+    }
+  }
+}
