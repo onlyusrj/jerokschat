@@ -174,3 +174,9 @@ V36 FIX (QR chat on two devices)
 - Now the scanner sends the scanned code with the invite and the owner accepts with that same code.
 - PUBLISH the updated firestore.rules (invites now allow a "code" field). Needed also for view-once photos (the "once" rule).
 - If a chat is already broken: on both phones delete the contact, then scan the QR again (hold the QR phone on the same device).
+
+TROUBLESHOOTING UPDATE (v37 diagnostic build)
+- This build now shows Firestore errors for call/whiteboard signalling and ICE candidate reads/writes instead of silently swallowing them.
+- Publish the firestore.rules file included in THIS ZIP in Firebase Console > Firestore Database > Rules. It restricts chat data to signed-in chat members and includes /share/{sid}/ice/{iid} signalling paths. Do not use older rules that allow read/write: if true.
+- If the app reports permission-denied, the deployed rules or chat membership must be corrected. If it reports ICE/network connection failure, a TURN server may be needed; this ZIP cannot create TURN credentials automatically.
+- Live Firebase/network tests cannot be run from this ZIP-editing environment.
