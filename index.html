@@ -1539,7 +1539,7 @@ $('setb').addEventListener('click',stat);stat();
  // --- sending must not close the keyboard
  const mic=$('mic');
  if(mic){['mousedown','pointerdown'].forEach(ev=>mic.addEventListener(ev,e=>{if($('in')&&document.activeElement===$('in'))e.preventDefault()}));
-  mic.addEventListener('touchstart',e=>{if($('in')&&document.activeElement===$('in')&&$('in').value.trim())e.preventDefault()},{passive:false});
+  // Do not cancel touchstart here: doing so suppresses the synthetic click on some phones, so the purple Send button appears to do nothing. Keep the input focused without blocking the click.
   mic.addEventListener('click',()=>{const t=$('in');if(t&&!t.value.trim()&&document.activeElement!==t){/* voice record: leave focus alone */}else if(t){try{t.focus({preventScroll:true})}catch(e){}}});}
 
 
