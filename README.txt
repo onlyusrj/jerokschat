@@ -104,3 +104,13 @@ CHESS (v26)
 - Chat tools (⋯) > Chess. Full rules (check, checkmate, castling, en passant, promotion), live sync, resign, rematch with colours swapped.
 - Uses chess.js from cdnjs for move rules. No new Firestore rules needed (uses chats/{id}/share).
 - Recent emojis show first when you open the emoji panel. Tapping a message no longer opens the menu: long-press or right-click it (swipe right to reply).
+
+V28 FEATURES
+- Publish the updated firestore.rules (poll votes, encrypted fields, disappearing-message cleanup).
+- End-to-end encryption: text, replies, poll text and voice transcripts are encrypted on this device with a key derived from your shared secret code (PBKDF2 + NaCl secretbox). Photos/videos/voice files are NOT encrypted (they sit on Cloudinary). Use a long random secret code.
+- Scheduled messages send only while the app is open at the chosen time (or the next time it opens).
+- Disappearing messages hide and delete messages after 1 hour or 1 day (uploaded media files stay on Cloudinary).
+- Voice-to-text uses the browser's speech recognition while recording (Chrome/Android/desktop); not available on iPhone Safari.
+- Translate uses the free MyMemory service (text is sent to them when you tap Translate).
+- GIF search needs GIPHY_KEY in firebase-config.js.
+- Biometric unlock needs HTTPS and App lock on; it checks your fingerprint/face on the device only.

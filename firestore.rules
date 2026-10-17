@@ -82,9 +82,9 @@ service cloud.firestore {
           && request.resource.data.ts == resource.data.ts
           && request.resource.data.type == resource.data.type
           && (
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['dlv', 'read', 'r', 'pinned'])
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['dlv', 'read', 'r', 'pinned', 'votes'])
             || (resource.data.fromUid == request.auth.uid
-                && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['dele', 'text', 'data', 'url', 'rep', 'r', 'dlv', 'read', 'edited', 'pinned']))
+                && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['dele', 'text', 'data', 'url', 'rep', 'et', 'eq', 'etr', 'r', 'dlv', 'read', 'edited', 'pinned']))
             // Recipient may open a view-once photo/video exactly once: it marks it opened and wipes the media.
             || (resource.data.fromUid != request.auth.uid
                 && resource.data.get('once', false) == true
@@ -93,7 +93,8 @@ service cloud.firestore {
                 && request.resource.data.get('data', '') == ''
                 && request.resource.data.get('url', '') == '')
           );
-        allow delete: if false;
+        // Sender may delete own messages (disappearing messages cleanup).
+        allow delete: if isMember(cid) && resource.data.fromUid == request.auth.uid;
       }
       // Screen share / whiteboard signalling (members only).
       match /share/{sid} {

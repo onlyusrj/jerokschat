@@ -22,3 +22,6 @@ window.TURN_CONFIG = {
   meteredApiKey: "",
   servers: []
 };
+
+// Optional: free GIPHY API key (developers.giphy.com) to enable GIF search in the emoji panel.
+window.GIPHY_KEY = "";
