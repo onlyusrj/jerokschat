@@ -50,7 +50,8 @@ service cloud.firestore {
     // QR connect: someone who scanned your QR leaves a request here. Only they can write it, only you can read/delete it.
     match /invites/{ownerUid}/requests/{fromUid} {
       allow create, update: if signedIn() && request.auth.uid == fromUid
-        && request.resource.data.keys().hasOnly(['name', 'ts'])
+        && request.resource.data.keys().hasOnly(['name', 'ts', 'code'])
+        && (!('code' in request.resource.data) || (request.resource.data.code is string && request.resource.data.code.size() <= 64))
         && request.resource.data.name is string
         && request.resource.data.name.size() <= 60
         && request.resource.data.ts is int;

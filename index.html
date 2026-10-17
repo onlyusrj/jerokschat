@@ -679,7 +679,7 @@ async function qrAdd(txt){const p=String(txt||'').split('|');if(p[0]!=='ONLYUS1'
  if(ex){list();return open(ex)}
  if(!(await askYes('Add contact','Add '+name+' to your chats?','Add')))return;
  const c={name,email:'',phone:'',num:uid,code,uid};contacts.push(c);LS.s('uc-contacts',contacts);saveCloud();
- if(!demo&&fs)fs.collection('invites').doc(uid).collection('requests').doc(authUser.uid).set({name:(me&&me.name)||'Someone',ts:Date.now()}).catch(()=>{});
+ if(!demo&&fs)fs.collection('invites').doc(uid).collection('requests').doc(authUser.uid).set({name:(me&&me.name)||'Someone',ts:Date.now(),code}).catch(()=>{});
  list();open(c)}
 $('qrFab').onclick=()=>openQr(1);$('qrRow').onclick=()=>openQr(1);$('qrClose').onclick=closeQr;$('qrT1').onclick=()=>qrTab(1);$('qrT2').onclick=()=>qrTab(2);
 $('qrNew').onclick=async()=>{if(await askYes('Reset my QR','Old QR codes will stop working for new people. Your current chats are not affected.','Reset')){myQrCode(true);drawQr();toast('New QR created')}};
@@ -689,7 +689,7 @@ function watchInvites(){if(demo||!authUser||!fs||invUid===authUser.uid)return;in
 function askInvite(fromUid,d){return new Promise(res=>{const del=()=>fs.collection('invites').doc(authUser.uid).collection('requests').doc(fromUid).delete().catch(()=>{});
  if(contacts.some(c=>c.uid===fromUid)){del();return res()}
  const name=String(d.name||'Someone').slice(0,40);
- const accept=()=>{contacts=contacts.filter(c=>c.uid!==fromUid);contacts.push({name,email:'',phone:'',num:fromUid,code:myQrCode(),uid:fromUid});LS.s('uc-contacts',contacts);saveCloud();del();list();toast(name+' added 💕')};
+ const accept=()=>{contacts=contacts.filter(c=>c.uid!==fromUid);contacts.push({name,email:'',phone:'',num:fromUid,code:(typeof d.code==='string'&&d.code.length>=20&&d.code.length<=64?d.code:myQrCode()),uid:fromUid});LS.s('uc-contacts',contacts);saveCloud();del();list();toast(name+' added 💕')};
  const F=window.__fx;if(F&&F.dlg)F.dlg('💌 New connection',name+' scanned your QR code. Add '+name+' to your chats?',[{l:'Accept',f:()=>{accept();res()}},{l:'Decline',g:1,f:()=>{del();res()}}]);
  else{if(confirm(name+' scanned your QR code. Add to chats?'))accept();else del();res()}})}
 // ---- chat

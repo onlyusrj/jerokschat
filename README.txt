@@ -168,3 +168,9 @@ V35 FREE AI (Gemini free tier, key stays on your device)
 - Free tier: limited requests per minute/day; Google may use free-tier prompts to improve its products. Do not type secrets in the AI chat.
 - If you see "model name sari illa", set window.GEMINI_MODEL in firebase-config.js to a current model name from AI Studio.
 - Optional (Blaze plan): Firebase function aiChat with an Anthropic key, enable with window.AI_USE_FUNCTION = true; in firebase-config.js. See the V34 section.
+
+V36 FIX (QR chat on two devices)
+- Before: when the QR owner accepted a scan on a different phone/browser than the one that showed the QR, that device used its own QR code, so the two people ended up in different chat rooms (messages never arrived, encrypted text unreadable).
+- Now the scanner sends the scanned code with the invite and the owner accepts with that same code.
+- PUBLISH the updated firestore.rules (invites now allow a "code" field). Needed also for view-once photos (the "once" rule).
+- If a chat is already broken: on both phones delete the contact, then scan the QR again (hold the QR phone on the same device).
