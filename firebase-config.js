@@ -29,6 +29,6 @@ window.GIPHY_KEY = "";
 // OnlyUs AI (free): key from aistudio.google.com. Paste it between the quotes.
 // This key is visible to anyone who opens your site, so RESTRICT it in Google Cloud Console
 // (APIs & Services > Credentials > your key > Website restrictions = your site URL, API restriction = Generative Language API).
-window.GEMINI_KEY = "AQ.Ab8RN6JNp5jenwhRb0hTJBvRcwBrM1onpNNUsSLgBPhEYruyBA";
+window.GEMINI_KEY = "AQ.Ab8RN6KC7IyZ5biMyggRnrhpCtd15rw6YKayn8eqzqoDHOhxnw";
 // Model name from AI Studio (names change often). Default if empty: gemini-flash-latest
 window.GEMINI_MODEL = "";

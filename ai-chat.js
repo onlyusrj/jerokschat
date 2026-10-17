@@ -56,11 +56,15 @@
         const turns=hist.slice(-MAX_KEEP).reduce((a,m)=>{const r=m.role==='assistant'?'model':'user',l=a[a.length-1];if(l&&l.role===r)l.parts[0].text+='\n'+m.content;else a.push({role:r,parts:[{text:m.content}]});return a},[]);
         while(turns.length&&turns[0].role!=='user')turns.shift();
         const nm=myName().replace(/[^\p{L}\p{N} ._-]/gu,'').slice(0,30);
-        const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(window.GEMINI_MODEL||'gemini-flash-latest')+':generateContent',{method:'POST',
-          headers:{'content-type':'application/json','x-goog-api-key':GK},
-          body:JSON.stringify({systemInstruction:{parts:[{text:SYSTEM+(nm?"\nThe user's name is "+nm+'.':'')}]},contents:turns,generationConfig:{maxOutputTokens:900,temperature:0.8}})});
+        const model=encodeURIComponent(window.GEMINI_MODEL||'gemini-flash-latest');
+        const reqInit={method:'POST',headers:{'content-type':'application/json','x-goog-api-key':GK},
+          body:JSON.stringify({systemInstruction:{parts:[{text:SYSTEM+(nm?"\nThe user's name is "+nm+'.':'')}]},contents:turns,generationConfig:{maxOutputTokens:900,temperature:0.8}})};
+        // Keys from AI Studio (AIza... and the newer AQ.... bound-account keys) use the Gemini API endpoint.
+        let r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent',reqInit);
+        // Vertex AI Express keys are also AQ.... : if Gemini API refuses the key, try the Vertex endpoint once.
+        if((r.status===401||r.status===403)&&/^AQ\./.test(GK))r=await fetch('https://aiplatform.googleapis.com/v1/publishers/google/models/'+model+':generateContent',reqInit);
         let j={};try{j=await r.json()}catch(x){}
-        if(!r.ok){const er=new Error((j.error&&j.error.message)||'AI error');er.code=r.status===429?'resource-exhausted':r.status===404?'bad-model':(r.status===400||r.status===403)?'bad-key':'internal';throw er}
+        if(!r.ok){const er=new Error((j.error&&j.error.message)||'AI error');er.detail='HTTP '+r.status+': '+String((j.error&&j.error.message)||'').slice(0,160);er.code=r.status===429?'resource-exhausted':r.status===404?'bad-model':(r.status===400||r.status===403)?'bad-key':'internal';throw er}
         const cand=(j.candidates||[])[0];
         data={reply:((cand&&cand.content&&cand.content.parts)||[]).map(p=>p.text||'').join('').trim()};
       }else{                        // Mode 2: Firebase Cloud Function "aiChat" (needs Blaze plan, see README)
@@ -79,6 +83,7 @@
       else if(/bad-key/.test(code))msg='Gemini key sari illa / restrict aagirukku. firebase-config.js-la GEMINI_KEY check pannunga.';
       else if(/bad-model/.test(code))msg='Gemini model name sari illa. firebase-config.js-la GEMINI_MODEL maathunga.';
       else if(/not-found|unavailable|internal|failed-precondition/.test(code))msg=window.GEMINI_KEY?'AI ippo busy-a irukku. Konjam neram kazhichu try pannunga 🙏':'AI innum set up aagala. firebase-config.js-la GEMINI_KEY podunga (README paarunga).';
+      if(window.GEMINI_KEY){const d=e&&(e.detail||(e.name==='TypeError'?'network/CORS: '+e.message:e.message));if(d)msg+='\n('+String(d).slice(0,200)+')'}
       hist.pop();save();       // drop the unanswered question so history stays valid
       row('assistant',msg,'err');
       $('aiIn').value=text;autoGrow();
