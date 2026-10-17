@@ -726,10 +726,11 @@ function close(){window.__us.onclose&&window.__us.onclose();unsub.forEach(f=>f()
 $('back').onclick=close;
 function add(m,id){const e=bubble(m,id);if(!e)return;const ms=$('ms'),near=ms.scrollHeight-ms.scrollTop-ms.clientHeight<200||m.from===me.num;const d=fD(m.ts);if(d!=lastDay){lastDay=d;ms.appendChild(mkEl('div','day',d))}
  ms.appendChild(e);els.set(id,e);lastTs=m.ts;if(near)ms.scrollTop=ms.scrollHeight}
-async function openOnce(m,id){try{const u={vo:Date.now()};if(m.data)u.data='';if(m.url)u.url='';await col().doc(id).update(u)}catch(e){return toast('Could not open. Publish the updated firestore.rules first.')}
+async function openOnce(m,id){try{const u={vo:Date.now()};if(m.data)u.data='';if(m.url)u.url='';await col().doc(id).update(u)}catch(e){return toast('Could not open ('+((e&&e.code)||'error')+'). Publish the updated firestore.rules first.')}
  const src=m.url||m.data;if(m.path)onceDel=m.path;
- const v=$('vv'),i=$('vi');if(m.type=='vid'){i.style.display='none';v.style.display='block';v.src=src;v.play().catch(()=>{})}else{v.style.display='none';i.style.display='block';i.src=src}$('viewer').classList.add('on')}
+ const v=$('vv'),i=$('vi');if(m.type=='vid'){i.style.display='none';v.style.display='block';v.src=src;v.play().catch(()=>{})}else{v.style.display='none';i.style.display='block';i.src=src}$('viewer').dataset.once='1';$('viewer').classList.add('on')}
 let reactTo=null;
+function jumpTo(id){const e=id&&els.get(id);if(!e){toast('Original message not available');return}e.scrollIntoView({behavior:'smooth',block:'center'});e.classList.remove('flash');void e.offsetWidth;e.classList.add('flash');setTimeout(()=>e.classList.remove('flash'),1800)}
 function startReply(m,id){if(m.dele)return;replyTo={id,from:m.from,t:preview(m)};$('rept').textContent=preview(m);$('rep').style.display='flex';$('in').focus()}
 function bubble(m,id){if(delMe.has(id))return null;if(m.exp&&m.exp<Date.now())return null;const mine=m.from===me.num,d=mkEl('div','m '+(mine?'me':'th'));
  {let x0=0,y0=0,dx=0,on=false,hit=false,lp=0,lpT=0;d.oncontextmenu=e=>{e.preventDefault();if(Date.now()-lpT>1200)sheet(m,id)};
@@ -741,11 +742,11 @@ function bubble(m,id){if(delMe.has(id))return null;if(m.exp&&m.exp<Date.now())re
  d.addEventListener('pointerup',e=>{if(e.pointerType!=='mouse')return;d.style.transform='';if(on&&dx>60){e.preventDefault();startReply(m,id)}on=false});
  d.addEventListener('pointercancel',e=>{if(e.pointerType!=='mouse')return;d.style.transform='';on=false})}
  if(m.dele){const i=mkEl('i','','🚫 This message was deleted');i.style.color='var(--dim)';d.appendChild(i)}
- else{if(m.pinned)d.appendChild(mkEl('div','pinned-badge','📌 Pinned'));if(m.rep){const q=mkEl('div','q');q.appendChild(mkEl('b','',m.rep.from===me.num?'You':cur.name));q.appendChild(document.createTextNode(m.rep.t));d.appendChild(q)}
+ else{if(m.pinned)d.appendChild(mkEl('div','pinned-badge','📌 Pinned'));if(m.rep){const q=mkEl('div','q');q.appendChild(mkEl('b','',m.rep.from===me.num?'You':cur.name));q.appendChild(document.createTextNode(m.rep.t));if(m.rep.id){q.dataset.jump='1';q.onclick=e=>{e.stopPropagation();jumpTo(m.rep.id)}}d.appendChild(q)}
   if(m.once&&(m.type=='img'||m.type=='vid')){const ic=m.type=='img'?'📷 Photo':'🎥 Video',b=mkEl('button','once',m.vo?'🔒 Opened':(mine?'🔒 '+ic+' · view once':'👁 '+ic+' · tap to view once'));b.type='button';if(m.vo||mine)b.disabled=true;else b.onclick=e=>{e.stopPropagation();openOnce(m,id)};d.appendChild(b)}
   else if(m.type=='poll')window.__fx.poll(d,m,id);else if(m.type=='doc'&&window.__docBubble)window.__docBubble(d,m);else if(m.type=='event'&&window.__eventBubble)window.__eventBubble(d,m,id);
   else if(m.type=='vid'){const v=mkEl('video','pic');v.controls=true;v.playsInline=true;v.src=m.url||m.data;v.onclick=e=>e.stopPropagation();d.appendChild(v)}
-  else if(m.type=='img'){if(m.sticker||m.gif)d.classList.add('stk');const i=mkEl('img','pic');const sr=m.url||m.data;i.src=sr;i.alt='Photo';i.onclick=e=>{e.stopPropagation();$('vi').src=sr;$('viewer').classList.add('on')};d.appendChild(i)}
+  else if(m.type=='img'){if(m.sticker||m.gif)d.classList.add('stk');const i=mkEl('img','pic');const sr=m.url||m.data;i.src=sr;i.alt='Photo';i.onclick=e=>{e.stopPropagation();$('vi').src=sr;$('vi').style.display='block';$('vv').style.display='none';$('viewer').dataset.once='';$('viewer').classList.add('on')};d.appendChild(i)}
   else if(m.type=='aud')window.__fx.aud(d,m);
   if(m.text){d.appendChild(document.createTextNode(m.text));if(m.edited)d.appendChild(mkEl('span','edit-mark','edited'))}}
  const t=mkEl('span','mt');t.appendChild(mkEl('span','',fT(m.ts)));if(mine&&!m.dele){t.appendChild(mkEl('span','tk'+(m.read?' r':'')+(m.__p?' pend':''),m.__p?'🕓':(m.dlv||m.read?'✓✓':'✓')))}d.appendChild(t);
@@ -1740,5 +1741,7 @@ $('setb').addEventListener('click',stat);stat();
 })();
 </script>
 <script src="ai-chat.js"></script>
+<script src="couple-plus.js"></script>
+<script src="fx-anim.js"></script>
 </body>
 </html>
