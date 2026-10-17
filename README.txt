@@ -11,3 +11,6 @@ Tamil steps:
 6. This build reports the actual Firestore/WebRTC error in the app toast (instead of hiding it). If it still fails, send me the exact error text shown. Do not send passwords, API keys, or private login details.
 
 Known status: Calls were already not connecting before. This package is focused on identifying the whiteboard failure first; a TURN server may be required for some networks, but we should use the displayed error to choose the next fix rather than guessing.
+
+V38 FIXES
+- Whiteboard: if the direct peer-to-peer link cannot connect (different networks / mobile data), drawing now continues through Firestore instead of cutting the session. Screen VIDEO still needs a direct link (set a TURN server for that).
