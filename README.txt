@@ -36,3 +36,8 @@ V41 MOTION + PHOTO SAVE + REPLY JUMP
 - Photo/video viewer has a "Save" button (downloads the file; if the browser blocks it, long-press to save). It is hidden for view-once photos/videos.
 - Tap the quoted reply inside a message to scroll to the original message and flash it. Works for replies that stored the message id; if the original was deleted you get a small notice.
 - Cache v7: fully close and reopen the app once.
+
+V42 GALLERY WALLPAPER
+- Chat tools (the tools grid inside a chat) > 🎨 Wallpaper > "🖼 Choose from gallery": pick any photo as the chat background. A slider dims it so messages stay readable; "Remove photo" goes back.
+- The photo is resized (max 1280 px) and saved on THIS device only, separately for each chat. It is not uploaded and your partner does not see it. Picking one of the 5 built-in designs replaces the photo.
+- New file wallpaper-gallery.js. Cache v8: fully close and reopen the app once.

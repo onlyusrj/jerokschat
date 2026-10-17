@@ -9,7 +9,7 @@ const POP=['.game-tabs>button','.tool-grid>*','.cpTabs>button','.sound-options>*
 const SLIDE=['.hub-tabs>button'];
 const gen=(sels,anim)=>sels.map(s=>`.fx-run ${s}{animation:${anim} both}`).join('')
   +sels.map(s=>{let o='';for(let i=1;i<=14;i++)o+=`.fx-run ${s}:nth-child(${i}){animation-delay:${i*45}ms}`;return o+`.fx-run ${s}:nth-child(n+15){animation-delay:630ms}`}).join('');
-const PRESS='.ic,.btn,.tool-grid button,.game-tabs button,.hub-tabs button,.cpBtn,.cpTabs button,#gameArea button,.hub-card button,.aiChips button,.sound-option,.once,#vdl';
+const PRESS='.ic,.btn,.tool-grid button,.game-tabs button,.hub-tabs button,.cpBtn,.cpTabs button,#gameArea button,.hub-card button,.aiChips button,.sound-option,.once,#vdl,.hub-btn,.hub-close,.status-bottom button,.period-bottom button,.media-tabs button,.tool-foot button,.mpvB,.mpvSend,.qrX,.qrTabs button,.qrPane button,.sound-close,.inboxClose,.ai-fab,.qr-fab,.aiBot button,.aiTop button,.bar button,.card button,.sheet button';
 const css=`
 @keyframes fxRise{from{opacity:0;transform:translateY(18px)}}
 @keyframes fxPop{0%{opacity:0;transform:scale(.7)}70%{transform:scale(1.07)}}
@@ -39,6 +39,18 @@ ${gen(RISE,'fxRise .46s cubic-bezier(.2,.8,.2,1)')}${gen(POP,'fxPop .45s cubic-b
 ${PRESS}{transition:transform .16s ease,filter .16s ease}
 ${PRESS.split(',').map(s=>s+':active').join(',')}{transform:scale(.94)}
 @media (hover:hover){${PRESS.split(',').map(s=>s+':hover').join(',')}{filter:brightness(1.07)}}
+/* Premium balanced menu and button motion */
+${PRESS}{position:relative;isolation:isolate;overflow:hidden;transition:transform .18s cubic-bezier(.2,.8,.2,1),filter .18s ease,box-shadow .2s ease,border-color .2s ease}
+${PRESS}:focus-visible{outline:2px solid color-mix(in srgb,var(--acc,#a879ff) 80%,white);outline-offset:3px}
+${PRESS}:active{filter:brightness(1.12) saturate(1.08);box-shadow:0 2px 8px #0002}
+.btn:not(.l),.hub-btn:not(.alt),.mpvSend,.aiBot button{background-size:180% 180%;transition:transform .18s cubic-bezier(.2,.8,.2,1),filter .18s ease,box-shadow .2s ease,background-position .35s ease}
+@media(hover:hover){.btn:not(.l):hover,.hub-btn:not(.alt):hover,.mpvSend:hover,.aiBot button:hover{background-position:100% 0;box-shadow:0 9px 24px color-mix(in srgb,var(--acc,#a879ff) 28%,transparent)}}
+.tool-grid button,.hub-card,.hub-item,.search-result,.pin-item,.star-item,.sound-option{transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s ease,border-color .22s ease,background-color .22s ease}
+@media(hover:hover){.tool-grid button:hover,.hub-item:hover,.search-result:hover,.pin-item:hover,.star-item:hover,.sound-option:hover{transform:translateY(-2px);box-shadow:0 8px 20px #00000012}}
+.ov.on>.card,.ov.on>.tools-card,.ov.on>.games-card,.ov.on>.qrCard,.ov.on>.mpvBody{transform-origin:center bottom}
+.status-bottom button,.period-bottom button,.hub-tabs button,.game-tabs button,.cpTabs button{transition:background .2s ease,color .2s ease,transform .18s ease,box-shadow .2s ease}
+.status-bottom button.on,.period-bottom button.on,.hub-tabs button.on,.game-tabs button.on,.cpTabs button.on{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc,#a879ff) 24%,transparent)}
+@media(prefers-reduced-motion:reduce){${PRESS},.tool-grid button,.hub-card,.hub-item,.search-result,.pin-item,.star-item,.sound-option,.status-bottom button,.period-bottom button,.hub-tabs button,.game-tabs button,.cpTabs button{animation:none!important;transition:none!important;transform:none!important}}
 }`;
 const st=document.createElement('style');st.id='v41fx';st.textContent=css;document.head.appendChild(st);
 
