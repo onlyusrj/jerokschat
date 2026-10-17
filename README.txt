@@ -114,3 +114,10 @@ V28 FEATURES
 - Translate uses the free MyMemory service (text is sent to them when you tap Translate).
 - GIF search needs GIPHY_KEY in firebase-config.js.
 - Biometric unlock needs HTTPS and App lock on; it checks your fingerprint/face on the device only.
+
+V29 ADDITIONS
+- Games v2: 🎮 on the home bar or Chat tools > Games. Send a game request, partner accepts, then play (Tic-Tac-Toe, Connect 4, Rock Paper Scissors, Memory, Quick Duel, Draw & Guess). Needs the existing firestore.rules (share/{id}).
+- Our Space and Games open from the home screen: they ask which chat if you have several.
+- Offline: messages you send offline show a clock (🕓) and send automatically when you are back online. The app shell is cached so it also opens offline. Photos/voice/video need internet to upload.
+- Sakura petals: Settings > Sakura petals in chats / on home.
+- Calls: if no TURN server is configured the app now falls back to a free public relay (best effort). For reliable calls on mobile data set your own TURN in firebase-config.js.
