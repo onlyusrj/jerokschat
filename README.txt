@@ -14,3 +14,8 @@ Known status: Calls were already not connecting before. This package is focused 
 
 V38 FIXES
 - Whiteboard: if the direct peer-to-peer link cannot connect (different networks / mobile data), drawing now continues through Firestore instead of cutting the session. Screen VIDEO still needs a direct link (set a TURN server for that).
+
+V39 GAMES
+- Added 3 games to the existing Play together hub (same request/accept/score/play-again flow, same share/game document, no rules change):
+  Would You Rather (8 questions, co-op: how often you match), Truth or Dare (turns, cards drawn for both), Ludo (2 players, 4 coins each, 6 to start, exact roll to finish, capture, safe stars, extra turn on 6/capture/home, three 6s lose the turn).
+- Fully close and reopen the app once so the new cache loads.

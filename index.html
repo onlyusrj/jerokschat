@@ -461,6 +461,19 @@ body{background:transparent;color:var(--ink);font-family:Inter,"Segoe UI",Roboto
 #aiSend svg{width:22px;height:22px;fill:#fff}#aiSend:disabled{opacity:.5}
 .aiNote{text-align:center;font:11.5px system-ui,sans-serif;color:var(--dim);padding:0 12px 4px}
 </style>
+<style id="v39css">
+.gWyr{width:100%;display:flex;flex-direction:column;gap:12px}.gWq{text-align:center;font-size:15px;opacity:.85}
+.gWo{all:unset;cursor:pointer;box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:18px 16px;border-radius:18px;background:#ffffff1c;border:2px solid transparent;font-size:18px;line-height:1.3}
+.gWo:disabled{cursor:default}.gWo.sel{border-color:var(--acc,#8657d9);background:#8657d940}
+.gWl{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#ffffff26;font-weight:700}
+.gWb{margin-left:auto;display:flex;flex-direction:column;gap:3px;align-items:flex-end}.gWb i{font-style:normal;font-size:12px;background:#ff6b9d;color:#fff;border-radius:10px;padding:2px 8px}
+.gTod{width:100%;box-sizing:border-box;min-height:170px;border-radius:22px;padding:22px 18px;text-align:center;background:#ffffff1c;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.gTod b{font-size:20px}.gTod p{margin:0;font-size:19px;line-height:1.4}.gTod.truth{background:linear-gradient(150deg,#3b82f655,#8b5cf655)}.gTod.dare{background:linear-gradient(150deg,#f9731655,#ec489955)}
+.gTodRow{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+.gLudo{width:min(94vw,400px);height:auto;aspect-ratio:1;background:#fff;border-radius:14px;touch-action:manipulation;display:block}
+.lMov{animation:lPulse .9s infinite}@keyframes lPulse{50%{opacity:.3}}
+.gDice{display:flex;align-items:center;gap:14px;margin-top:10px;min-height:66px}.gDie{font-size:58px;line-height:1;min-width:64px;text-align:center}
+</style>
 </head>
 <body>
 <div class="ov" id="mpv" role="dialog" aria-modal="true" aria-label="Preview"><div class="mpvTop"><button type="button" class="mpvB" id="mpvX" aria-label="Close preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button><span style="flex:1"></span><button type="button" class="mpvB" id="mpvO" aria-label="View once"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2.2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="sans-serif">1</text></svg></button></div><div class="mpvBody" id="mpvBody"></div><div class="mpvBot"><span id="mpvHint" class="mpvHint">Keep in chat</span><span style="flex:1"></span><button type="button" class="mpvSend" id="mpvS" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div></div>
@@ -1400,7 +1413,7 @@ window.__fx={ready,inn,out,edit,poll,aud,srStart,srStop,translate,pickChat,dlg,h
 <script>
 (()=>{
 const $=id=>document.getElementById(id),U=()=>window.__us,h=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
-const NAME={ttt:'Tic-Tac-Toe',c4:'Connect 4',rps:'Rock Paper Scissors',memory:'Memory Match',duel:'Quick Duel',draw:'Draw & Guess'},ICON={ttt:'❌⭕',c4:'🔴🟡',rps:'✊✋✌️',memory:'🧠',duel:'⚡',draw:'🎨'};
+const NAME={ttt:'Tic-Tac-Toe',c4:'Connect 4',rps:'Rock Paper Scissors',memory:'Memory Match',duel:'Quick Duel',draw:'Draw & Guess',wyr:'Would You Rather',tod:'Truth or Dare',ludo:'Ludo'},ICON={ttt:'❌⭕',c4:'🔴🟡',rps:'✊✋✌️',memory:'🧠',duel:'⚡',draw:'🎨',wyr:'🤔💞',tod:'💬🔥',ludo:'🎲'};
 const FAST=()=>!!window.__gmFast,my=()=>U().uid(),R=k=>U().fs().collection('chats').doc(k).collection('share').doc('game');
 let K='',OPP=null,ref=null,un=null,D=null,inc=null,loc={},arb={};const shown=new Set();
 const idx=()=>D.p.indexOf(my()),opp=()=>{const u=D.p[1-idx()];return{uid:u,name:(D.names&&D.names[u])||(OPP&&OPP.name)||'Partner'}};
@@ -1419,10 +1432,10 @@ function render(){const B=$('gmBody'),F=$('gmFoot');
  B.textContent='';F.textContent='';loc.dv=null;const live=D&&NAME[D.game]&&D.p&&!(D.st==='req'&&Date.now()-D.n>6e5);
  $('gmT').textContent=live&&D.st!=='idle'&&D.st!=='dec'?NAME[D.game]:'Games';$('gmSc').textContent='';
  if(!live||D.st==='idle'||D.st==='dec'){if(live&&D.st==='dec'&&D.by===my())B.appendChild(h('p','gmMsg',opp().name+' declined 😔'));picker(B);return}
- const sc=D.sc||{};$('gmSc').textContent='You '+(sc[my()]||0)+' – '+(sc[opp().uid]||0)+' '+opp().name;
+ const sc=D.sc||{};$('gmSc').textContent=COOP[D.game]?'':'You '+(sc[my()]||0)+' – '+(sc[opp().uid]||0)+' '+opp().name;
  if(D.st==='req'){if(D.by===my()){B.appendChild(h('p','gmMsg','Waiting for '+opp().name+' to accept '+NAME[D.game]+'…'));btn(F,'Cancel',()=>upd({st:'idle'}),1)}else{B.appendChild(h('p','gmMsg',opp().name+' wants to play '+NAME[D.game]+' '+ICON[D.game]));btn(F,'Accept',()=>upd({st:'play'}));btn(F,'Decline',()=>upd({st:'dec'}),1)}return}
- const box=h('div','gmBox');B.appendChild(box);({ttt:rTTT,c4:rC4,rps:rRPS,memory:rMem,duel:rDuel,draw:rDraw})[D.game](box);
- if(D.st==='end'){const w=D.res;box.appendChild(h('div','gmBan',w==='d'?'It’s a draw 🤝':w===my()?'You won! 🎉':opp().name+' won 🏆'));btn(F,'Play again',()=>request(D.game));btn(F,'Other games',()=>upd({st:'idle'}),1)}else btn(F,'Quit game',()=>{if(confirm('End this game?'))upd({st:'idle'})},1)}
+ const box=h('div','gmBox');B.appendChild(box);({ttt:rTTT,c4:rC4,rps:rRPS,memory:rMem,duel:rDuel,draw:rDraw,wyr:rWYR,tod:rTOD,ludo:rLudo})[D.game](box);
+ if(D.st==='end'){const w=D.res;box.appendChild(h('div','gmBan',COOP[D.game]?SUM[D.game]():w==='d'?'It’s a draw 🤝':w===my()?'You won! 🎉':opp().name+' won 🏆'));btn(F,'Play again',()=>request(D.game));btn(F,'Other games',()=>upd({st:'idle'}),1)}else btn(F,'Quit game',()=>{if(confirm('End this game?'))upd({st:'idle'})},1)}
 function onData(){if(D&&D.st==='play'){arbiters()}render()}
 // ---------- tic-tac-toe
 const LN=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]],lnT=b=>{for(const[a,c,d]of LN)if(b[a]&&b[a]===b[c]&&b[a]===b[d])return b[a];return ''};
@@ -1475,7 +1488,73 @@ function arbDraw(){const s=D.s,me=my(),dr=D.p[s.dr]===me;
  if(dr&&!s.wh&&!arb.pick){arb.pick=1;const w=WORDS[Math.floor(Math.random()*WORDS.length)];loc.word=w;const key='onlyus-gw-'+D.n+':'+s.rd+':'+hs(norm(w));try{localStorage.setItem(key,w)}catch(e){}upd({'s.wh':hs(norm(w)),'s.d':'','s.g':{},'s.ph':'draw','s.ok':'','s.rw':''});setTimeout(()=>{arb.pick=0},800);return}
  if(s.wh&&s.ph==='draw'&&dr){const sig=D.n+':'+s.rd+':'+s.wh;if(arb.tm!==sig){arb.tm=sig;if(!loc.word)try{loc.word=localStorage.getItem('onlyus-gw-'+sig)}catch(e){}setTimeout(()=>{if(D&&D.st==='play'&&D.s.ph==='draw'&&D.s.wh===s.wh&&D.s.rd===s.rd)upd({'s.ph':'done','s.rw':loc.word||'?'})},FAST()?4000:75000)}}
  if(s.ph==='done'&&D.p[0]===me){const sig=D.n+':'+s.rd;if(arb.nx!==sig){arb.nx=sig;setTimeout(()=>{if(!D||D.st!=='play'||D.s.rd!==s.rd||D.s.ph!=='done')return;if(s.rd>=4){const a=(D.sc||{})[D.p[0]]||0,b=(D.sc||{})[D.p[1]]||0;fin(a>b?D.p[0]:b>a?D.p[1]:'d',D.s)}else upd({'s.rd':s.rd+1,'s.dr':1-s.dr,'s.wh':'','s.d':'','s.g':{},'s.ph':'draw','s.ok':'','s.rw':''})},FAST()?700:4500)}}}
-function arbiters(){({rps:arbRPS,memory:arbMem,duel:arbDuel,draw:arbDraw})[D.game]&&({rps:arbRPS,memory:arbMem,duel:arbDuel,draw:arbDraw})[D.game]()}
+function arbiters(){const A={rps:arbRPS,memory:arbMem,duel:arbDuel,draw:arbDraw,wyr:arbWYR,ludo:arbLudo};A[D.game]&&A[D.game]()}
+// ---------- would you rather (8 questions · co-op: how often do you match?)
+const COOP={wyr:1,tod:1},WN=8,SUM={wyr:()=>'You matched '+D.s.m+' of '+WN+' 💞',tod:()=>D.s.n>1?(D.s.n-1)+' turns played 💞':'Thanks for playing 💞'};
+const WYR=[['Beach holiday 🏖️','Mountain trip 🏔️'],['Biryani forever 🍗','Pizza forever 🍕'],['Movie night at home 🎬','Dinner at a fancy place 🍽️'],['Know the future 🔮','Change the past ⏪'],['Free travel for life ✈️','Free food for life 🍜'],['Morning person 🌅','Night owl 🌙'],['Sing every day 🎤','Dance every day 💃'],['Surprise gift 🎁','A gift you pick yourself 🛍️'],['Long drive with songs 🚗','Long walk with talks 🚶'],['Texting all day 💬','Calling all day 📞'],['Tea 🍵','Coffee ☕'],['Rainy day together 🌧️','Sunny day together ☀️'],['Cook together 👩‍🍳','Order in together 📦'],['Always 10 min early ⏰','Always 10 min late 🐢'],['Read minds 🧠','Be invisible 🫥'],['Big city life 🌆','Quiet village life 🌾'],['Cuddle all day 🧸','Adventure all day 🎢'],['No social media 📵','No movies ever 🎞️'],['A pet cat 🐱','A pet dog 🐶'],['Dance in the rain 💃','Stargaze all night ✨'],['Fly like a bird 🕊️','Breathe underwater 🐠'],['Beach wedding 🌊','Grand hall wedding 🏛️'],['Only sweet food 🍰','Only spicy food 🌶️'],['Always win arguments 🏆','Always make up fast 💞'],['Handwritten love letter 💌','Surprise voice note 🎙️'],['Road trip, no plan 🗺️','Perfectly planned trip 📋'],['Relive our first date 💫','Jump to our 50th anniversary 💍'],['Teleport anywhere 🌀','Stop time ⏸️'],['Pani puri 🥟','Ice cream 🍦'],['Be famous 🌟','Be rich but unknown 💰'],['Netflix marathon 📺','Game marathon 🎮'],['Live in a treehouse 🌳','Live on a houseboat ⛵'],['Bike ride together 🚲','Scooter ride together 🛵'],['Surprise party 🎉','Quiet day just us 🕯️'],['Hug 🤗','Kiss on the cheek 😘'],['Same meal for a year 🍛','Never eat out again 🏠'],['Wake up to a song 🎵','Wake up to a hug 🫶'],['Visit the past 🕰️','Visit the future 🚀'],['Morning chai together ☕','Midnight snacks together 🌙'],['Plan everything 📋','Go with the flow 🌊']];
+INIT.wyr=()=>({q:shuf(WYR.map((_,i)=>i)).slice(0,WN),r:0,c:{},m:0,done:0});
+function rWYR(B){const s=D.s,me=my(),o=opp().uid,c=s.c||{},q=WYR[s.q[Math.min(s.r,WN-1)]],both=c[me]!=null&&c[o]!=null;
+ B.appendChild(h('div','gmSt',s.done?'All '+WN+' questions done':'Question '+(s.r+1)+' of '+WN+' · matches so far '+s.m));
+ const box=h('div','gWyr');box.appendChild(h('div','gWq','Would you rather…'));
+ [0,1].forEach(k=>{const b=h('button','gWo'+(c[me]===k?' sel':''));b.type='button';b.append(h('span','gWl',k?'B':'A'),h('span','',q[k]));
+  if(both){const t=h('span','gWb');if(c[me]===k)t.appendChild(h('i','','You'));if(c[o]===k)t.appendChild(h('i','',opp().name));b.appendChild(t)}
+  b.disabled=D.st!=='play'||c[me]!=null;b.onclick=()=>upd({['s.c.'+me]:k});box.appendChild(b)});
+ B.appendChild(box);
+ B.appendChild(h('div','gmNote',both?(c[me]===c[o]?'💞 Same choice!':'😄 Different choices!'):c[me]!=null?'Waiting for '+opp().name+'…':'Pick one'))}
+function arbWYR(){const s=D.s,c=s.c||{},p0=D.p[0],p1=D.p[1];if(p0!==my()||s.done||c[p0]==null||c[p1]==null)return;const key=D.n+'|'+s.r;if(arb.wy===key)return;arb.wy=key;const r=s.r,n=D.n,same=c[p0]===c[p1],m=s.m+(same?1:0);
+ setTimeout(()=>{if(!D||D.game!=='wyr'||D.st!=='play'||D.n!==n||D.s.r!==r)return;if(r+1>=WN)fin('d',Object.assign({},D.s,{m,done:1}));else upd({'s.r':r+1,'s.c':{},'s.m':m})},FAST()?150:2200)}
+// ---------- truth or dare (turns, co-op)
+const TRUTH=['What was your first impression of me?','What small thing do I do that makes you smile?','Which memory of us do you replay the most?','What is something you always wanted to tell me but haven’t?','When did you realize you liked me?','Which habit of mine do you secretly love?','What was the most embarrassing thing that happened to you this year?','What dream have you not told many people?','Which song reminds you of me?','What is one thing you want us to do together this year?','What is your biggest fear in a relationship?','What is the silliest thing you have cried about?','What could I do to make your day better?','Which photo of us is your favourite, and why?','If we could go anywhere tomorrow, where would you take me?','Which food do you pretend to like but don’t?','Which of my messages made you happiest?','What are you proud of but rarely talk about?','What did you think the first time we talked?','Which talent do you wish you had?','What is the most childish thing you still do?','Describe me in three words.','What does a perfect lazy Sunday with me look like?','What small thing did I do that you still remember?','What is your guilty-pleasure song or show?','What is one thing about the future that makes you nervous?','What is the best compliment you ever received?','What is one thing you would change about your daily routine?','Who was your first crush in school?','What is the one thing you want me to never change?'];
+const DARE=['Send a voice note singing your favourite song line 🎤','Send a selfie with the funniest face you can make 🤪','Write a two-line poem about me ✍️','Say “I love you” in a voice note in three different styles','Imitate me in a voice note 🙈','Tell me your day using only emojis','Dance for 20 seconds and tell me how it felt 💃','Tell a joke so bad I have to laugh','Send a photo of what is on your table right now 📷','Do 10 jumping jacks and send “done”','Send your best sleepy-face selfie 😴','Describe our first meeting like a movie trailer 🎬','Sing me a lullaby in a voice note 🎶','Type a message with your eyes closed and send it as it is','Compliment me in exactly five words','Make up a nickname for me and explain it','Send a photo of the sky above you right now 🌤️','Draw a quick doodle of us and send it ✏️','Talk in a funny accent for the next three messages','Send a memory photo of us and say why you love it','Whisper a plan for our next date in a voice note','Report on your day like a news reporter 🎙️','Send three emojis that describe how you feel about me','Read a tiny love note out loud in a voice note 💌','Teach me one word from your favourite language','Send a photo of your favourite snack 🍫','Tell me three things you like about my voice','Do your best villain laugh in a voice note 😈','Send a thumbs-up photo with your silliest background','Say something sweet about me in a different language'];
+INIT.tod=()=>({t:0,n:1,card:null,used:[]});
+function todPick(k){const s=D.s,pool=k==='truth'?TRUTH:DARE,used=s.used||[];let free=pool.map((_,i)=>i).filter(i=>!used.includes(k[0]+i));if(!free.length)free=pool.map((_,i)=>i);const i=free[Math.floor(Math.random()*free.length)];upd({'s.card':{k,i},'s.used':(used.length>50?[]:used).concat(k[0]+i)})}
+function todNext(){const s=D.s;upd({'s.t':1-s.t,'s.card':null,'s.n':s.n+1})}
+function rTOD(B){const s=D.s,mine=D.st==='play'&&D.p[s.t]===my(),cd=s.card;
+ B.appendChild(h('div','gmSt',D.st!=='play'?'Game over':'Turn '+s.n+' · '+(mine?'your turn':opp().name+'’s turn')));
+ const card=h('div','gTod'+(cd?' '+cd.k:''));
+ if(cd)card.append(h('b','',cd.k==='truth'?'💬 Truth':'🔥 Dare'),h('p','',(cd.k==='truth'?TRUTH:DARE)[cd.i]||''));else card.append(h('b','','🎴 Truth or Dare?'),h('p','',D.st!=='play'?'':mine?'Choose one':opp().name+' is choosing…'));
+ B.appendChild(card);if(D.st!=='play')return;
+ const row=h('div','gTodRow'),mk=(t,f,g)=>{const b=h('button','btn'+(g?' l':''),t);b.type='button';b.onclick=f;row.appendChild(b)};
+ if(mine&&!cd){mk('💬 Truth',()=>todPick('truth'));mk('🔥 Dare',()=>todPick('dare'))}else if(mine&&cd){mk('✅ Done',todNext);mk('⏭ Skip',todNext,1)}else if(cd)B.appendChild(h('div','gmNote',opp().name+' is on it…'));
+ B.appendChild(row);const f=h('div','gTodRow');const e=h('button','btn l','We’re done 💞');e.type='button';e.onclick=()=>fin('d',Object.assign({},s,{card:null}));f.appendChild(e);B.appendChild(f)}
+// ---------- ludo (2 players, 4 coins each, exact roll to finish)
+const LD_START=[0,26],LD_SAFE=new Set([0,8,13,21,26,34,39,47]),PCOL=['#ef4444','#eab308'],LD_NS='http://www.w3.org/2000/svg';
+const LD_TRK=[[6,1],[6,2],[6,3],[6,4],[6,5],[5,6],[4,6],[3,6],[2,6],[1,6],[0,6],[0,7],[0,8],[1,8],[2,8],[3,8],[4,8],[5,8],[6,9],[6,10],[6,11],[6,12],[6,13],[6,14],[7,14],[8,14],[8,13],[8,12],[8,11],[8,10],[8,9],[9,8],[10,8],[11,8],[12,8],[13,8],[14,8],[14,7],[14,6],[13,6],[12,6],[11,6],[10,6],[9,6],[8,5],[8,4],[8,3],[8,2],[8,1],[8,0],[7,0],[6,0]];
+const LD_HC=[[[7,1],[7,2],[7,3],[7,4],[7,5]],[[7,13],[7,12],[7,11],[7,10],[7,9]]],LD_BASE=[[[2,2],[4,2],[2,4],[4,4]],[[11,11],[13,11],[11,13],[13,13]]];
+INIT.ludo=()=>({b:Array(8).fill(-1),t:0,d:0,sx:0,v:0,ln:null});
+function ldMoves(s,t,d){const out=[],seen=new Set();for(let k=0;k<4;k++){const p=s.b[4*t+k];if(seen.has(p))continue;if(p<0?d===6:p+d<=56){out.push(k);seen.add(p)}}return out}
+function ldApply(s,k,d){const t=s.t,b=s.b.slice(),np=b[4*t+k]<0?0:b[4*t+k]+d;b[4*t+k]=np;let cap=0;
+ if(np<=50){const a=(LD_START[t]+np)%52;if(!LD_SAFE.has(a))for(let j=0;j<4;j++){const q=b[4*(1-t)+j];if(q>=0&&q<=50&&(LD_START[1-t]+q)%52===a){b[4*(1-t)+j]=-1;cap++}}}
+ const win=b.slice(4*t,4*t+4).every(x=>x===56),extra=d===6||cap>0||np===56;
+ return{ns:{b,t:extra?t:1-t,d:0,sx:extra&&d===6?(s.sx||0)+1:0,v:(s.v||0)+1,ln:{k:'m',u:null,d,c:cap,h:np===56?1:0}},win}}
+function ldMove(k){const s=D.s;if(D.st!=='play'||!s.d||D.p[s.t]!==my())return;const me=my(),r=ldApply(s,k,s.d);r.ns.ln.u=me;if(r.win)fin(me,r.ns);else upd({s:r.ns})}
+function ldRoll(){const s=D.s;if(D.st!=='play'||D.p[s.t]!==my()||s.d)return;const v=s.v||0;if(loc.rl===D.n+'|'+v)return;loc.rl=D.n+'|'+v;const d=window.__ludoRoll?window.__ludoRoll():1+Math.floor(Math.random()*6);upd({'s.d':d,'s.v':v+1,'s.ln':{k:'r',u:my(),d}})}
+function ldPass(kind){const s=D.s;upd({'s.t':1-s.t,'s.d':0,'s.sx':0,'s.v':(s.v||0)+1,'s.ln':{k:kind,u:D.p[s.t],d:s.d}})}
+function ldText(l){if(!l)return '';const w=l.u===my()?'You':opp().name;return l.k==='r'?w+' rolled '+l.d:l.k==='m'?w+' moved '+l.d+(l.c?' · captured '+l.c+' 🔥':'')+(l.h?' · coin reached home 🏠':''):l.k==='p'?w+' rolled '+l.d+' · no move possible':l.k==='s'?w+' rolled three 6s · turn lost':''}
+function ldXY(t,k,p,fi){if(p<0)return LD_BASE[t][k];if(p<=50){const c=LD_TRK[(LD_START[t]+p)%52];return[c[1]+.5,c[0]+.5]}if(p<=55){const c=LD_HC[t][p-51];return[c[1]+.5,c[0]+.5]}return[t?8.35:6.65,6.8+.45*fi]}
+function ldBoard(s,mv,pick){const svg=document.createElementNS(LD_NS,'svg'),E=(t,a,pa)=>{const e=document.createElementNS(LD_NS,t);for(const k in a)e.setAttribute(k,a[k]);(pa||svg).appendChild(e);return e};
+ svg.setAttribute('viewBox','0 0 15 15');svg.setAttribute('class','gLudo');
+ [[0,0,'#ef4444',0],[9,0,'#22c55e',1],[9,9,'#eab308',0],[0,9,'#3b82f6',1]].forEach(([x,y,c,f])=>{E('rect',{x,y,width:6,height:6,fill:c,opacity:f?.3:1});E('rect',{x:x+1,y:y+1,width:4,height:4,rx:.5,fill:'#fff'})});
+ LD_TRK.forEach((c,a)=>{E('rect',{x:c[1],y:c[0],width:1,height:1,fill:a===0?'#ef4444':a===26?'#eab308':a===13?'#bbf7d0':a===39?'#bfdbfe':'#fff',stroke:'#cbd5e1','stroke-width':.05});if(LD_SAFE.has(a)&&a%13)E('text',{x:c[1]+.5,y:c[0]+.74,'text-anchor':'middle','font-size':.7,fill:'#94a3b8'}).textContent='★'});
+ [[0,'#ef4444'],[1,'#eab308']].forEach(([t,col])=>LD_HC[t].forEach(c=>E('rect',{x:c[1],y:c[0],width:1,height:1,fill:col,opacity:.85,stroke:'#fff','stroke-width':.05})));
+ for(let i=1;i<=5;i++){E('rect',{x:7,y:i,width:1,height:1,fill:'#bbf7d0',stroke:'#fff','stroke-width':.05});E('rect',{x:7,y:8+i,width:1,height:1,fill:'#bfdbfe',stroke:'#fff','stroke-width':.05})}
+ [['6,6 7.5,7.5 6,9','#ef4444'],['6,6 9,6 7.5,7.5','#86efac'],['9,6 9,9 7.5,7.5','#eab308'],['6,9 9,9 7.5,7.5','#93c5fd']].forEach(([pt,c])=>E('polygon',{points:pt,fill:c}));
+ const mvPos={};mv.forEach(k=>{mvPos[s.b[4*s.t+k]]=k});const groups={},coins=[];
+ for(let t=0;t<2;t++){let fi=0;for(let k=0;k<4;k++){const p=s.b[4*t+k],xy=ldXY(t,k,p,p===56?fi++:0),key=p<0?'b'+t+k:xy.join(',');(groups[key]=groups[key]||[]).push(coins.length);coins.push({t,k,p,xy,key})}}
+ coins.forEach(c=>{const g=groups[c.key],j=g.indexOf(coins.indexOf(c)),off=(j-(g.length-1)/2)*.28,x=c.xy[0]+off,y=c.xy[1]-Math.abs(off)*.2;
+  E('circle',{cx:x,cy:y,r:.36,fill:PCOL[c.t],stroke:'#111827','stroke-width':.07});E('circle',{cx:x-.1,cy:y-.1,r:.12,fill:'#fff',opacity:.55});
+  if(c.t===s.t&&mvPos[c.p]!=null){E('circle',{cx:x,cy:y,r:.52,fill:'none',stroke:'#111827','stroke-width':.09,class:'lMov'});const hit=E('circle',{cx:x,cy:y,r:.62,fill:'transparent',style:'cursor:pointer'});hit.onclick=()=>pick(mvPos[c.p])}});
+ return svg}
+function rLudo(B){const s=D.s,me=my(),i=idx(),act=D.st==='play'&&D.p[s.t]===me,mv=s.d?ldMoves(s,s.t,s.d):[],home=t=>s.b.slice(4*t,4*t+4).filter(x=>x===56).length;
+ B.appendChild(h('div','gmSt',D.st!=='play'?'Game over':act?(s.d?(mv.length>1?'Tap a glowing coin to move':'Moving…'):'Your turn · roll the dice'):opp().name+(s.d?' is moving…':' is rolling…')));
+ B.appendChild(ldBoard(s,act&&s.d?mv:[],ldMove));
+ const dice=h('div','gDice');dice.appendChild(h('div','gDie',s.d?'⚀⚁⚂⚃⚄⚅'[s.d-1]:'🎲'));
+ if(act&&!s.d){const b=h('button','btn','🎲 Roll');b.type='button';b.onclick=ldRoll;dice.appendChild(b)}
+ B.appendChild(dice);
+ B.appendChild(h('div','gmNote',(i?'🟡':'🔴')+' You · home '+home(i)+'/4   |   '+(i?'🔴':'🟡')+' '+opp().name+' · home '+home(1-i)+'/4'));
+ const lt=ldText(s.ln);if(lt)B.appendChild(h('div','gmNote',lt))}
+function arbLudo(){const s=D.s;if(!s.d||D.p[s.t]!==my())return;const key=D.n+'|'+(s.v||0);if(arb.ld===key)return;arb.ld=key;const v=s.v||0,n=D.n,mv=ldMoves(s,s.t,s.d),dl=FAST()?120:950,ok=()=>D&&D.game==='ludo'&&D.st==='play'&&D.n===n&&(D.s.v||0)===v;
+ if(s.d===6&&(s.sx||0)>=2)setTimeout(()=>ok()&&ldPass('s'),dl*1.6);else if(!mv.length)setTimeout(()=>ok()&&ldPass('p'),dl*1.6);else if(mv.length===1)setTimeout(()=>ok()&&ldMove(mv[0]),dl)}
 // ---------- open / requests
 function openHub(k,o){K=k;OPP=o;un&&un();un=null;D=null;loc={};arb={};ref=R(k);$('gmView').classList.add('on');render();un=ref.onSnapshot(s=>{const nd=s.exists?s.data():null;if(nd&&D&&nd.n!==D.n){loc={};arb={}}D=nd;onData()},()=>U().toast('Games need the updated firestore.rules'))}
 window.__gm={D:()=>D,word:()=>loc.word,open:openHub};
