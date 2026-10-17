@@ -161,10 +161,10 @@ SETUP (one time, needs Firebase Blaze plan + Firebase CLI):
 - AI chat history is saved only on this device (localStorage). It is not shared with your partner and not read by the app's other chats.
 - No firestore.rules change needed (usage counter is written by the server).
 
-V34b FREE AI (Gemini free tier, no backend, no card)
-- Paste your Gemini key into firebase-config.js: window.GEMINI_KEY = "AIza...";  (optional: window.GEMINI_MODEL)
-- Get the key free at aistudio.google.com > Get API key.
-- IMPORTANT: the key is public in the site code. In Google Cloud Console > APIs & Services > Credentials > your key:
-  Application restrictions = Websites (add your GitHub Pages URL, e.g. https://USER.github.io/*), API restrictions = Generative Language API.
+V35 FREE AI (Gemini free tier, key stays on your device)
+- Open ✨ OnlyUs AI > tap the 🔑 button > paste your free Gemini key from aistudio.google.com/apikey. Saved only on that device (localStorage).
+- Each person (you and your partner) pastes their own free key on their own phone.
+- NEVER put the key in firebase-config.js or any file in the public GitHub repo: Google scans GitHub and revokes leaked keys ("API key not valid").
 - Free tier: limited requests per minute/day; Google may use free-tier prompts to improve its products. Do not type secrets in the AI chat.
-- Without a key the app uses the Firebase Cloud Function aiChat (Anthropic key, needs the Blaze plan), see the V34 section above.
+- If you see "model name sari illa", set window.GEMINI_MODEL in firebase-config.js to a current model name from AI Studio.
+- Optional (Blaze plan): Firebase function aiChat with an Anthropic key, enable with window.AI_USE_FUNCTION = true; in firebase-config.js. See the V34 section.

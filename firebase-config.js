@@ -26,9 +26,7 @@ window.TURN_CONFIG = {
 // Optional: free GIPHY API key (developers.giphy.com) to enable GIF search in the emoji panel.
 window.GIPHY_KEY = "";
 
-// OnlyUs AI (free): key from aistudio.google.com. Paste it between the quotes.
-// This key is visible to anyone who opens your site, so RESTRICT it in Google Cloud Console
-// (APIs & Services > Credentials > your key > Website restrictions = your site URL, API restriction = Generative Language API).
-window.GEMINI_KEY = "AQ.Ab8RN6KC7IyZ5biMyggRnrhpCtd15rw6YKayn8eqzqoDHOhxnw";
-// Model name from AI Studio (names change often). Default if empty: gemini-flash-latest
+// OnlyUs AI: do NOT put your Gemini key here. A key in a public GitHub repo is found by Google and revoked.
+// Each person pastes their own free key (aistudio.google.com/apikey) with the 🔑 button inside the AI chat.
+// Optional: model name from AI Studio (names change often). Default if empty: gemini-flash-latest
 window.GEMINI_MODEL = "";
