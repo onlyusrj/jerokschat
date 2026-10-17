@@ -2,11 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="OnlyUs"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#30204f">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <title>OnlyUs</title>
+<style id="splashCss">
+#splash{position:fixed;inset:0;z-index:2147483000;background:#191027;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .45s ease,visibility .45s;opacity:1}
+#splash.out{opacity:0;visibility:hidden;pointer-events:none}
+#splash img{width:132px;height:132px;border-radius:50%;box-shadow:0 0 42px #b06cff66;animation:spl 1.6s ease-in-out infinite}
+#splash b{margin-top:22px;color:#fff;font:600 26px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;letter-spacing:.5px}
+#splash small{position:absolute;bottom:calc(34px + env(safe-area-inset-bottom,0px));color:#cbb8ee;font:13px system-ui,sans-serif;opacity:.85}
+@keyframes spl{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+</style>
+
 <style>
 :root{--hd:#008069;--bg:#efeae2;--panel:#fff;--ink:#111b21;--dim:#667781;--me:#d9fdd3;--th:#fff;--line:#e9edef;--acc:#00a884;--blue:#53bdeb;--sa:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root{--hd:#1f2c34;--bg:#0b141a;--panel:#111b21;--ink:#e9edef;--dim:#8696a0;--me:#005c4b;--th:#202c33;--line:#222d34}}
@@ -378,15 +388,92 @@ body{background:transparent;color:var(--ink);font-family:Inter,"Segoe UI",Roboto
 #offBar{position:fixed;top:0;left:0;right:0;z-index:150;display:none;padding:calc(6px + env(safe-area-inset-top,0px)) 12px 6px;background:#f5a623;color:#2a1a00;text-align:center;font-size:13px}
 .skc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}.tk.pend{opacity:.75}
 </style>
+<style id="v31css">
+#cf{display:flex;align-items:flex-end;gap:8px;padding:0;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0}
+#cf .pill{flex:1;min-width:0;display:flex;align-items:flex-end;gap:0;background:var(--glass-strong,var(--panel));border:1px solid var(--glass-border,var(--line));border-radius:26px;padding:3px 4px;box-shadow:var(--glass-shadow,none)}
+#cf .pill textarea{flex:1;min-width:0;border:0!important;background:transparent!important;box-shadow:none!important;outline:none!important;padding:11px 4px;min-height:42px;max-height:110px;resize:none;font:inherit;color:var(--ink);border-radius:0!important}
+#cf .pill .ic{width:40px;height:44px;border-radius:50%;background:transparent!important;border:0!important;box-shadow:none!important;color:var(--dim)}
+#cf svg{width:24px;height:24px;fill:currentColor;display:block}
+#cf #mic{width:48px;height:48px;background:var(--acc)!important;color:#fff!important;border:0!important;flex:none;box-shadow:0 3px 10px #0003}
+#rbar svg{width:22px;height:22px;fill:currentColor}#rbar .ic{display:grid;place-items:center}
+#mpv{background:#000;z-index:70;flex-direction:column}
+.mpvTop,.mpvBot{display:flex;align-items:center;gap:10px}.mpvTop{padding:calc(10px + env(safe-area-inset-top,0px)) 12px 10px}.mpvBot{padding:10px 14px calc(14px + env(safe-area-inset-bottom,0px))}
+.mpvBody{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.mpvBody img,.mpvBody video{max-width:100%;max-height:100%;object-fit:contain}
+.mpvB{all:unset;cursor:pointer;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:#fff;background:#ffffff26}
+.mpvB.on{background:var(--acc)}.mpvB svg{width:26px;height:26px;fill:currentColor}
+.mpvHint{color:#fff;background:#ffffff26;padding:9px 14px;border-radius:20px;font:14px system-ui,sans-serif}.mpvHint.on{background:#00a884aa}
+.mpvSend{all:unset;cursor:pointer;width:56px;height:56px;border-radius:50%;background:var(--acc);display:grid;place-items:center;color:#fff}.mpvSend svg{width:26px;height:26px;fill:currentColor}
+</style>
+<style id="v32css">
+#attMenu{position:absolute;left:10px;bottom:72px;z-index:30;display:none;grid-template-columns:repeat(3,78px);gap:8px 2px;padding:14px 10px 10px;background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:0 10px 30px #0005;transform-origin:bottom left}
+#attMenu.on{display:grid;animation:attIn .16s ease-out}@keyframes attIn{from{opacity:0;transform:scale(.85) translateY(8px)}to{opacity:1;transform:none}}
+#attMenu button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px 0;border-radius:12px;-webkit-tap-highlight-color:transparent}
+#attMenu i{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-style:normal}
+#attMenu svg{width:26px;height:26px;fill:#fff}#attMenu span{font:13px system-ui,sans-serif;color:var(--ink)}
+.docC{display:flex;align-items:center;gap:10px;min-width:210px;max-width:270px;padding:9px 10px;border-radius:12px;background:#0000001a;color:inherit;text-decoration:none;margin-bottom:2px}
+.docI{flex:none;width:42px;height:46px;border-radius:8px;display:grid;place-items:center;color:#fff;font:700 11px system-ui,sans-serif;letter-spacing:.3px;background:#64748b}
+.docI.pdf{background:#e11d48}.docI.doc{background:#2563eb}.docI.xls{background:#16a34a}.docI.ppt{background:#ea580c}.docI.zip{background:#a16207}
+.docX{min-width:0;flex:1}.docN{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.docM{font-size:12px;opacity:.7;margin-top:2px}.docD{flex:none;font-size:18px;opacity:.75}
+.evC{min-width:220px;max-width:280px}.evH{font-size:12px;opacity:.7;margin-bottom:4px}.evT{display:block;font-size:16px;margin-bottom:4px}.evW,.evP{font-size:13.5px;margin-bottom:3px}
+.mpvDoc{display:flex;flex-direction:column;align-items:center;gap:14px;color:#fff;padding:24px;text-align:center;max-width:90%}
+.mpvDoc .docI{width:84px;height:92px;font-size:20px;border-radius:14px}.mpvDoc .docN{white-space:normal;word-break:break-word;font-size:16px}.mpvDoc .docM{font-size:13px}
+</style>
+<script src="qr-gen.js"></script>
+<style id="v33css">
+#uidbox{margin:6px 0 10px;padding:12px 14px}.uidnote{color:var(--dim);margin-top:4px}
+.qr-fab{position:fixed;right:16px;bottom:calc(88px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:18px;border:0;background:var(--acc);color:#fff;display:grid;place-items:center;box-shadow:0 8px 22px #0004;z-index:6;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.qr-fab svg{width:30px;height:30px;fill:currentColor}.qr-fab:active{transform:scale(.94)}
+#qrOv{z-index:60;align-items:center;justify-content:center;background:#000b}
+.qrCard{position:relative;width:min(340px,92vw);background:var(--panel);color:var(--ink);border-radius:24px;padding:18px 18px 20px;box-shadow:0 20px 60px #0007}
+.qrX{all:unset;cursor:pointer;position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--dim)}.qrX svg{width:22px;height:22px;fill:currentColor}
+.qrTabs{display:flex;gap:6px;margin:0 40px 14px 0}.qrTabs button{all:unset;cursor:pointer;flex:1;text-align:center;padding:9px 6px;border-radius:12px;background:var(--line);font:600 14px system-ui,sans-serif}.qrTabs button.on{background:var(--acc);color:#fff}
+.qrPane{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}.qrPane[hidden]{display:none}
+.qrBox{background:#fff;padding:10px;border-radius:18px;line-height:0}#qrCv{width:240px;height:240px;image-rendering:pixelated}
+#qrNm{font-size:18px}.qrPane small{color:var(--dim);font-size:12.5px}.qrPane .btn{display:block;margin:0;cursor:pointer;text-align:center}
+.qrCam{position:relative;width:260px;height:260px;border-radius:18px;overflow:hidden;background:#000}.qrCam video{width:100%;height:100%;object-fit:cover}
+.qrFrame{position:absolute;inset:36px;border:3px solid #fff;border-radius:18px;box-shadow:0 0 0 999px #0005;pointer-events:none}
+</style>
+<style id="v34css">
+.ai-fab{position:fixed;right:16px;bottom:calc(88px + 58px + 12px + env(safe-area-inset-bottom,0px));height:46px;padding:0 16px;border-radius:18px;border:0;background:linear-gradient(135deg,#8657d9,#d65db1);color:#fff;font:700 15px system-ui,sans-serif;display:flex;align-items:center;gap:6px;box-shadow:0 8px 22px #0004;z-index:6;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.ai-fab:active{transform:scale(.95)}
+#aiOv{z-index:55;flex-direction:column;background:var(--bg);color:var(--ink);padding-top:env(safe-area-inset-top,0px)}
+#aiOv .aiTop{display:flex;align-items:center;gap:10px;background:var(--hd,#8657d9);color:#fff;padding:10px 12px;min-height:56px}
+#aiOv .aiTop b{font-size:18px;flex:1}#aiOv .aiTop small{display:block;font-weight:400;font-size:12px;opacity:.85}
+#aiOv .aiTop button{all:unset;cursor:pointer;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:22px;color:#fff;flex:none}
+#aiMsgs{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch}
+.aiRow{display:flex;flex-direction:column;max-width:86%}.aiRow.me{align-self:flex-end;align-items:flex-end}.aiRow.bot{align-self:flex-start}
+.aiBub{padding:9px 13px;border-radius:18px;font:15px/1.45 system-ui,sans-serif;word-break:break-word;white-space:normal}
+.aiRow.me .aiBub{background:var(--acc);color:#fff;border-bottom-right-radius:6px}
+.aiRow.bot .aiBub{background:var(--line);color:var(--ink);border-bottom-left-radius:6px}
+.aiRow.err .aiBub{background:#ffe3e3;color:#7a1c1c}
+.aiBub code{background:#0002;padding:1px 5px;border-radius:5px;font-size:13px}.aiLi{padding-left:2px}
+.aiRow.typing .aiBub{display:flex;gap:4px;padding:13px 15px}
+.aiRow.typing i{width:7px;height:7px;border-radius:50%;background:var(--dim);animation:aiDot 1s infinite ease-in-out}
+.aiRow.typing i:nth-child(2){animation-delay:.15s}.aiRow.typing i:nth-child(3){animation-delay:.3s}
+@keyframes aiDot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.aiChips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.aiChips button{all:unset;cursor:pointer;padding:7px 12px;border-radius:16px;border:1.5px solid var(--acc);color:var(--acc);font:600 13.5px system-ui,sans-serif}
+#aiOv .aiBot{display:flex;align-items:flex-end;gap:8px;padding:8px 10px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--bg)}
+#aiIn{flex:1;resize:none;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);border-radius:20px;padding:10px 14px;font:16px/1.35 system-ui,sans-serif;max-height:120px;outline:none;min-height:42px}
+#aiIn:focus{border-color:var(--acc)}
+#aiSend{all:unset;cursor:pointer;width:44px;height:44px;border-radius:50%;background:var(--acc);display:grid;place-items:center;flex:none}
+#aiSend svg{width:22px;height:22px;fill:#fff}#aiSend:disabled{opacity:.5}
+.aiNote{text-align:center;font:11.5px system-ui,sans-serif;color:var(--dim);padding:0 12px 4px}
+</style>
 </head>
 <body>
+<div class="ov" id="mpv" role="dialog" aria-modal="true" aria-label="Preview"><div class="mpvTop"><button type="button" class="mpvB" id="mpvX" aria-label="Close preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button><span style="flex:1"></span><button type="button" class="mpvB" id="mpvO" aria-label="View once"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2.2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="sans-serif">1</text></svg></button></div><div class="mpvBody" id="mpvBody"></div><div class="mpvBot"><span id="mpvHint" class="mpvHint">Keep in chat</span><span style="flex:1"></span><button type="button" class="mpvSend" id="mpvS" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div></div>
+<div class="ov" id="qrOv" role="dialog" aria-modal="true" aria-label="QR code"><div class="qrCard"><button class="qrX" id="qrClose" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button><div class="qrTabs"><button id="qrT1" class="on" type="button">My code</button><button id="qrT2" type="button">Scan code</button></div><div id="qrP1" class="qrPane"><div class="qrBox"><canvas id="qrCv"></canvas></div><b id="qrNm"></b><small>Your partner can scan this code to add you. Keep it private.</small><button class="btn l" id="qrNew" type="button">Reset my QR</button></div><div id="qrP2" class="qrPane" hidden><div class="qrCam"><video id="qrVid" playsinline muted></video><div class="qrFrame"></div></div><small id="qrHint">Point the camera at your partner’s OnlyUs QR</small><label class="btn l" for="qrFile">Choose from gallery</label><input id="qrFile" type="file" accept="image/*" hidden></div></div></div>
+<div class="ov" id="aiOv" role="dialog" aria-modal="true" aria-label="OnlyUs AI"><div class="aiTop"><button id="aiClose" type="button" aria-label="Close AI chat">←</button><b>✨ OnlyUs AI<small>your little assistant</small></b><button id="aiClear" type="button" aria-label="Clear AI chat" title="Clear chat">🗑</button></div><div id="aiMsgs" aria-live="polite"></div><div class="aiNote">AI can make mistakes. Your AI chat is not shared with your partner.</div><div class="aiBot"><textarea id="aiIn" rows="1" maxlength="4000" placeholder="Ask OnlyUs AI…" aria-label="Message OnlyUs AI"></textarea><button id="aiSend" type="button" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div></div>
+<div id="splash" aria-hidden="true"><img src="icon-192.png" alt=""><b>OnlyUs</b><small>just us two 💕</small></div>
 <div id="lock" role="dialog" aria-modal="true" aria-label="App lock"><div class="lkw"><div class="lkh">♡</div><h2 id="lkT">Enter passcode</h2><div id="lkD"><i></i><i></i><i></i><i></i></div><p id="lkM" role="status"></p><div id="lkP"></div><button id="lkX" type="button">Cancel</button><button id="lkBio" type="button">Use Face ID / fingerprint</button></div></div>
 <div id="offBar" role="status">You’re offline. Messages will send automatically when you’re back 🕓</div>
 <div id="dg" aria-label="Calculator"><div id="dgD">0</div><div id="dgK"></div></div>
 <div class="ov" id="fxD" role="dialog" aria-modal="true"><div class="card"><h1 id="fxT"></h1><div id="fxB"></div><div id="fxF"></div></div></div>
 <div class="view" id="vAuth"><div class="bar"><b>OnlyUs · private space</b></div><div style="padding:24px;overflow:auto"><div class="card" style="margin:auto"><div class="brandmark" style="margin-bottom:14px"><img src="icon-192.png" alt="OnlyUs" /></div><h1 id="authTitle">Welcome back, love.</h1><p id="authHint">Sign in with your email and password to enter your private space.</p><input id="authEmail" type="email" autocomplete="email" placeholder="Email address" aria-label="Email address"><input id="authPassword" type="password" autocomplete="current-password" placeholder="Password (at least 6 characters)" aria-label="Password" minlength="6"><button class="btn" id="emailSubmit">Sign in</button><button class="btn l" id="authToggle" type="button">New here? Create account</button><button class="btn l" id="forgotPassword" type="button">Forgot password?</button><p id="authmsg" role="status" aria-live="polite" style="margin-top:12px"></p></div></div></div>
 <div class="view" id="vSetup"><div class="bar"><b>OnlyUs</b></div><div style="padding:24px"><div class="card" style="margin:auto"><h1>Make this space yours</h1><p>Choose the name your partner will see. Add your phone number (with country code) so your partner can find you by number. It is optional.</p><input id="sn" placeholder="Your name (e.g. Rokshan)" maxlength="24" aria-label="Your name"><input id="sph" type="tel" placeholder="Your phone, e.g. +91 98765 43210 (optional)" maxlength="20" aria-label="Your phone number"><button class="btn" id="sgo">Continue</button></div></div></div>
-<div class="view" id="vList"><div class="bar listbar"><div class="brandmark"><img src="icon-192.png" alt="OnlyUs" /></div><div class="brandcopy"><b>Rok💕Jeru</b><small>your little private world</small></div><span class="sp"></span><button class="ic" id="setb" type="button" aria-label="Settings" title="Settings">⚙</button><button class="ic sound-toggle" id="soundb" type="button" aria-label="Sound settings" title="Sound settings">♫</button><button class="ic theme-toggle" id="themeb" type="button" aria-label="Toggle light and dark theme" title="Toggle theme">☾</button><button class="ic" id="gmHome" type="button" aria-label="Play games" title="Play games">🎮</button><button class="ic" id="usb" type="button" aria-label="Our Space" title="Our Space">💕</button><button class="ic add-toggle" id="addb" aria-label="New chat" title="New chat">＋</button></div><div class="search-wrap"><span aria-hidden="true">⌕</span><input id="searchChats" type="search" placeholder="Search your chats…" aria-label="Search chats"><kbd>⌘ K</kbd></div><div id="cl"></div><div class="welcome-strip"><div><span class="eyebrow">JUST THE TWO OF YOU</span><h2>A little space for <em>us.</em></h2><p>Private conversations, tiny moments, all in one place.</p></div><div class="heart-orb" aria-hidden="true">♡</div></div><div class="couple-profile" aria-label="Bubu and Dudu hugging profile decoration"><div class="hug-stage"><span class="bear bear-bubu" aria-hidden="true">🐻‍❄️</span><span class="tiny-heart" aria-hidden="true">♥</span><span class="bear bear-dudu" aria-hidden="true">🐼</span><span class="spark s1">✦</span><span class="spark s2">♡</span></div><div class="couple-copy"><b>Bubu <span>♡</span> Dudu</b><small>your little forever · together is our favourite place</small></div><div class="sound-chip" id="soundStatus">♫ soft sounds</div></div><div id="uidbox" style="padding:10px 14px;background:var(--bg);font-size:12px;overflow-wrap:anywhere"><b>Your Firebase ID:</b> <span id="uidtxt"></span> <button id="copyuid" style="padding:4px 8px">Copy</button><div style="color:var(--dim);margin-top:4px">Share this ID only with your partner so they can add you.</div></div><div id="inboxBanner" role="status" aria-live="polite"><div class="inboxIcon"><img src="icon-192.png" alt="" /></div><div class="inboxText"><b id="inboxFrom">New message</b><span id="inboxText">Tap to open</span></div><button class="inboxClose" id="inboxClose" type="button" aria-label="Dismiss">×</button></div><div class="status-bottom"><button id="listChats" class="on" type="button">💬<br>Chats</button><button id="listStatus" type="button">◉<br>Status</button><button id="listPeriod" type="button">🩷<br>Period</button></div></div>
+<div class="view" id="vList"><div class="bar listbar"><div class="brandmark"><img src="icon-192.png" alt="OnlyUs" /></div><div class="brandcopy"><b>Rok💕Jeru</b><small>your little private world</small></div><span class="sp"></span><button class="ic" id="setb" type="button" aria-label="Settings" title="Settings">⚙</button><button class="ic sound-toggle" id="soundb" type="button" aria-label="Sound settings" title="Sound settings">♫</button><button class="ic theme-toggle" id="themeb" type="button" aria-label="Toggle light and dark theme" title="Toggle theme">☾</button><button class="ic" id="gmHome" type="button" aria-label="Play games" title="Play games">🎮</button><button class="ic" id="usb" type="button" aria-label="Our Space" title="Our Space">💕</button><button class="ic add-toggle" id="addb" aria-label="New chat" title="New chat">＋</button></div><div class="search-wrap"><span aria-hidden="true">⌕</span><input id="searchChats" type="search" placeholder="Search your chats…" aria-label="Search chats"><kbd>⌘ K</kbd></div><div id="cl"></div><div class="welcome-strip"><div><span class="eyebrow">JUST THE TWO OF YOU</span><h2>A little space for <em>us.</em></h2><p>Private conversations, tiny moments, all in one place.</p></div><div class="heart-orb" aria-hidden="true">♡</div></div><div class="couple-profile" aria-label="Bubu and Dudu hugging profile decoration"><div class="hug-stage"><span class="bear bear-bubu" aria-hidden="true">🐻‍❄️</span><span class="tiny-heart" aria-hidden="true">♥</span><span class="bear bear-dudu" aria-hidden="true">🐼</span><span class="spark s1">✦</span><span class="spark s2">♡</span></div><div class="couple-copy"><b>Bubu <span>♡</span> Dudu</b><small>your little forever · together is our favourite place</small></div><div class="sound-chip" id="soundStatus">♫ soft sounds</div></div><div id="inboxBanner" role="status" aria-live="polite"><div class="inboxIcon"><img src="icon-192.png" alt="" /></div><div class="inboxText"><b id="inboxFrom">New message</b><span id="inboxText">Tap to open</span></div><button class="inboxClose" id="inboxClose" type="button" aria-label="Dismiss">×</button></div><button class="ai-fab" id="aiFab" type="button" aria-label="OnlyUs AI" title="OnlyUs AI">✨ OnlyUs AI</button><button class="qr-fab" id="qrFab" type="button" aria-label="QR code" title="My QR / Scan QR"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zM19 19h2v2h-2zM13 13h2v2h-2zM15 15h2v2h-2zM13 17h2v2h-2zM15 19h2v2h-2zM17 17h2v2h-2zM17 13h2v2h-2zM19 15h2v2h-2z"/></svg></button><div class="status-bottom"><button id="listChats" class="on" type="button">💬<br>Chats</button><button id="listStatus" type="button">◉<br>Status</button><button id="listPeriod" type="button">🩷<br>Period</button></div></div>
 <div class="view status-view" id="vStatus">
   <div class="bar"><button class="ic" id="statusBack" type="button" aria-label="Back">←</button><b>Status</b><span class="sp"></span><button class="ic" id="statusRefresh" type="button" aria-label="Refresh status">↻</button></div>
   <div class="status-hero"><h2>Moments</h2><p>Share a little update. It disappears after 24 hours.</p></div>
@@ -421,6 +508,7 @@ body{background:transparent;color:var(--ink);font-family:Inter,"Segoe UI",Roboto
 <div class="view" id="vSet"><div class="bar"><button class="ic" id="setBack" type="button" aria-label="Back">←</button><b>Settings</b></div><div id="setBody">
 <div class="sprof"><label class="spav" id="spAv" for="spPic" title="Change photo"></label><input id="spPic" type="file" accept="image/*" hidden><div><input id="spName" maxlength="24" aria-label="Your name"><small>Tap the photo to change it</small></div></div>
 <h3>Phone number</h3><input id="spPhone" type="tel" placeholder="+91 98765 43210" maxlength="20" aria-label="Your phone number"><small style="display:block;color:var(--dim);padding:4px 2px 10px">Your partner can add you with this number. Start with the country code.</small>
+<h3>Your Firebase ID</h3><div id="uidbox"><span id="uidtxt"></span> <button id="copyuid" type="button">Copy</button><div class="uidnote">Share this ID only with your partner so they can add you.</div></div><button class="row" id="qrRow" type="button">My QR code · scan to add<span>▦</span></button>
 <h3>Theme</h3><div class="seg" id="thSeg"><button data-v="light">Light</button><button data-v="dark">Dark</button><button data-v="auto">System</button></div><div class="seg sw" id="acSeg" aria-label="Accent colour"></div>
 <h3>Chat</h3><div class="seg" id="fzSeg"><button data-v="13">Small</button><button data-v="15">Medium</button><button data-v="17">Large</button></div><div class="seg sw" id="wpSeg" aria-label="Chat wallpaper"></div>
 <h3>Privacy and security</h3><button class="row" id="lkRow" type="button">App lock<span id="lkSt">Off</span></button><div id="lkOpts"><div class="seg" id="lkAuto"><button data-v="0">Immediately</button><button data-v="60">1 min</button><button data-v="300">5 min</button></div><button class="row" id="lkChg" type="button">Change passcode</button></div>
@@ -430,8 +518,10 @@ body{background:transparent;color:var(--ink);font-family:Inter,"Segoe UI",Roboto
   <div id="ms" aria-live="polite"></div>
   <div id="rep"><span id="rept"></span><button class="ic" id="repx" aria-label="Cancel reply">✕</button></div>
   <div id="emo"></div>
-  <div id="rbar"><i></i><span id="rt">0:00</span><span class="sp"></span><button class="ic d" id="rc" aria-label="Cancel">🗑</button><button class="ic g" id="rs" aria-label="Send voice">➤</button></div>
-  <form id="cf" autocomplete="off"><button type="button" class="ic d" id="eb" aria-label="Emoji">☺</button><textarea id="in" rows="1" placeholder="Message" aria-label="Message"></textarea><button type="button" class="ic d" id="ob" aria-label="View once" title="View once">①</button><label class="ic d" for="pf" aria-label="Send photo or video">📎</label><input id="pf" type="file" accept="image/*,video/*" hidden><button type="button" class="ic g" id="mic" aria-label="Send">🎤</button></form>
+  <div id="rbar"><i></i><span id="rt">0:00</span><span class="sp"></span><button class="ic d" id="rc" aria-label="Cancel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button><button class="ic g" id="rs" aria-label="Send voice"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div>
+  <form id="cf" autocomplete="off"><div class="pill"><button type="button" class="ic d" id="eb" aria-label="Emoji"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg></button><textarea id="in" rows="1" placeholder="Message" aria-label="Message"></textarea><button type="button" class="ic d" id="ob" aria-label="View once" style="display:none!important">①</button><button type="button" class="ic d" id="attb" aria-label="Attach" aria-haspopup="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg></button><input id="pf" type="file" accept="image/*,video/*" hidden><label class="ic d" id="camb" for="pfc" aria-label="Camera"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zM9 2 7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg></label><input id="pfc" type="file" accept="image/*" capture="environment" hidden></div><button type="button" class="ic g" id="mic" aria-label="Voice message"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z"/></svg></button></form>
+  <div id="attMenu" role="menu" aria-label="Attach"><button type="button" role="menuitem" data-a="img"><i style="background:#a855f7"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></i><span>Image</span></button><button type="button" role="menuitem" data-a="vid"><i style="background:#ec4899"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></i><span>Video</span></button><button type="button" role="menuitem" data-a="doc"><i style="background:#3b82f6"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></i><span>Document</span></button><button type="button" role="menuitem" data-a="poll"><i style="background:#f59e0b"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg></i><span>Poll</span></button><button type="button" role="menuitem" data-a="evt"><i style="background:#10b981"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></i><span>Event</span></button><input id="pfd" type="file" hidden></div>
+
 </div>
 <div class="ov" id="modal"><div class="card"><h1>New chat</h1><p>Enter your partner’s phone number with country code. She must have saved it in OnlyUs Settings. Both of you must type the same secret code, it keeps your chat private.</p><input id="mn" placeholder="Partner display name" maxlength="24" aria-label="Partner display name"><input id="mp" type="email" placeholder="Partner email (optional)" aria-label="Partner email"><input id="mc" placeholder="Private shared code (same on both devices, 12+ chars)" aria-label="Shared secret code"><input id="mph" type="tel" placeholder="Partner phone, e.g. +91 98765 43210" maxlength="20" aria-label="Partner phone number"><input id="mu" placeholder="…or Partner Firebase UID (only if no number)" aria-label="Partner Firebase UID"><button class="btn" id="mok">Start private chat</button><button class="btn l" id="mno">Cancel</button></div></div>
 <div class="ov" id="chatTools" role="dialog" aria-modal="true" aria-label="Chat tools"><div class="card tools-card"><button class="sound-close" id="toolsClose" type="button">×</button><div class="tool-hero"><div class="tool-hero-icon">♡</div><div><b id="toolsName">Chat</b><small>your private little space</small></div></div><div class="tool-grid"><button id="toolSearch">🔎<span>Search</span></button><button id="toolMedia">🖼️<span>Media</span></button><button id="toolStarred">⭐<span>Starred</span></button><button id="toolPinned">📌<span>Pinned</span></button><button id="toolMute">🔕<span id="muteLabel">Mute</span></button><button id="toolWallpaper">🎨<span>Wallpaper</span></button><button id="toolGames">🎮<span>Games</span></button><button id="toolChess">♟️<span>Chess</span></button><button id="toolSched">⏰<span>Schedule</span></button><button id="toolTtl">⏳<span id="ttlLbl">Disappear</span></button><button id="toolPoll">📊<span>Poll</span></button><button id="toolExport">📦<span>Export</span></button><button id="toolHide">🙈<span id="hideLbl">Hide chat</span></button></div><div id="chatSearchBox" class="tool-section" style="display:none"><input id="chatSearchInput" placeholder="Search messages…" aria-label="Search messages"><div id="chatSearchResults"></div></div><div id="mediaBox" class="tool-section" style="display:none"><div class="media-tabs"><button data-mt="all">All</button><button data-mt="img">Photos</button><button data-mt="vid">Videos</button><button data-mt="aud">Audio</button></div><div id="mediaGrid"></div></div><div id="starBox" class="tool-section" style="display:none"><div id="starList"></div></div><div id="pinBox" class="tool-section" style="display:none"><div id="pinList"></div></div><div id="wallpaperBox" class="tool-section" style="display:none"><b>Chat design</b><div class="wallpaper-picker"><button data-w="1" title="Soft glow">♡</button><button data-w="2" title="Dots">• •</button><button data-w="3" title="Dream gradient">✦</button><button data-w="4" title="Stripes">▧</button><button data-w="5" title="Spotlight">◌</button></div></div><div class="tool-foot"><button id="toolClearLocal" type="button">🧹 Clear my local chat view</button></div></div></div><div class="ov" id="sheet"><div id="sh"></div></div>
@@ -458,6 +548,7 @@ body{background:transparent;color:var(--ink);font-family:Inter,"Segoe UI",Roboto
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
@@ -550,7 +641,7 @@ async function watchList(){lun.forEach(f=>f());lun=[];if(!authUser||demo||!me)re
   lun.push(base.collection('share').doc('chess').onSnapshot(sn=>{const d=sn.exists?sn.data():null;if(d&&window.__us.onchess)window.__us.onchess(c,k,d)},()=>{}));
   lun.push(base.collection('share').doc('game').onSnapshot(sn=>{const d=sn.exists?sn.data():null;if(d&&window.__us.ongame)window.__us.ongame(c,k,d)},()=>{}))}}
 function ensureWatch(){if(!authUser||demo||!me)return;const g=authUser.uid+'|'+contacts.map(c=>c.uid+c.code).join(',');if(g===wsig)return;wsig=g;watchList()}
-function list(){ensureWatch();const l=$('cl');l.textContent='';$('uidtxt').textContent=authUser?authUser.uid:'Not signed in';if(!contacts.length){l.appendChild(mkEl('div','empty','No chats yet.\nTap ＋ and add your partner by phone number or Firebase UID.'));l.firstChild.style.whiteSpace='pre-line';return}
+function list(){ensureWatch();watchInvites();const l=$('cl');l.textContent='';$('uidtxt').textContent=authUser?authUser.uid:'Not signed in';if(!contacts.length){l.appendChild(mkEl('div','empty','No chats yet.\nTap ＋ and add your partner by phone number or Firebase UID.'));l.firstChild.style.whiteSpace='pre-line';return}
  const rows=contacts.map((c,i)=>({c,i})).sort((a,b)=>{const at=prev.get(a.c.uid)?.m?.ts||0,bt=prev.get(b.c.uid)?.m?.ts||0;return bt-at});
  rows.forEach(({c,i})=>{if(window.__hid&&window.__hid.has(c.uid)&&!window.__hid.show)return;const r=mkEl('div','ct');r.tabIndex=0;r.appendChild(mkEl('div','av',(c.name||'?')[0].toUpperCase()));const d=mkEl('div');d.appendChild(mkEl('b','',(window.__hid&&window.__hid.has(c.uid)?'🙈 ':'')+c.name));const p=prev.get(c.uid),lm=p&&p.m;d.appendChild(mkEl('small','',lm?(lm.dele?'🚫 Message deleted':(lm.from===me.num?'You: ':'')+preview(lm)):(c.email||c.phone||'Private chat')));r.appendChild(d);
   if(lm){const rt=mkEl('div','rt',fD(lm.ts)=='Today'?fT(lm.ts):fD(lm.ts));if(p.un){rt.appendChild(document.createElement('br'));rt.appendChild(mkEl('span','bd',String(p.un)))}r.appendChild(rt)}
@@ -563,6 +654,44 @@ $('mok').onclick=async()=>{const n=$('mn').value.trim(),email=$('mp').value.trim
  if(ph&&!u){const r=await findByPhone(ph);if(r.err)return toast(r.err);u=r.uid}
  if(u===authUser.uid)return toast('That is your own account');
  contacts=contacts.filter(x=>x.uid!==u);contacts.push({name:n,email,phone:ph?('+'+(normPh(ph)||'')):'',num:u,code:c,uid:u});LS.s('uc-contacts',contacts);saveCloud();$('modal').classList.remove('on');['mn','mp','mc','mu','mph'].forEach(i=>$(i).value='');list();open(contacts[contacts.length-1])};
+// ---- QR connect: show my QR, scan partner QR, partner gets a request to accept
+var invUid='',invUn=null,invChain=Promise.resolve();const invShown=new Set();
+const QRK='onlyus-qrcode';
+function myQrCode(fresh){let c=fresh?'':localStorage.getItem(QRK);if(!c||c.length<20){const a=new Uint8Array(18);crypto.getRandomValues(a);c=btoa(String.fromCharCode(...a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');localStorage.setItem(QRK,c)}return c}
+function qrPayload(){return 'ONLYUS1|'+authUser.uid+'|'+myQrCode()+'|'+((me&&me.name)||'')}
+function askYes(title,text,yes){return new Promise(res=>{const F=window.__fx;if(F&&F.dlg)F.dlg(title,text,[{l:yes,f:()=>{res(true)}},{l:'Cancel',g:1,f:()=>{res(false)}}]);else res(confirm(text))})}
+function drawQr(){const cv=$('qrCv');if(!authUser||!window.QRCode)return;const q=new QRCode(-1,QRCode.ECL.M);q.addData(qrPayload());q.make();const n=q.getModuleCount(),qz=2,sc=Math.max(3,Math.floor(480/(n+2*qz))),S=(n+2*qz)*sc;cv.width=cv.height=S;const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,S,S);x.fillStyle='#000';for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(q.isDark(r,c))x.fillRect((c+qz)*sc,(r+qz)*sc,sc,sc);$('qrNm').textContent=(me&&me.name)||'Me'}
+let qrStream=null,qrTimer=0,qrBusy=false,qrDet=null;
+function stopCam(){clearInterval(qrTimer);qrTimer=0;if(qrStream){qrStream.getTracks().forEach(t=>t.stop());qrStream=null}const v=$('qrVid');if(v)v.srcObject=null}
+function closeQr(){stopCam();$('qrOv').classList.remove('on')}
+function loadJsQR(){return window.jsQR?Promise.resolve():new Promise((ok,no)=>{const e=document.createElement('script');e.src='https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';e.onload=ok;e.onerror=no;document.head.appendChild(e)})}
+async function decodeSource(src,w,h){if(window.BarcodeDetector){try{qrDet=qrDet||new BarcodeDetector({formats:['qr_code']});const r=await qrDet.detect(src);if(r&&r[0])return r[0].rawValue;return ''}catch(e){}}
+ await loadJsQR();const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(src,0,0,w,h);const d=x.getImageData(0,0,w,h),r=window.jsQR(d.data,w,h);return r?r.data:''}
+async function startCam(){stopCam();const v=$('qrVid');$('qrHint').textContent='Point the camera at your partner’s OnlyUs QR';
+ try{qrStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});v.srcObject=qrStream;await v.play()}catch(e){$('qrHint').textContent='Camera permission needed. You can also choose a QR image from gallery.';return}
+ qrTimer=setInterval(async()=>{if(qrBusy||!v.videoWidth)return;qrBusy=true;try{const t=await decodeSource(v,v.videoWidth,v.videoHeight);if(t&&t.startsWith('ONLYUS1|')){navigator.vibrate&&navigator.vibrate(30);qrAdd(t)}}catch(e){}qrBusy=false},300)}
+function qrTab(n){$('qrT1').classList.toggle('on',n===1);$('qrT2').classList.toggle('on',n===2);$('qrP1').hidden=n!==1;$('qrP2').hidden=n!==2;if(n===1){stopCam();drawQr()}else startCam()}
+function openQr(tab){if(!authUser)return toast('Sign in first');if(!me||!me.name)return toast('Set your name first');$('qrOv').classList.add('on');qrTab(tab||1)}
+async function qrAdd(txt){const p=String(txt||'').split('|');if(p[0]!=='ONLYUS1'||p.length<4)return toast('This is not an OnlyUs QR code');
+ const uid=p[1],code=p[2],name=(p.slice(3).join('|')||'Partner').slice(0,24);
+ if(!authUser)return toast('Sign in first');if(uid===authUser.uid)return toast('That is your own QR code');
+ closeQr();const ex=contacts.find(c=>c.uid===uid);
+ if(ex){list();return open(ex)}
+ if(!(await askYes('Add contact','Add '+name+' to your chats?','Add')))return;
+ const c={name,email:'',phone:'',num:uid,code,uid};contacts.push(c);LS.s('uc-contacts',contacts);saveCloud();
+ if(!demo&&fs)fs.collection('invites').doc(uid).collection('requests').doc(authUser.uid).set({name:(me&&me.name)||'Someone',ts:Date.now()}).catch(()=>{});
+ list();open(c)}
+$('qrFab').onclick=()=>openQr(1);$('qrRow').onclick=()=>openQr(1);$('qrClose').onclick=closeQr;$('qrT1').onclick=()=>qrTab(1);$('qrT2').onclick=()=>qrTab(2);
+$('qrNew').onclick=async()=>{if(await askYes('Reset my QR','Old QR codes will stop working for new people. Your current chats are not affected.','Reset')){myQrCode(true);drawQr();toast('New QR created')}};
+$('qrFile').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const bm=await createImageBitmap(f);let t=await decodeSource(bm,bm.width,bm.height);if(t)qrAdd(t);else toast('No QR code found in that image')}catch(x){toast('Could not read that image')}};
+function watchInvites(){if(demo||!authUser||!fs||invUid===authUser.uid)return;invUn&&invUn();invUid=authUser.uid;invShown.clear();
+ try{invUn=fs.collection('invites').doc(authUser.uid).collection('requests').onSnapshot(snap=>{snap.docChanges().forEach(ch=>{if(ch.type==='removed')return;const id=ch.doc.id;if(invShown.has(id))return;invShown.add(id);const d=ch.doc.data()||{};invChain=invChain.then(()=>askInvite(id,d)).catch(()=>{})})},()=>{})}catch(e){}}
+function askInvite(fromUid,d){return new Promise(res=>{const del=()=>fs.collection('invites').doc(authUser.uid).collection('requests').doc(fromUid).delete().catch(()=>{});
+ if(contacts.some(c=>c.uid===fromUid)){del();return res()}
+ const name=String(d.name||'Someone').slice(0,40);
+ const accept=()=>{contacts=contacts.filter(c=>c.uid!==fromUid);contacts.push({name,email:'',phone:'',num:fromUid,code:myQrCode(),uid:fromUid});LS.s('uc-contacts',contacts);saveCloud();del();list();toast(name+' added 💕')};
+ const F=window.__fx;if(F&&F.dlg)F.dlg('💌 New connection',name+' scanned your QR code. Add '+name+' to your chats?',[{l:'Accept',f:()=>{accept();res()}},{l:'Decline',g:1,f:()=>{del();res()}}]);
+ else{if(confirm(name+' scanned your QR code. Add to chats?'))accept();else del();res()}})}
 // ---- chat
 async function prepChat(c){if(!c||!authUser)return false;cur=c;cid=await sha([me.num,c.num].sort().join('|')+'|'+c.code);if(window.__fx)await window.__fx.ready(c);try{const room=await root().get();if(!room.exists)await root().set({members:[authUser.uid,c.uid],createdAt:Date.now()});else if(!Array.isArray((room.data()||{}).members)||room.data().members.indexOf(authUser.uid)<0){toast('This account is not a member of this chat.');cid='';return false}}catch(e){toast('Chat access blocked. Check Firestore rules.');cid='';return false}return true}
 async function open(c){if(!authUser){show('vAuth');return}if(!c.uid){toast('Remove this old contact and add it again with your partner Firebase ID');return}cur=c;cid=await sha([me.num,c.num].sort().join('|')+'|'+c.code);if(window.__fx)await window.__fx.ready(c);window.__us.onopen&&window.__us.onopen();try{const room=await root().get();if(!room.exists){await root().set({members:[authUser.uid,c.uid],createdAt:Date.now()})}else if(!Array.isArray((room.data()||{}).members)||(room.data().members.indexOf(authUser.uid)<0)){toast('This account is not a member of this chat. Check the partner ID and shared code.');return}}catch(e){toast('Chat access blocked. Check Authentication and Firestore rules.');return}msgs=new Map();els=new Map();first=true;lastTs=0;lastDay='';peer=null;replyTo=null;$('rep').style.display='none';
@@ -573,7 +702,7 @@ async function open(c){if(!authUser){show('vAuth');return}if(!c.uid){toast('Remo
    const had=msgs.has(id);msgs.set(id,m);
    if(had){const e=els.get(id),n=bubble(m,id);if(e&&n)e.replaceWith(n);if(n)els.set(id,n)}
    else{if(!first&&m.from!==me.num)inc=true;if(m.ts>=lastTs&&!full)add(m,id);else full=true}}
-  if(full){const ms=$('ms');ms.textContent='';els=new Map();lastDay='';lastTs=0;[...msgs].sort((a,b)=>a[1].ts-b[1].ts).forEach(([id,m])=>add(m,id));ms.scrollTop=ms.scrollHeight}
+  if(full){const ms=$('ms');ms.textContent='';els=new Map();lastDay='';lastTs=0;[...msgs].sort((a,b)=>a[1].ts-b[1].ts).forEach(([id,m])=>add(m,id));window.__toBottom&&window.__toBottom(true)}
   if(inc&&!mutedLocal()){ding();if(document.hidden&&'Notification' in window&&Notification.permission=='granted'){note(c.name,'New message')}}
   first=false;seen()},e=>toast('Connection problem. Check internet and Firestore rules.')));
  unsub.push(pres().doc(c.uid).onSnapshot(s=>{peer=s.data()||null;stat()}));beat(0);hb=setInterval(()=>{if(document.visibilityState=='visible'){beat(0);stat()}},15000)}
@@ -601,7 +730,7 @@ function bubble(m,id){if(delMe.has(id))return null;if(m.exp&&m.exp<Date.now())re
  if(m.dele){const i=mkEl('i','','🚫 This message was deleted');i.style.color='var(--dim)';d.appendChild(i)}
  else{if(m.pinned)d.appendChild(mkEl('div','pinned-badge','📌 Pinned'));if(m.rep){const q=mkEl('div','q');q.appendChild(mkEl('b','',m.rep.from===me.num?'You':cur.name));q.appendChild(document.createTextNode(m.rep.t));d.appendChild(q)}
   if(m.once&&(m.type=='img'||m.type=='vid')){const ic=m.type=='img'?'📷 Photo':'🎥 Video',b=mkEl('button','once',m.vo?'🔒 Opened':(mine?'🔒 '+ic+' · view once':'👁 '+ic+' · tap to view once'));b.type='button';if(m.vo||mine)b.disabled=true;else b.onclick=e=>{e.stopPropagation();openOnce(m,id)};d.appendChild(b)}
-  else if(m.type=='poll')window.__fx.poll(d,m,id);
+  else if(m.type=='poll')window.__fx.poll(d,m,id);else if(m.type=='doc'&&window.__docBubble)window.__docBubble(d,m);else if(m.type=='event'&&window.__eventBubble)window.__eventBubble(d,m,id);
   else if(m.type=='vid'){const v=mkEl('video','pic');v.controls=true;v.playsInline=true;v.src=m.url||m.data;v.onclick=e=>e.stopPropagation();d.appendChild(v)}
   else if(m.type=='img'){if(m.sticker||m.gif)d.classList.add('stk');const i=mkEl('img','pic');const sr=m.url||m.data;i.src=sr;i.alt='Photo';i.onclick=e=>{e.stopPropagation();$('vi').src=sr;$('viewer').classList.add('on')};d.appendChild(i)}
   else if(m.type=='aud')window.__fx.aud(d,m);
@@ -612,7 +741,7 @@ function bubble(m,id){if(delMe.has(id))return null;if(m.exp&&m.exp<Date.now())re
 function seen(){if(!cid)return;const vis=document.visibilityState=='visible',b=fs.batch();let n=0;msgs.forEach((m,id)=>{if(m.from===me.num)return;const u={};if(!m.dlv)u.dlv=Date.now();if(vis&&!m.read)u.read=Date.now();if(Object.keys(u).length){b.update(col().doc(id),u);n++}});if(n)b.commit().catch(()=>{})}
 document.addEventListener('visibilitychange',seen);addEventListener('focus',seen);
 // ---- actions
-const preview=m=>m.once?'🔒 View once':m.type=='poll'?'📊 '+(m.q||'Poll'):m.sticker?'🏷 Sticker':m.gif?'GIF':m.type=='vid'?'🎥 Video':m.type=='img'?'📷 Photo':m.type=='aud'?'🎤 Voice message':(m.text||'').slice(0,80);
+const preview=m=>m.once?'🔒 View once':m.type=='doc'?'📄 '+(m.fileName||'Document'):m.type=='event'?'📅 '+(m.q||'Event'):m.type=='poll'?'📊 '+(m.q||'Poll'):m.sticker?'🏷 Sticker':m.gif?'GIF':m.type=='vid'?'🎥 Video':m.type=='img'?'📷 Photo':m.type=='aud'?'🎤 Voice message':(m.text||'').slice(0,80);
 function sheet(m,id){if(m.dele)return;const s=$('sh');s.textContent='';const rr=mkEl('div','rr');['❤️','😂','😮','😢','🙏','👍'].forEach(e=>{const b=mkEl('button','',e);b.onclick=()=>{react(m,id,e);closeSheet()};rr.appendChild(b)});{const b=mkEl('button','','➕');b.onclick=()=>{closeSheet();reactTo={m,id};window.__emoShow()};rr.appendChild(b)}s.appendChild(rr);
  const A=(t,f)=>{const b=mkEl('button','a',t);b.onclick=()=>{closeSheet();f()};s.appendChild(b)};
  A('↩ Reply',()=>{replyTo={id,from:m.from,t:preview(m)};$('rept').textContent=preview(m);$('rep').style.display='flex';$('in').focus()});
@@ -630,10 +759,10 @@ $('repx').onclick=()=>{replyTo=null;$('rep').style.display='none'};
 async function send(o){if(!cid)return;const m=Object.assign({from:me.num,fromUid:authUser?authUser.uid:'',ts:Date.now(),type:'text',text:''},o);if(replyTo){m.rep=replyTo;replyTo=null;$('rep').style.display='none'}
  if('Notification' in window&&Notification.permission=='default')Notification.requestPermission();try{window.__fx&&window.__fx.out(m);await col().add(m);premiumSound('send')}catch(e){toast('Could not send')}}
 const ta=$('in');
-function sync(){$('mic').textContent=ta.value.trim()?'➤':'🎤'}
+const IC={mic:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z"/></svg>',send:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>'};function sync(){const has=!!ta.value.trim(),m=$('mic');if(m.__s!==has){m.__s=has;m.innerHTML=has?IC.send:IC.mic;m.setAttribute('aria-label',has?'Send':'Voice message')}const c=$('camb');if(c)c.style.display=has?'none':''}
 ta.oninput=()=>{ta.style.height='auto';ta.style.height=Math.min(110,ta.scrollHeight)+'px';sync();if(!ty){ty=1;beat(1)}clearTimeout(tyT);tyT=setTimeout(()=>{ty=0;beat(0)},2000)};
 ta.onkeydown=e=>{if(e.key=='Enter'&&!e.shiftKey&&!/Mobi|Android/i.test(navigator.userAgent)){e.preventDefault();go()}};
-function go(){const v=ta.value.trim();if(!v)return;ta.value='';ta.style.height='auto';sync();$('emo').style.display='none';send({text:v.slice(0,3000)})}
+function go(){const v=ta.value.trim();if(!v)return;ta.value='';ta.style.height='auto';sync();$('emo').style.display='none';send({text:v.slice(0,3000)});try{ta.focus({preventScroll:true})}catch(e){ta.focus()}}
 $('cf').onsubmit=e=>{e.preventDefault();go()};$('mic').onclick=()=>{if(ta.value.trim())go();else recStart()};
 // emoji
 {
@@ -680,12 +809,14 @@ $('eb').onclick=()=>{const e=$('emo');if(e.style.display=='grid')e.style.display
 // photo
 let onceOn=false;const takeOnce=()=>{const v=onceOn;onceOn=false;$('ob').classList.remove('on');return v};$('ob').onclick=()=>{onceOn=!onceOn;$('ob').classList.toggle('on',onceOn);toast(onceOn?'Next photo or video: view once':'View once off')};
 const CLOUDINARY_CLOUD='hb5szrd0',CLOUDINARY_PRESET='onlyus_chat',MAX_MEDIA=50*1024*1024;
-const upl=async(blob,type)=>{if(blob.size>MAX_MEDIA)throw new Error('MAX_SIZE');const fd=new FormData();fd.append('file',blob,blob.name||('onlyus-'+Date.now()));fd.append('upload_preset',CLOUDINARY_PRESET);fd.append('folder','onlyus/chat/'+(cid||'unknown'));const resource=type&&type.startsWith('video/')?'video':type&&type.startsWith('audio/')?'video':'image';const ep='https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/'+resource+'/upload';toast('Uploading… 0%');const xhr=new XMLHttpRequest();const result=await new Promise((resolve,reject)=>{xhr.open('POST',ep);xhr.upload.onprogress=e=>{if(e.lengthComputable)toast('Uploading… '+Math.round(e.loaded/e.total*100)+'%')};xhr.onload=()=>{try{const j=JSON.parse(xhr.responseText||'{}');if(xhr.status>=200&&xhr.status<300&&j.secure_url)resolve(j);else reject(new Error(j.error?.message||'Cloudinary upload failed'))}catch(err){reject(err)}};xhr.onerror=()=>reject(new Error('Network error during upload'));xhr.send(fd)});return{url:result.secure_url,cloudinaryId:result.public_id,resourceType:result.resource_type,format:result.format||'',bytes:result.bytes||blob.size}};
-$('pf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f||!cid)return;const once=takeOnce();
+const upl=async(blob,type,raw)=>{if(blob.size>MAX_MEDIA)throw new Error('MAX_SIZE');const fd=new FormData();fd.append('file',blob,blob.name||('onlyus-'+Date.now()));fd.append('upload_preset',CLOUDINARY_PRESET);fd.append('folder','onlyus/chat/'+(cid||'unknown'));const resource=raw?'raw':type&&type.startsWith('video/')?'video':type&&type.startsWith('audio/')?'video':'image';const ep='https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/'+resource+'/upload';toast('Uploading… 0%');const xhr=new XMLHttpRequest();const result=await new Promise((resolve,reject)=>{xhr.open('POST',ep);xhr.upload.onprogress=e=>{if(e.lengthComputable)toast('Uploading… '+Math.round(e.loaded/e.total*100)+'%')};xhr.onload=()=>{try{const j=JSON.parse(xhr.responseText||'{}');if(xhr.status>=200&&xhr.status<300&&j.secure_url)resolve(j);else reject(new Error(j.error?.message||'Cloudinary upload failed'))}catch(err){reject(err)}};xhr.onerror=()=>reject(new Error('Network error during upload'));xhr.send(fd)});return{url:result.secure_url,cloudinaryId:result.public_id,resourceType:result.resource_type,format:result.format||'',bytes:result.bytes||blob.size}};
+window.__sendMedia=async(f,once)=>{if(!f||!cid)return;once=!!once;
  try{if(f.size>MAX_MEDIA)return toast('File too big. Max 50 MB.');
+  if(!/^(image|video)\//.test(f.type))return send(Object.assign({type:'doc',fileName:f.name,fileSize:f.size,mime:f.type||''},await upl(f,f.type,true)));
   if(f.type.startsWith('video/'))return send(Object.assign({type:'vid',once,fileName:f.name,fileSize:f.size},await upl(f,f.type)));
   const u=URL.createObjectURL(f),i=new Image();await new Promise((r,j)=>{i.onload=r;i.onerror=j;i.src=u});const k=Math.min(1,1600/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);
   const bl=await new Promise(r=>c.toBlob(r,'image/jpeg',.8));send(Object.assign({type:'img',once,fileName:f.name,fileSize:bl.size},await upl(bl,'image/jpeg')))}catch(x){toast(x.message==='MAX_SIZE'?'File too big. Max 50 MB.':'Upload failed. Check Cloudinary upload preset and internet connection.')}};
+const pickMedia=e=>{const f=e.target.files[0];e.target.value='';if(!f||!cid)return;window.__preview&&window.__preview(f)};$('pf').onchange=pickMedia;$('pfc').onchange=pickMedia;
 // voice
 async function recStart(){if(!navigator.mediaDevices||!window.MediaRecorder)return toast('Voice notes not supported here');
  try{const st=await navigator.mediaDevices.getUserMedia({audio:true}),mt=['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(t=>MediaRecorder.isTypeSupported(t))||'',mr=new MediaRecorder(st,mt?{mimeType:mt}:{}),ch=[];
@@ -1218,7 +1349,7 @@ function gifs(){const eG=$('emG'),K=window.GIPHY_KEY;if(!K){const p=h('small',''
 const save=(b,n)=>{const a=h('a');a.href=URL.createObjectURL(b);a.download=n;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)};
 async function exportChat(kind){const c=U().cur();if(!c)return;U().toast('Preparing export…');let docs;try{docs=(await U().col().orderBy('ts').get()).docs}catch(e){return U().toast('Could not read messages')}
  const ms=docs.map(d=>({id:d.id,m:inn(d.data(),c)})).filter(x=>!x.m.dele),nm=m=>m.from===U().me().num?U().me().name:c.name,fm=t=>new Date(t).toLocaleString(),esc=s=>String(s).replace(/[&<>]/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[x]));
- const body=m=>m.type==='poll'?'📊 Poll: '+m.q+' ['+(m.opts||[]).join(' / ')+']':m.type==='img'?(m.sticker?'[sticker]':m.gif?'[GIF]':'[photo]'):m.type==='vid'?'[video]':m.type==='aud'?'[voice message]'+(m.tr?': '+m.tr:''):(m.text||''),txt=ms.map(x=>'['+fm(x.m.ts)+'] '+nm(x.m)+': '+body(x.m)).join('\n'),fn='onlyus-'+c.name;
+ const body=m=>m.type==='doc'?'[document: '+(m.fileName||'')+']':m.type==='event'?'📅 Event: '+(m.q||''):m.type==='poll'?'📊 Poll: '+m.q+' ['+(m.opts||[]).join(' / ')+']':m.type==='img'?(m.sticker?'[sticker]':m.gif?'[GIF]':'[photo]'):m.type==='vid'?'[video]':m.type==='aud'?'[voice message]'+(m.tr?': '+m.tr:''):(m.text||''),txt=ms.map(x=>'['+fm(x.m.ts)+'] '+nm(x.m)+': '+body(x.m)).join('\n'),fn='onlyus-'+c.name;
  if(kind==='txt')return save(new Blob([txt],{type:'text/plain'}),fn+'.txt');
  if(kind==='pdf'){const w=window.open('','_blank');if(!w)return U().toast('Allow pop-ups, then use Print > Save as PDF');w.document.write('<title>OnlyUs chat with '+esc(c.name)+'</title><body style="font:14px sans-serif;max-width:700px;margin:auto"><h2>Chat with '+esc(c.name)+'</h2>'+ms.map(x=>{const m=x.m;return '<p><small>'+esc(fm(m.ts))+'</small> <b>'+esc(nm(m))+'</b><br>'+esc(body(m))+(m.type==='img'&&(m.url||m.data)?'<br><img src="'+esc(m.url||m.data)+'" style="max-width:260px">':'')+'</p>'}).join('')+'</body>');w.document.close();setTimeout(()=>w.print(),700);return}
  if(!window.JSZip)return U().toast('Zip library missing');const z=new JSZip();z.file('chat.txt',txt);z.file('chat.json',JSON.stringify(ms.map(x=>x.m),null,1));let n=0;
@@ -1258,7 +1389,7 @@ $('fxDisg').onclick=()=>{if(ls('onlyus-disg')){if(confirm('Turn off calculator d
 $('fxHid').onclick=()=>{if(!J(hidK,[]).length)return U().toast('Hide a chat first: open it, tap ⋯ then Hide chat');if(window.__hid.show){window.__hid.show=false;U().list();stat();return}hPin(()=>{window.__hid.show=true;U().list();stat();U().toast('Hidden chats visible. Tap again to lock.')})};
 $('fxVl').onclick=()=>{const k=Object.keys(VL),n=k[(k.indexOf(ls('onlyus-vlang')||'ta-IN')+1)%k.length];ls('onlyus-vlang',n);stat()};
 function pickChat(){return new Promise(res=>{const all=(U().contacts()||[]).filter(c=>c&&c.uid&&!(window.__hid.has(c.uid)&&!window.__hid.show));if(!all.length){U().toast('Add a chat first');return res(null)}if(all.length===1)return res(all[0]);const w=h('div');all.forEach(c=>{const b=h('button','btn l',c.name);b.type='button';b.style.cssText='display:block;width:100%;margin:6px 0';b.onclick=()=>{$('fxD').classList.remove('on');res(c)};w.appendChild(b)});dlg('Choose a chat',w,[{l:'Cancel',g:1,f:()=>{res(null)}}])})}
-window.__fx={ready,inn,out,edit,poll,aud,srStart,srStop,translate,pickChat};
+window.__fx={ready,inn,out,edit,poll,aud,srStart,srStop,translate,pickChat,dlg,h};
 })();
 
 </script>
@@ -1371,5 +1502,160 @@ $('setb').addEventListener('click',stat);stat();
 })();
 
 </script>
+
+<script>
+/* ===== v30 fixes: scroll-to-latest, keep keyboard, Android back button, splash ===== */
+(function(){
+ const $=id=>document.getElementById(id);
+ // --- splash (WhatsApp style): logo shows at launch, fades out once app is ready
+ const t0=Date.now(),sp=$('splash');
+ const hideSplash=()=>{if(!sp||sp.__h)return;sp.__h=1;const w=Math.max(0,900-(Date.now()-t0));setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),600)},w)};
+ if(document.readyState==='complete')hideSplash();else addEventListener('load',hideSplash);
+ setTimeout(hideSplash,3000);
+
+ // --- always land on the newest message (no visible scrolling through old ones)
+ let stickUntil=0,userScrolled=false;
+ function jump(){const ms=$('ms');if(!ms)return;ms.style.scrollBehavior='auto';ms.scrollTop=ms.scrollHeight}
+ window.__toBottom=function(force){
+  const ms=$('ms');if(!ms)return;
+  if(force){userScrolled=false;stickUntil=Date.now()+2500}
+  jump();requestAnimationFrame(jump);
+  [60,150,350,700,1200].forEach(d=>setTimeout(()=>{if(!userScrolled&&Date.now()<stickUntil)jump()},d));
+  setTimeout(()=>{ms.style.scrollBehavior=''},1400);
+ };
+ const ms0=$('ms');
+ if(ms0){
+  // images / videos finishing loading change the height -> stay at bottom during the first moments
+  ms0.addEventListener('load',()=>{if(!userScrolled&&Date.now()<stickUntil)jump()},true);
+  ms0.addEventListener('loadedmetadata',()=>{if(!userScrolled&&Date.now()<stickUntil)jump()},true);
+  ['touchstart','wheel','mousedown'].forEach(ev=>ms0.addEventListener(ev,()=>{userScrolled=true},{passive:true}));
+ }
+ // when the chat view opens, make sure it starts at the bottom
+ new MutationObserver(()=>{const v=$('vChat');if(v&&v.classList.contains('on')&&!v.__was){v.__was=1;window.__toBottom(true)}else if(v&&!v.classList.contains('on'))v.__was=0})
+  .observe($('vChat'),{attributes:true,attributeFilter:['class']});
+ // keyboard open/close resizes the viewport -> keep the latest message visible
+ if(window.visualViewport)visualViewport.addEventListener('resize',()=>{const v=$('vChat');if(v&&v.classList.contains('on')){const m=$('ms');if(m&&m.scrollHeight-m.scrollTop-m.clientHeight<400)jump()}});
+
+ // --- sending must not close the keyboard
+ const mic=$('mic');
+ if(mic){['mousedown','pointerdown'].forEach(ev=>mic.addEventListener(ev,e=>{if($('in')&&document.activeElement===$('in'))e.preventDefault()}));
+  mic.addEventListener('touchstart',e=>{if($('in')&&document.activeElement===$('in')&&$('in').value.trim())e.preventDefault()},{passive:false});
+  mic.addEventListener('click',()=>{const t=$('in');if(t&&!t.value.trim()&&document.activeElement!==t){/* voice record: leave focus alone */}else if(t){try{t.focus({preventScroll:true})}catch(e){}}});}
+
+
+
+ // --- attach menu (Image / Video / Document / Poll / Event)
+ const menu=$('attMenu'),attb=$('attb');
+ const openAtt=()=>{const cf=$('cf'),vc=$('vChat');if(!cf||!vc)return;const r=cf.getBoundingClientRect(),vr=vc.getBoundingClientRect();menu.style.bottom=Math.max(8,vr.bottom-r.top+8)+'px';menu.classList.add('on')};
+ const closeAtt=()=>menu&&menu.classList.remove('on');
+ window.__closeAtt=closeAtt;
+ if(attb&&menu){
+  attb.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(menu.classList.contains('on'))closeAtt();else{try{$('in').blur()}catch(x){}openAtt()}});
+  document.addEventListener('pointerdown',e=>{if(menu.classList.contains('on')&&!menu.contains(e.target)&&!attb.contains(e.target))closeAtt()},true);
+  new MutationObserver(()=>{const v=$('vChat');if(v&&!v.classList.contains('on'))closeAtt()}).observe($('vChat'),{attributes:true,attributeFilter:['class']});
+  const pick=(acc)=>{const f=$('pf');f.accept=acc;f.click()};
+  menu.addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b)return;const a=b.dataset.a;closeAtt();
+   if(a==='img')pick('image/*');
+   else if(a==='vid')pick('video/*');
+   else if(a==='doc')$('pfd').click();
+   else if(a==='poll'){const t=$('toolPoll');if(t)t.click()}
+   else if(a==='evt')eventDlg()});
+  $('pfd').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f&&window.__preview)window.__preview(f)};
+ }
+
+ // --- helpers for message cards
+ const h=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+ const fmtSize=n=>!n?'':n<1024?n+' B':n<1048576?(n/1024).toFixed(0)+' KB':(n/1048576).toFixed(1)+' MB';
+ const extOf=n=>((n||'').split('.').pop()||'').toLowerCase();
+ const extCls=x=>/^pdf$/.test(x)?'pdf':/^(docx?|rtf|odt|txt)$/.test(x)?'doc':/^(xlsx?|csv|ods)$/.test(x)?'xls':/^(pptx?|odp|key)$/.test(x)?'ppt':/^(zip|rar|7z|tar|gz)$/.test(x)?'zip':'';
+ const docIcon=name=>{const x=extOf(name),i=h('div','docI '+extCls(x),(x||'file').toUpperCase().slice(0,4));return i};
+
+ // --- document bubble
+ window.__docBubble=(d,m)=>{
+  const a=h('a','docC');a.href=m.url||'#';a.target='_blank';a.rel='noopener noreferrer';a.onclick=e=>e.stopPropagation();
+  const x=h('div','docX');x.append(h('div','docN',m.fileName||'Document'),h('div','docM',[(extOf(m.fileName)||'file').toUpperCase(),fmtSize(m.fileSize||m.bytes)].filter(Boolean).join(' · ')));
+  a.append(docIcon(m.fileName),x,h('div','docD','⬇'));d.appendChild(a)};
+
+ // --- event: create + bubble (RSVP works like poll votes)
+ const p2=n=>String(n).padStart(2,'0'),lc=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())+'T'+p2(d.getHours())+':'+p2(d.getMinutes());
+ function eventDlg(){
+  const F=window.__fx,U=window.__us;if(!F||!F.dlg||!U||!U.cur||!U.cur())return toast('Open a chat first');
+  const w=h('div'),t=h('input'),d=h('input'),pl=h('input');
+  t.placeholder='Event name, e.g. Movie night 🎬';t.maxLength=80;d.type='datetime-local';pl.placeholder='Place (optional)';pl.maxLength=80;
+  const dt=new Date();dt.setDate(dt.getDate()+1);dt.setHours(19,0,0,0);d.value=lc(dt);
+  w.append(t,d,pl);
+  F.dlg('📅 New event',w,[{l:'Send event',f:()=>{const title=t.value.trim(),at=new Date(d.value).getTime();if(!title||!at){toast('Add an event name and date/time');return false}U.send({type:'event',q:title,opts:[String(at),pl.value.trim()],votes:{}})}},{l:'Cancel',g:1}])}
+ window.__eventBubble=(d,m,id)=>{
+  const U=window.__us,uid=U.uid(),v=m.votes||{},o=m.opts||[],at=+o[0],loc=o[1]||'',tot=Object.keys(v).length;
+  d.classList.add('evC');
+  d.append(h('div','evH','📅 Event'),h('b','evT',m.q||'Event'));
+  if(at)d.appendChild(h('div','evW','🕒 '+new Date(at).toLocaleString(undefined,{weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})));
+  if(loc)d.appendChild(h('div','evP','📍 '+loc));
+  ['✅ Going','🤔 Maybe','❌ Can’t go'].forEach((lbl,i)=>{
+   const n=Object.values(v).filter(x=>x===i).length,pc=tot?Math.round(100*n/tot):0,b=h('button','fxOpt');b.type='button';b.style.setProperty('--p',pc+'%');if(v[uid]===i)b.classList.add('mine');
+   b.append(h('span','',lbl),h('i','',String(n)));
+   b.onclick=e=>{e.stopPropagation();U.col().doc(id).update({['votes.'+uid]:i}).catch(()=>toast('Could not reply. Try again.'))};d.appendChild(b)});
+ };
+
+ // --- preview before sending: photo / video (with view-once) or document
+ {let mf=null,mu='',mo=false;const mpv=$('mpv');
+  const setOnce=v=>{mo=v;$('mpvO').classList.toggle('on',v);const h2=$('mpvHint');h2.classList.toggle('on',v);h2.textContent=v?'View once · opens one time only':'Keep in chat'};
+  const closeP=()=>{mpv.classList.remove('on');const b=$('mpvBody');b.querySelectorAll('video').forEach(v=>{try{v.pause()}catch(e){}v.removeAttribute('src')});b.textContent='';if(mu){URL.revokeObjectURL(mu);mu=''}mf=null};
+  window.__preview=f=>{
+   if(f.size>50*1024*1024)return toast('File too big. Max 50 MB.');
+   closeP();mf=f;
+   const media=/^(image|video)\//.test(f.type);
+   if(media){mu=URL.createObjectURL(f);const el=document.createElement(f.type.startsWith('video/')?'video':'img');el.src=mu;if(el.tagName==='VIDEO'){el.controls=true;el.playsInline=true}$('mpvBody').appendChild(el);$('mpvO').style.display='';setOnce(false)}
+   else{const w=h('div','mpvDoc');w.append(docIcon(f.name),h('div','docN',f.name),h('div','docM',[(extOf(f.name)||'file').toUpperCase(),fmtSize(f.size)].filter(Boolean).join(' · ')));$('mpvBody').appendChild(w);$('mpvO').style.display='none';setOnce(false);$('mpvHint').textContent='Document'}
+   mpv.classList.add('on')};
+  $('mpvX').onclick=closeP;$('mpvO').onclick=()=>setOnce(!mo);
+  $('mpvS').onclick=()=>{const f=mf,o=mo;closeP();if(f&&window.__sendMedia)window.__sendMedia(f,o)};
+ }
+ // --- Android back button: go back inside the app instead of closing it
+ let lastBack=0;
+ const vis=el=>el&&getComputedStyle(el).display!=='none'&&getComputedStyle(el).visibility!=='hidden';
+ const closeBtnOf=el=>{
+  const q=el.querySelectorAll('button,[role=button]');
+  for(const b of q){const t=(b.textContent||'').trim().toLowerCase(),a=((b.getAttribute('aria-label')||'')+' '+b.id+' '+b.className).toLowerCase();
+   if(/^(✕|×|x|close|exit|back|cancel|decline|done|←)$/.test(t)||/close|clo\b|cancel|exit/.test(a))return b}
+  return null};
+ function toast(m){if(window.__us&&window.__us.toast)window.__us.toast(m);else{let d=document.createElement('div');d.textContent=m;d.style.cssText='position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:20px;z-index:2147483001;font:14px sans-serif';document.body.appendChild(d);setTimeout(()=>d.remove(),1800)}}
+ // returns true when something inside the app was closed
+ function handleBack(){
+  const lock=$('lock');if(lock&&vis(lock)&&lock.classList.contains('on'))return true; // locked: ignore
+  const am=$('attMenu');if(am&&am.classList.contains('on')){am.classList.remove('on');return true}
+  // 1) top-most overlay / popup
+  const layers=[...document.querySelectorAll('.ov,.hub-view')].filter(e=>vis(e)&&(e.classList.contains('on')||getComputedStyle(e).display!=='none'));
+  if(layers.length){layers.sort((a,b)=>(parseInt(getComputedStyle(a).zIndex)||0)-(parseInt(getComputedStyle(b).zIndex)||0));
+   const top=layers[layers.length-1],b=closeBtnOf(top);if(b)b.click();else top.classList.remove('on');return true}
+  const viewer=$('viewer');if(viewer&&viewer.classList.contains('on')){viewer.click();return true}
+  const emo=$('emo');if(emo&&vis(emo)){emo.style.display='none';return true}
+  const boxes=['chatSearchBox','mediaBox','starBox','pinBox'].map($).filter(vis);
+  if(boxes.length){boxes.forEach(b=>b.style.display='none');return true}
+  const rep=$('rep');if(rep&&vis(rep)&&$('repx')){$('repx').click();return true}
+  // 2) screens
+  const v=document.querySelector('.view.on');
+  if(v&&v.id==='vChat'){const bk=$('back');if(bk){bk.click();return true}}
+  if(v&&v.id!=='vList'&&v.id!=='vAuth'){
+   const bar=v.querySelector('.bar,.status-head,.hub-head,header')||v;
+   const b=bar.querySelector('button.ic,button');
+   if(b&&/←|back/i.test((b.textContent||'')+(b.getAttribute('aria-label')||''))){b.click();return true}
+   if(window.__us&&window.__us.show){window.__us.show('vList');return true}
+  }
+  return false;
+ }
+ function arm(){history.pushState({onlyus:1},'',location.href)}
+ try{history.replaceState({onlyus:0},'',location.href);arm()}catch(e){}
+ addEventListener('popstate',e=>{
+  if(e.state&&e.state.onlyus===1)return; // forward onto our own entry, nothing to do
+  if(handleBack()){arm();return}
+  // on the main list: press back twice to leave
+  const n=Date.now();
+  if(n-lastBack<2000){lastBack=0;history.back();return}
+  lastBack=n;toast('Press back again to exit');arm();
+ });
+})();
+</script>
+<script src="ai-chat.js"></script>
 </body>
 </html>

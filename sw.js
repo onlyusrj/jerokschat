@@ -3,8 +3,8 @@ try{firebase.initializeApp(self.FIREBASE_CONFIG);const messaging=firebase.messag
 self.addEventListener('notificationclick',e=>{e.notification.close();const url=(e.notification.data&&e.notification.data.url)||'./index.html';e.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(list=>{for(const c of list){if('focus' in c){return c.focus().then(()=>('navigate' in c?c.navigate(url):c))}}return clients.openWindow(url)}))});
 
 // ---- offline app shell (network first for our files, cache first for SDK/CDN files)
-const SHELL='onlyus-shell-v1';
-self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(SHELL).then(c=>c.addAll(['./','./index.html','./nacl-fast.min.js','./jszip.min.js','./manifest.json','./icon-192.png','./icon-512.png','./firebase-config.js']).catch(()=>{})))});
+const SHELL='onlyus-shell-v4';
+self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(SHELL).then(c=>c.addAll(['./','./index.html','./nacl-fast.min.js','./jszip.min.js','./qr-gen.js','./ai-chat.js','./manifest.json','./icon-192.png','./icon-512.png','./icon-maskable-512.png','./apple-touch-icon.png','./firebase-config.js']).catch(()=>{})))});
 self.addEventListener('activate',e=>{e.waitUntil(Promise.all([clients.claim(),caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('onlyus-shell-')&&k!==SHELL).map(k=>caches.delete(k))))]))});
 self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url),own=u.origin===location.origin,cdn=['www.gstatic.com','fonts.gstatic.com','fonts.googleapis.com','cdnjs.cloudflare.com'].includes(u.hostname);if(!own&&!cdn)return;
  e.respondWith(caches.open(SHELL).then(async c=>{const hit=await c.match(r,{ignoreSearch:own});const net=()=>fetch(r).then(res=>{if(res&&(res.ok||res.type==='opaque'))c.put(r,res.clone());return res});if(cdn&&hit)return hit;try{return await net()}catch(err){if(hit)return hit;if(r.mode==='navigate'){const idx=await c.match('./index.html');if(idx)return idx}throw err}}))});

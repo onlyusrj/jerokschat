@@ -25,3 +25,10 @@ window.TURN_CONFIG = {
 
 // Optional: free GIPHY API key (developers.giphy.com) to enable GIF search in the emoji panel.
 window.GIPHY_KEY = "";
+
+// OnlyUs AI (free): key from aistudio.google.com. Paste it between the quotes.
+// This key is visible to anyone who opens your site, so RESTRICT it in Google Cloud Console
+// (APIs & Services > Credentials > your key > Website restrictions = your site URL, API restriction = Generative Language API).
+window.GEMINI_KEY = "AQ.Ab8RN6JNp5jenwhRb0hTJBvRcwBrM1onpNNUsSLgBPhEYruyBA";
+// Model name from AI Studio (names change often). Default if empty: gemini-flash-latest
+window.GEMINI_MODEL = "";

@@ -121,3 +121,50 @@ V29 ADDITIONS
 - Offline: messages you send offline show a clock (🕓) and send automatically when you are back online. The app shell is cached so it also opens offline. Photos/voice/video need internet to upload.
 - Sakura petals: Settings > Sakura petals in chats / on home.
 - Calls: if no TURN server is configured the app now falls back to a free public relay (best effort). For reliable calls on mobile data set your own TURN in firebase-config.js.
+
+
+V30 FIXES
+- Chat opens directly at the newest message (instant jump, no scrolling through old messages).
+- Sending a message keeps the keyboard open.
+- Android back button: closes popups first, then chat -> list; on the main list press back twice to exit.
+- Launch splash screen with logo (WhatsApp style) + dark splash colour in manifest; new maskable and apple-touch icons.
+- After deploying, fully close and reopen the app once (service worker cache is now v2). To refresh the home-screen icon/splash, remove the installed app and Add to Home screen / Install again.
+
+V31 FIXES
+- Photo/video: choosing a file no longer sends it. A preview opens with a "1" (view once) button and a Send button. View once is only used when you switch it on there.
+- Composer icons now WhatsApp style: emoji, paperclip (attach), camera, round green mic (turns into send arrow when you type).
+
+V32 FIXES
+- Paperclip now opens a small attach menu: Image, Video, Document, Poll, Event.
+- Document: any file up to 50 MB (uploaded to Cloudinary as raw), shown as a file card; tap to open.
+- Event: name, date/time, place; the partner can reply Going / Maybe / Cant go.
+- No firestore.rules change needed.
+
+V33 FIXES
+- Firebase ID moved from the home screen to Settings (Your Firebase ID + Copy), with a "My QR code" row.
+- Round-square QR button at bottom right of the home screen: My code / Scan code.
+- Scan a partner QR -> contact is added and chat opens. The partner gets an "Accept" prompt and is added on their side too.
+- IMPORTANT: publish the updated firestore.rules (new /invites rule) in Firebase Console > Firestore > Rules, otherwise the partner will not get the Accept prompt.
+- New file qr-gen.js (QR generator, MIT licence). Camera scan uses the built-in BarcodeDetector on Android Chrome; other browsers load jsQR from cdnjs.
+
+V34 ✨ OnlyUs AI
+- Home screen: "✨ OnlyUs AI" button sits just above the QR button (bottom right). Tap it to chat with the AI.
+- New files: ai-chat.js (chat screen). Changed: index.html, sw.js (cache v4), functions/index.js (new aiChat function).
+- The AI key is NEVER in the app. It is stored as a Firebase secret and used only by the aiChat Cloud Function.
+SETUP (one time, needs Firebase Blaze plan + Firebase CLI):
+  1. Get an Anthropic API key from console.anthropic.com
+  2. firebase functions:secrets:set ANTHROPIC_API_KEY      (paste the key)
+  3. firebase deploy --only functions
+  4. Redeploy the site to Netlify, then fully close and reopen the app once (service worker cache v4).
+- Only signed-in users can use it. Limit: 100 AI messages per user per day (AI_DAILY_LIMIT in functions/index.js).
+- Model: claude-sonnet-5-5. Change with the AI_MODEL environment variable or edit functions/index.js.
+- AI chat history is saved only on this device (localStorage). It is not shared with your partner and not read by the app's other chats.
+- No firestore.rules change needed (usage counter is written by the server).
+
+V34b FREE AI (Gemini free tier, no backend, no card)
+- Paste your Gemini key into firebase-config.js: window.GEMINI_KEY = "AIza...";  (optional: window.GEMINI_MODEL)
+- Get the key free at aistudio.google.com > Get API key.
+- IMPORTANT: the key is public in the site code. In Google Cloud Console > APIs & Services > Credentials > your key:
+  Application restrictions = Websites (add your GitHub Pages URL, e.g. https://USER.github.io/*), API restrictions = Generative Language API.
+- Free tier: limited requests per minute/day; Google may use free-tier prompts to improve its products. Do not type secrets in the AI chat.
+- Without a key the app uses the Firebase Cloud Function aiChat (Anthropic key, needs the Blaze plan), see the V34 section above.
