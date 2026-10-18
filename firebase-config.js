@@ -12,6 +12,9 @@ window.FIREBASE_CONFIG = {
   vapidKey: "BMnkBAVyO_xY9FGVvNSTDyuxoJuGitZhWbFUiOIer6cudwSVXSKua-7yni_kIiPxZJlBmpkpEHsEcnvuHlpCazE"
 };
 
+// Region of your Cloud Functions (default us-central1). Used by the service worker to confirm message delivery.
+window.FUNCTIONS_REGION = "us-central1";
+
 // TURN relay for screen share / whiteboard on strict networks (optional).
 // Option 1 (easy): Metered.ca. Fill both fields from dashboard.metered.ca (app name + the TURN credential's API key).
 // Option 2: any TURN provider / your own coturn: list servers below, e.g.

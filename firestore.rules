@@ -22,7 +22,9 @@ service cloud.firestore {
       match /devices/{deviceId} {
         allow read, delete: if signedIn() && request.auth.uid == uid;
         allow create, update: if signedIn() && request.auth.uid == uid
-          && request.resource.data.keys().hasOnly(['token','updatedAt','userAgent'])
+          && request.resource.data.keys().hasOnly(['token','updatedAt','userAgent','hideMode','lock'])
+          && request.resource.data.get('hideMode','auto') in ['auto','on','off']
+          && request.resource.data.get('lock',false) is bool
           && request.resource.data.token is string
           && request.resource.data.token.size() > 0
           && request.resource.data.token.size() <= 2000;

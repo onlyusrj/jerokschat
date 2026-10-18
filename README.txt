@@ -48,3 +48,26 @@ V43 FIXES
 - Settings > "Calls & whiteboard check": runs a self-test (Firestore rules, mic permission, network path) and lets you paste a free Metered TURN app name + API key (saved on that phone). Without a TURN server, calls and screen video fail when the two phones are on different networks.
 - Sound bug: the anti-spam check compared seconds with 100, so sounds were blocked almost always. Fixed (80 ms).
 - Sending no longer waits for the server answer: the message appears at once with a clock and the send button is never locked, so you can keep typing offline and everything is delivered when you are back online.
+
+V44 STICKERS + GIF BUTTON
+- New sticker/GIF button right next to the attach (clip) button in every chat. It opens a panel with 4 tabs: Recent, Us (69 original animated panda & bear couple stickers: love, kiss, hug, miss you, good morning/night, sorry, angry, hungry, birthday, call me, etc.), Mine, GIF.
+- Mine > Add stickers: pick many WhatsApp .webp / .png files at once (WhatsApp animated stickers keep moving), or a .wastickers / .zip sticker pack. Stored on THIS phone (IndexedDB). Long-press to delete. Each sticker must be under about 500 KB.
+- GIF tab: save your own .gif files (under 500 KB each), or set window.GIPHY_KEY in firebase-config.js for online GIF search.
+- The built-in panda & bear stickers are original artwork (not official Bubu/Dudu art). Old stickers from the emoji panel are still shown under Mine.
+- New file stickers-pack.js. Cache v9: fully close and reopen the app once.
+
+V44b NOTIFICATIONS + DELIVERED TICK
+- BUG FIXED: sw.js crashed on start ("window is not defined" from firebase-config.js), so the service worker never registered. That is why push notifications did not arrive when the app was closed. sw.js now sets self.window=self first.
+- Settings > "Hide text in notifications": Auto (hide when app lock is on) / On / Off. Hidden = notification only says "OnlyUs - You have a new message" (no text, no sender). Per phone.
+- Double tick when the partner's app is closed but the phone is online: the service worker confirms the push to a new Cloud Function (ackDelivered) which marks the message delivered.
+- Notification text now shows Photo / Sticker / Voice message / etc. instead of the same generic line.
+- YOU MUST DEPLOY (once):  firebase deploy --only functions,firestore:rules
+  (rules: devices docs may now hold hideMode + lock.) Both phones: fully close and reopen the app, then Settings > Notifications = On.
+- Region: functions default to us-central1. If you deploy elsewhere set window.FUNCTIONS_REGION in firebase-config.js.
+
+V45 VOICE NOTES
+- Length bug fixed: a 15 s voice note showed 3-4 min because recorded WebM files carry no length. The sender now sends the real length with the voice note; older voice notes get it from the decoded audio. Seeking and the waveform progress use the same length.
+- Clearer recording: mono 48 kHz with noise suppression, 96 kbps (was the low browser default).
+- Waveform decoding no longer opens a new AudioContext per voice note (they piled up and could spoil playback).
+- Settings > "Voice note text (transcript)" (default OFF): speech-to-text runs on the same microphone while recording and on many phones makes the voice note quiet/muffled. Turn it On only if you want the Aa text under voice notes.
+- Both phones must update. Old voice notes show the right length after a moment. Cache v11: fully close and reopen the app once.

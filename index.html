@@ -717,7 +717,7 @@ async function open(c){if(!authUser){show('vAuth');return}if(!c.uid){toast('Remo
    if(had){const e=els.get(id),n=bubble(m,id);if(e&&n)e.replaceWith(n);if(n)els.set(id,n)}
    else{if(!first&&m.from!==me.num)inc=true;if(m.ts>=lastTs&&!full)add(m,id);else full=true}}
   if(full){const ms=$('ms');ms.textContent='';els=new Map();lastDay='';lastTs=0;[...msgs].sort((a,b)=>a[1].ts-b[1].ts).forEach(([id,m])=>add(m,id));window.__toBottom&&window.__toBottom(true)}
-  if(inc&&!mutedLocal()){ding();if(document.hidden&&'Notification' in window&&Notification.permission=='granted'){note(c.name,'New message')}}
+  if(inc&&!mutedLocal()){ding();if(document.hidden&&'Notification' in window&&Notification.permission=='granted'){note(window.__nhHide&&window.__nhHide()?'OnlyUs':c.name,'New message')}}
   first=false;seen()},e=>toast('Connection problem. Check internet and Firestore rules.')));
  unsub.push(pres().doc(c.uid).onSnapshot(s=>{peer=s.data()||null;stat()}));beat(0);hb=setInterval(()=>{if(document.visibilityState=='visible'){beat(0);stat()}},15000)}
 function mutedLocal(){try{return JSON.parse(localStorage.getItem('onlyus-muted')||'{}')[cid]===true}catch(e){return false}}
@@ -834,10 +834,10 @@ window.__sendMedia=async(f,once)=>{if(!f||!cid)return;once=!!once;
 const pickMedia=e=>{const f=e.target.files[0];e.target.value='';if(!f||!cid)return;window.__preview&&window.__preview(f)};$('pf').onchange=pickMedia;$('pfc').onchange=pickMedia;
 // voice
 async function recStart(){if(!navigator.mediaDevices||!window.MediaRecorder)return toast('Voice notes not supported here');
- try{const st=await navigator.mediaDevices.getUserMedia({audio:true}),mt=['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(t=>MediaRecorder.isTypeSupported(t))||'',mr=new MediaRecorder(st,mt?{mimeType:mt}:{}),ch=[];
+ try{const st=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,sampleRate:48000,echoCancellation:true,noiseSuppression:true,autoGainControl:true}}),mt=['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(t=>MediaRecorder.isTypeSupported(t))||'',mr=new MediaRecorder(st,Object.assign(mt?{mimeType:mt}:{},{audioBitsPerSecond:96000})),ch=[];
   rec={mr,st,t0:Date.now(),cancel:false};mr.ondataavailable=e=>ch.push(e.data);
   mr.onstop=()=>{clearInterval(rec.tm);st.getTracks().forEach(t=>t.stop());$('rbar').style.display='none';$('cf').style.display='flex';const r=rec;rec=null;if(r.cancel||Date.now()-r.t0<700)return;
-   const blob=new Blob(ch,{type:mr.mimeType||'audio/webm'});const trs=window.__fx.srStop();if(blob.size>MAX_MEDIA)return toast('Voice note too large. Max 50 MB');upl(blob,blob.type).then(async r=>send(Object.assign({type:'aud',fileSize:blob.size,tr:await trs},r))).catch(()=>toast('Voice upload failed. Check Cloudinary upload preset and internet connection.'))};
+   const durS=Math.max(.5,Math.round((Date.now()-r.t0)/100)/10);const blob=new Blob(ch,{type:mr.mimeType||'audio/webm'});const trs=window.__fx.srStop();if(blob.size>MAX_MEDIA)return toast('Voice note too large. Max 50 MB');upl(blob,blob.type).then(async r=>send(Object.assign({type:'aud',fileSize:blob.size,dur:durS,tr:await trs},r))).catch(()=>toast('Voice upload failed. Check Cloudinary upload preset and internet connection.'))};
   window.__fx.srStart();mr.start();$('cf').style.display='none';$('rbar').style.display='flex';rec.tm=setInterval(()=>{const s=Math.floor((Date.now()-rec.t0)/1000);$('rt').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(s>=60)mr.stop()},250)}catch(e){toast('Microphone permission needed')}}
 $('rs').onclick=()=>rec&&rec.mr.stop();$('rc').onclick=()=>{if(rec){rec.cancel=true;rec.mr.stop()}};
 // ---- V11 chat productivity features
@@ -1729,6 +1729,7 @@ $('setb').addEventListener('click',stat);stat();
   if(layers.length){layers.sort((a,b)=>(parseInt(getComputedStyle(a).zIndex)||0)-(parseInt(getComputedStyle(b).zIndex)||0));
    const top=layers[layers.length-1],b=closeBtnOf(top);if(b)b.click();else top.classList.remove('on');return true}
   const viewer=$('viewer');if(viewer&&viewer.classList.contains('on')){viewer.click();return true}
+  const sp=$('stkP');if(sp&&sp.classList.contains('on')){window.__stickerPanel&&window.__stickerPanel.close();return true}
   const emo=$('emo');if(emo&&vis(emo)){emo.style.display='none';return true}
   const boxes=['chatSearchBox','mediaBox','starBox','pinBox'].map($).filter(vis);
   if(boxes.length){boxes.forEach(b=>b.style.display='none');return true}
@@ -1760,5 +1761,8 @@ $('setb').addEventListener('click',stat);stat();
 <script src="couple-plus.js"></script>
 <script src="fx-anim.js"></script>
 <script src="wallpaper-gallery.js"></script>
+<script src="stickers-pack.js"></script>
+<script src="notify-privacy.js"></script>
+<script src="voice-fix.js"></script>
 </body>
 </html>
