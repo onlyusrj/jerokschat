@@ -41,3 +41,10 @@ V42 GALLERY WALLPAPER
 - Chat tools (the tools grid inside a chat) > 🎨 Wallpaper > "🖼 Choose from gallery": pick any photo as the chat background. A slider dims it so messages stay readable; "Remove photo" goes back.
 - The photo is resized (max 1280 px) and saved on THIS device only, separately for each chat. It is not uploaded and your partner does not see it. Picking one of the 5 built-in designs replaces the photo.
 - New file wallpaper-gallery.js. Cache v8: fully close and reopen the app once.
+
+V43 FIXES
+- Send/receive sounds: the audio engine is unlocked on the first tap, the send sound plays immediately when you send (not after the server answers), and the volume is higher. This also works for photos/files/voice.
+- Whiteboard requests now reach your partner even when they are on the chat list (not inside the chat), like calls. The sender sees "Partner got your request".
+- Settings > "Calls & whiteboard check": runs a self-test (Firestore rules, mic permission, network path) and lets you paste a free Metered TURN app name + API key (saved on that phone). Without a TURN server, calls and screen video fail when the two phones are on different networks.
+- Sound bug: the anti-spam check compared seconds with 100, so sounds were blocked almost always. Fixed (80 ms).
+- Sending no longer waits for the server answer: the message appears at once with a clock and the send button is never locked, so you can keep typing offline and everything is delivered when you are back online.
