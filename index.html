@@ -785,7 +785,7 @@ function bubble(m,id){if(delMe.has(id))return null;if(m.exp&&m.exp<Date.now())re
   else if(m.type=='vid'){const v=mkEl('video','pic');v.controls=true;v.playsInline=true;v.src=m.url||m.data;v.onclick=e=>e.stopPropagation();d.appendChild(v)}
   else if(m.type=='img'){if(m.sticker||m.gif)d.classList.add('stk');const i=mkEl('img','pic');const sr=m.url||m.data;i.src=sr;i.alt='Photo';i.onclick=e=>{e.stopPropagation();$('vi').src=sr;$('vi').style.display='block';$('vv').style.display='none';$('viewer').dataset.once='';$('viewer').classList.add('on')};d.appendChild(i)}
   else if(m.type=='aud')window.__fx.aud(d,m);
-  if(m.text){d.appendChild(document.createTextNode(m.text));if(m.edited)d.appendChild(mkEl('span','edit-mark','edited'))}}
+  if(m.text){if(!(window.__bigEmo&&window.__bigEmo(d,m,id)))d.appendChild(document.createTextNode(m.text));if(m.edited)d.appendChild(mkEl('span','edit-mark','edited'))}}
  const t=mkEl('span','mt');t.appendChild(mkEl('span','',fT(m.ts)));if(mine&&!m.dele){t.appendChild(mkEl('span','tk'+(m.read?' r':'')+(m.__p?' pend':''),m.__p?'🕓':(m.dlv||m.read?'✓✓':'✓')))}d.appendChild(t);
  const rs=Object.values(m.r||{}).filter(Boolean);if(rs.length){d.appendChild(mkEl('div','rx',rs.join('')));d.style.marginBottom='16px'}
  return d}
@@ -854,6 +854,7 @@ const cats=[['🕘',[]],...catDefs];
 const emo=$('emo'),eT=mkEl('div'),eG=mkEl('div');eT.id='emT';eG.id='emG';emo.append(eT,eG);
 const recent=()=>LS.g('onlyus-recent',[]).filter(e=>typeof e==='string');
 const pick=e=>{if(reactTo){react(reactTo.m,reactTo.id,e);reactTo=null;emo.style.display='none';return}ta.value+=e;sync();ta.focus();const r=recent().filter(x=>x!==e);r.unshift(e);LS.s('onlyus-recent',r.slice(0,48))};
+window.__emoPick=pick;window.__emoAll=allEmoji;
 const fill=i=>{eG.textContent='';const list=i===0?recent():cats[i][1];list.forEach(e=>{const b=mkEl('button','',e);b.type='button';b.onclick=()=>pick(e);eG.appendChild(b)});[...eT.children].forEach((b,j)=>b.classList.toggle('on',j===i))};
 cats.forEach(([ic],i)=>{const b=mkEl('button','',ic);b.type='button';b.onclick=()=>fill(i);eT.appendChild(b)});fill(1);window.__emoShow=()=>{$('emo').style.display='grid';fill(recent().length?0:1)}}
 $('eb').onclick=()=>{const e=$('emo');if(e.style.display=='grid')e.style.display='none';else window.__emoShow()};
@@ -1800,5 +1801,7 @@ $('setb').addEventListener('click',stat);stat();
 <script src="stickers-pack.js"></script>
 <script src="notify-privacy.js"></script>
 <script src="voice-fix.js"></script>
+<script src="emoji-names.js"></script>
+<script src="liquid-glass.js"></script>
 </body>
 </html>

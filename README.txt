@@ -87,3 +87,12 @@ V48 SHARED WALLPAPER
 - The wallpaper is now ONE per chat for both of you: when either of you picks a design or a gallery photo (or removes it), the other sees the same one. Stored in Firestore chats/{cid}/coupleHub/wallpaper (no rules change) and cached on each phone. Photos are resized to stay under ~700 KB.
 - A wallpaper you had chosen on one phone before v48 is shared automatically the first time.
 - Both phones must update. Cache v14: fully close and reopen the app once.
+
+V49 LIQUID GLASS + BIG EMOJI + EMOJI SEARCH
+- iPhone-26 style "liquid glass": header buttons, composer (text box + mic/send), emoji/sticker panel, attach menu, pop-up cards, tab bars and most buttons are now translucent glass with a blur, light edge and soft highlight.
+- In a chat the messages now scroll UNDER the glass header and the glass composer, so the blurred messages show through the glass.
+- Settings > Chats > "Liquid glass": On/Off, "Shade" slider (Light <-> Dark), "Blur" slider (Soft <-> Strong), live preview, Reset. Saved on THIS phone only.
+- Top bar (Rok💕Jeru) is now slim and full width on phones (smaller buttons, no subtitle), and the chat header is slimmer too.
+- One emoji sent alone is shown BIG with an animation (pop; hearts beat, laughing faces shake, fire flickers, party/stars spin) plus tiny floating emoji. 2-3 emoji alone are shown medium. Tap the big emoji to replay. Turned off by "reduce motion".
+- Emoji panel has a search bar (English names, plus words like sirippu / kadhal / muthham; flags by country name). Names come from Unicode, so very new emoji (2023+) may not be found by name but are still in the categories.
+- New files: liquid-glass.js, emoji-names.js. Cache v15: fully close and reopen the app once.
