@@ -71,3 +71,19 @@ V45 VOICE NOTES
 - Waveform decoding no longer opens a new AudioContext per voice note (they piled up and could spoil playback).
 - Settings > "Voice note text (transcript)" (default OFF): speech-to-text runs on the same microphone while recording and on many phones makes the voice note quiet/muffled. Turn it On only if you want the Aa text under voice notes.
 - Both phones must update. Old voice notes show the right length after a moment. Cache v11: fully close and reopen the app once.
+
+V46 DOUBLE TICK + GIF
+- Double tick now also set when the partner's app is open on the chat list (not only inside the chat).
+- GIPHY key added in firebase-config.js (GIF search works).
+- Cache v12: fully close and reopen the app once.
+
+V47 SETTINGS + PROFILE PHOTO
+- Settings redesigned like WhatsApp: search, big profile photo, rows Profile / Account / Privacy / Chats / Notifications / Calls, Log out.
+- Settings > Profile: Add / Change / Delete photo. The photo is saved on the phone AND in Firestore (chats/{cid}/coupleHub/pf_{uid}), so it stays until you delete it (also after reinstall) and your partner sees it in the chat list and chat header (tap it to enlarge). No rules change needed.
+- New file profile-ui.js. Cache v13: fully close and reopen the app once.
+
+V48 SHARED WALLPAPER
+- Bug fixed: the chosen chat design / gallery photo was only applied after opening Chat tools > Wallpaper, so after closing the app it looked reset. It is now applied as soon as the chat opens.
+- The wallpaper is now ONE per chat for both of you: when either of you picks a design or a gallery photo (or removes it), the other sees the same one. Stored in Firestore chats/{cid}/coupleHub/wallpaper (no rules change) and cached on each phone. Photos are resized to stay under ~700 KB.
+- A wallpaper you had chosen on one phone before v48 is shared automatically the first time.
+- Both phones must update. Cache v14: fully close and reopen the app once.

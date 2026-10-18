@@ -27,7 +27,7 @@ window.TURN_CONFIG = {
 };
 
 // Optional: free GIPHY API key (developers.giphy.com) to enable GIF search in the emoji panel.
-window.GIPHY_KEY = "";
+window.GIPHY_KEY = "Ox0y3gHvzHrrJJUWCCbluLAYAInNMHJL";
 
 // OnlyUs AI: do NOT put your Gemini key here. A key in a public GitHub repo is found by Google and revoked.
 // Each person pastes their own free key (aistudio.google.com/apikey) with the 🔑 button inside the AI chat.
