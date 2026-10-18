@@ -10,9 +10,9 @@
   var $ = function (id) { return document.getElementById(id); };
   var R = document.documentElement;
   var KEY = 'onlyus-lg';
-  var DEF = { on: 1, shade: 30, blur: 55 };
+  var DEF = { on: 1, shade: 30, blur: 20, ver: 50 };
 
-  function load() { try { return Object.assign({}, DEF, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { return Object.assign({}, DEF); } }
+  function load() { try { var sv = JSON.parse(localStorage.getItem(KEY) || '{}'), o = Object.assign({}, DEF, sv); if ((sv.ver || 0) < 50) { if (sv.blur != null) o.blur = Math.min(+sv.blur || 20, 25); o.ver = 50; } return o; } catch (e) { return Object.assign({}, DEF); } }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
   var S = load();
 
@@ -27,20 +27,20 @@
     'html{--lg-bg:rgba(255,255,255,.30);--lg-bd:rgba(255,255,255,.55);--lg-ink:#2a1d44;--lg-blur:22px;--lg-sheen:.40;--lg-panel:rgba(255,255,255,.72);--lg-bar:rgba(60,38,100,.60);--lg-sh:rgba(30,12,60,.20)}',
 
     /* ---- shared glass look ---- */
-    GLASS_CIRCLE + ',' + GLASS_CHIP + '{box-sizing:border-box;background:linear-gradient(180deg,rgba(255,255,255,var(--lg-sheen)) 0%,rgba(255,255,255,.07) 42%,rgba(255,255,255,0) 62%),var(--lg-bg)!important;border:1px solid var(--lg-bd)!important;-webkit-backdrop-filter:blur(var(--lg-blur)) saturate(180%);backdrop-filter:blur(var(--lg-blur)) saturate(180%);box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -1px 2px rgba(255,255,255,.14),inset 1px 0 1px rgba(255,255,255,.18),0 8px 22px var(--lg-sh)!important;color:var(--lg-ink);transition:transform .22s cubic-bezier(.3,1.6,.5,1),background .2s,box-shadow .2s}',
+    GLASS_CIRCLE + ',' + GLASS_CHIP + '{box-sizing:border-box;background:linear-gradient(180deg,rgba(255,255,255,var(--lg-sheen)) 0%,rgba(255,255,255,.07) 42%,rgba(255,255,255,0) 62%),var(--lg-bg)!important;border:1px solid var(--lg-bd)!important;-webkit-backdrop-filter:blur(var(--lg-blur));backdrop-filter:blur(var(--lg-blur));box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -1px 2px rgba(255,255,255,.14),inset 1px 0 1px rgba(255,255,255,.18),0 8px 22px var(--lg-sh)!important;color:var(--lg-ink);transition:transform .22s cubic-bezier(.3,1.6,.5,1),background .2s,box-shadow .2s}',
     /* circle buttons inside the (always dark-purple) bars keep white icons */
     'html.lg .bar .ic,html.lg .hub-close{color:#fff;--lg-bg:rgba(255,255,255,.20);--lg-bd:rgba(255,255,255,.38)}',
     'html.lg .bar .ic.add-toggle{color:#65409a;--lg-bg:rgba(255,255,255,.88)}',
-    GLASS_ACCENT + '{box-sizing:border-box;background:linear-gradient(180deg,rgba(255,255,255,.42) 0%,rgba(255,255,255,.08) 45%,rgba(255,255,255,0) 65%),color-mix(in srgb,var(--acc) 82%,transparent)!important;border:1px solid rgba(255,255,255,.45)!important;color:#fff!important;-webkit-backdrop-filter:blur(var(--lg-blur)) saturate(180%);backdrop-filter:blur(var(--lg-blur)) saturate(180%);box-shadow:inset 0 1px 1px rgba(255,255,255,.6),inset 0 -1px 2px rgba(0,0,0,.12),0 8px 22px color-mix(in srgb,var(--acc) 45%,transparent)!important;transition:transform .22s cubic-bezier(.3,1.6,.5,1)}',
+    GLASS_ACCENT + '{box-sizing:border-box;background:linear-gradient(180deg,rgba(255,255,255,.42) 0%,rgba(255,255,255,.08) 45%,rgba(255,255,255,0) 65%),color-mix(in srgb,var(--acc) 82%,transparent)!important;border:1px solid rgba(255,255,255,.45)!important;color:#fff!important;-webkit-backdrop-filter:blur(var(--lg-blur));backdrop-filter:blur(var(--lg-blur));box-shadow:inset 0 1px 1px rgba(255,255,255,.6),inset 0 -1px 2px rgba(0,0,0,.12),0 8px 22px color-mix(in srgb,var(--acc) 45%,transparent)!important;transition:transform .22s cubic-bezier(.3,1.6,.5,1)}',
     'html.lg .ic:active,html.lg .btn:active,html.lg .hub-btn:active,html.lg .tool-grid button:active,html.lg .seg button:active,html.lg .row:active,html.lg .pfbtn:active{transform:scale(.92)}',
 
     /* ---- panels (cards, emoji panel, menus) ---- */
-    GLASS_PANEL + '{background:var(--lg-panel)!important;-webkit-backdrop-filter:blur(var(--lg-blur)) saturate(170%);backdrop-filter:blur(var(--lg-blur)) saturate(170%);border:1px solid var(--lg-bd)!important;box-shadow:inset 0 1px 1px rgba(255,255,255,.45),0 14px 40px var(--lg-sh)!important}',
+    GLASS_PANEL + '{background:var(--lg-panel)!important;-webkit-backdrop-filter:blur(var(--lg-blur));backdrop-filter:blur(var(--lg-blur));border:1px solid var(--lg-bd)!important;box-shadow:inset 0 1px 1px rgba(255,255,255,.45),0 14px 40px var(--lg-sh)!important}',
     'html.lg .ov{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}',
-    'html.lg .status-bottom,html.lg .period-bottom{background:var(--lg-panel)!important;-webkit-backdrop-filter:blur(var(--lg-blur)) saturate(170%);backdrop-filter:blur(var(--lg-blur)) saturate(170%)}',
+    'html.lg .status-bottom,html.lg .period-bottom{background:var(--lg-panel)!important;-webkit-backdrop-filter:blur(var(--lg-blur));backdrop-filter:blur(var(--lg-blur))}',
 
     /* ---- top bars: slim, full width, glass ---- */
-    'html.lg .bar{background:var(--lg-bar)!important;-webkit-backdrop-filter:blur(var(--lg-blur)) saturate(180%);backdrop-filter:blur(var(--lg-blur)) saturate(180%);border-bottom:1px solid rgba(255,255,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 6px 18px var(--lg-sh);margin:0;border-radius:0 0 20px 20px}',
+    'html.lg .bar{background:var(--lg-bar)!important;-webkit-backdrop-filter:blur(var(--lg-blur));backdrop-filter:blur(var(--lg-blur));border-bottom:1px solid rgba(255,255,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 6px 18px var(--lg-sh);margin:0;border-radius:0 0 20px 20px}',
     'html.lg #vList,html.lg #vChat{padding-top:0}',
     'html.lg #vList>.bar,html.lg #vChat>.bar{padding-top:calc(var(--sa) + 6px)}',
 
@@ -50,7 +50,7 @@
     'html.lg #lgDock{position:absolute;left:0;right:0;bottom:0;z-index:6;display:flex;flex-direction:column;pointer-events:none}',
     'html.lg #lgDock>*{pointer-events:auto}',
     'html.lg #cf{background:transparent!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}',
-    'html.lg #cf .pill{background:linear-gradient(180deg,rgba(255,255,255,var(--lg-sheen)) 0%,rgba(255,255,255,.06) 50%),var(--lg-bg)!important;-webkit-backdrop-filter:blur(var(--lg-blur)) saturate(180%);backdrop-filter:blur(var(--lg-blur)) saturate(180%);border:1px solid var(--lg-bd)!important;box-shadow:inset 0 1px 1px rgba(255,255,255,.55),0 8px 22px var(--lg-sh)!important}',
+    'html.lg #cf .pill{background:linear-gradient(180deg,rgba(255,255,255,var(--lg-sheen)) 0%,rgba(255,255,255,.06) 50%),var(--lg-bg)!important;-webkit-backdrop-filter:blur(var(--lg-blur));backdrop-filter:blur(var(--lg-blur));border:1px solid var(--lg-bd)!important;box-shadow:inset 0 1px 1px rgba(255,255,255,.55),0 8px 22px var(--lg-sh)!important}',
     'html.lg #cf .pill textarea,html.lg #cf .pill .ic{color:var(--lg-ink)!important}',
     'html.lg #cf .pill textarea::placeholder{color:var(--lg-ink);opacity:.55}',
     'html.lg #cf .ic.g{width:46px;height:46px;border-radius:50%}',
@@ -116,8 +116,8 @@
 
     /* ---- settings: glass section ---- */
     '#lgPrev{position:relative;height:104px;border-radius:20px;overflow:hidden;margin:4px 0 12px;background:radial-gradient(circle at 18% 30%,#ff7ac6 0 22%,transparent 23%),radial-gradient(circle at 78% 70%,#5ec8ff 0 24%,transparent 25%),radial-gradient(circle at 55% 25%,#ffd36a 0 16%,transparent 17%),linear-gradient(135deg,#7b4bd8,#e0508a);display:flex;align-items:center;justify-content:center;gap:12px}',
-    '#lgPrev .pc{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:21px;box-sizing:border-box;background:linear-gradient(180deg,rgba(255,255,255,var(--lg-sheen)) 0%,rgba(255,255,255,.07) 42%,rgba(255,255,255,0) 62%),var(--lg-bg);border:1px solid var(--lg-bd);-webkit-backdrop-filter:blur(var(--lg-blur)) saturate(180%);backdrop-filter:blur(var(--lg-blur)) saturate(180%);box-shadow:inset 0 1px 1px rgba(255,255,255,.55),0 8px 22px var(--lg-sh);color:var(--lg-ink)}',
-    '#lgPrev .pp{height:48px;padding:0 20px;border-radius:24px;display:flex;align-items:center;font-size:14px;font-weight:600;box-sizing:border-box;background:linear-gradient(180deg,rgba(255,255,255,var(--lg-sheen)) 0%,rgba(255,255,255,.07) 42%,rgba(255,255,255,0) 62%),var(--lg-bg);border:1px solid var(--lg-bd);-webkit-backdrop-filter:blur(var(--lg-blur)) saturate(180%);backdrop-filter:blur(var(--lg-blur)) saturate(180%);box-shadow:inset 0 1px 1px rgba(255,255,255,.55),0 8px 22px var(--lg-sh);color:var(--lg-ink)}',
+    '#lgPrev .pc{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:21px;box-sizing:border-box;background:linear-gradient(180deg,rgba(255,255,255,var(--lg-sheen)) 0%,rgba(255,255,255,.07) 42%,rgba(255,255,255,0) 62%),var(--lg-bg);border:1px solid var(--lg-bd);-webkit-backdrop-filter:blur(var(--lg-blur));backdrop-filter:blur(var(--lg-blur));box-shadow:inset 0 1px 1px rgba(255,255,255,.55),0 8px 22px var(--lg-sh);color:var(--lg-ink)}',
+    '#lgPrev .pp{height:48px;padding:0 20px;border-radius:24px;display:flex;align-items:center;font-size:14px;font-weight:600;box-sizing:border-box;background:linear-gradient(180deg,rgba(255,255,255,var(--lg-sheen)) 0%,rgba(255,255,255,.07) 42%,rgba(255,255,255,0) 62%),var(--lg-bg);border:1px solid var(--lg-bd);-webkit-backdrop-filter:blur(var(--lg-blur));backdrop-filter:blur(var(--lg-blur));box-shadow:inset 0 1px 1px rgba(255,255,255,.55),0 8px 22px var(--lg-sh);color:var(--lg-ink)}',
     '.lgsl{padding:6px 4px 10px}.lgsl label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;color:var(--ink)}.lgsl label small{color:var(--dim);font-size:12px}',
     '.lgsl input[type=range]{width:100%;accent-color:var(--acc);height:28px;margin:0}'
   ].join('\n');
@@ -155,7 +155,7 @@
     s.setProperty('--lg-ink', ink);
     s.setProperty('--lg-bd', 'rgba(255,255,255,' + (0.55 - 0.27 * sh).toFixed(2) + ')');
     s.setProperty('--lg-sheen', (0.42 - 0.22 * sh).toFixed(2));
-    s.setProperty('--lg-blur', Math.round(6 + 34 * bl) + 'px');
+    s.setProperty('--lg-blur', Math.round(4 + 18 * bl) + 'px');
     s.setProperty('--lg-sh', 'rgba(20,8,40,' + (0.14 + 0.16 * sh).toFixed(2) + ')');
     /* bars stay purple (white text); shade only changes how see-through they are */
     s.setProperty('--lg-bar', 'linear-gradient(115deg,rgba(48,32,79,' + (0.45 + 0.45 * sh).toFixed(2) + '),rgba(107,62,158,' + (0.40 + 0.45 * sh).toFixed(2) + '))');

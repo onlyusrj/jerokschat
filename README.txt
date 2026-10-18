@@ -96,3 +96,13 @@ V49 LIQUID GLASS + BIG EMOJI + EMOJI SEARCH
 - One emoji sent alone is shown BIG with an animation (pop; hearts beat, laughing faces shake, fire flickers, party/stars spin) plus tiny floating emoji. 2-3 emoji alone are shown medium. Tap the big emoji to replay. Turned off by "reduce motion".
 - Emoji panel has a search bar (English names, plus words like sirippu / kadhal / muthham; flags by country name). Names come from Unicode, so very new emoji (2023+) may not be found by name but are still in the categories.
 - New files: liquid-glass.js, emoji-names.js. Cache v15: fully close and reopen the app once.
+
+V50 FAST CHATS + OLD MESSAGES + SAVED FILES + PLAIN BACKGROUND
+- Chat opens at once: the screen shows first, the room check runs quietly (after the first successful open on a phone), the security key is warmed up when you touch a chat row, and only the newest 50 messages are drawn (in one go, no layout thrash).
+- Older messages: a card at the top asks "Do you need old messages?" [Yes] [No]. Yes loads 50 more (repeat until none are left); No hides the card until you reopen the chat. Settings > Chats > Show old chats: "Ask me" (card) or "Auto-load" (older messages load when you scroll to the top). Nothing is deleted: it is all still in the cloud.
+- Saved files (service worker): photos, stickers, GIFs, voice notes and videos opened in chats are kept on the phone for 7 days, max 200 MB (oldest removed first), so reopening a chat uses no data. Settings > Chats shows the size and can clear them.
+- Liquid glass is lighter on phones: smaller blur (default ~8 px instead of 25 px), no extra colour boost layer. Old saved blur is capped once. Photos load lazily, voice-note waveforms decode only when on screen and are remembered.
+- Home background is now one solid colour. The faint "tiny boxes" were the browser dithering the old 3-colour gradient.
+- Firebase demo mode got get()/endBefore() so paging can be tested without Firebase.
+- Search/media views that read the open chat only see the messages loaded so far (50 + whatever you loaded).
+- Cache v16: fully close and reopen the app once on both phones.

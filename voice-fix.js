@@ -16,6 +16,12 @@
     return new Promise((res, rej) => { const p = OC.decodeAudioData(buf, res, rej); if (p && p.catch) p.catch(rej); });
   };
 
+  // remembered waveform + length per voice note (small, newest 150 kept)
+  const WK = 'onlyus-wf'; let WF = null;
+  const wkey = s => s.length > 90 ? s.length + ':' + s.slice(-70) : s;
+  const wfGet = k => { if (!WF) { try { WF = JSON.parse(localStorage.getItem(WK) || '{}'); } catch (e) { WF = {}; } } return WF[k]; };
+  const wfSet = (k, val) => { wfGet(k); WF[k] = val; const ks = Object.keys(WF); if (ks.length > 150) ks.slice(0, ks.length - 150).forEach(x => delete WF[x]); try { localStorage.setItem(WK, JSON.stringify(WF)); } catch (e) {} };
+
   const AU = new Map(), DUR = new Map(), PK = new Map();
   let playing = null;
 
@@ -45,16 +51,24 @@
     };
     dr(0); du.textContent = fmt(total());
 
-    // waveform + (for old voice notes) the true length, from the decoded audio
+    // waveform + (for old voice notes) the true length, from the decoded audio.
+    // v50: only when the bubble is on screen, and remembered on this phone so it is never decoded twice
+    const wk = wkey(src), saved = wfGet(wk);
+    if (saved) { if (!T && saved.t) { T = saved.t; DUR.set(src, T); } if (!pk && saved.p) { pk = saved.p.map(x => x / 100); PK.set(src, pk); } dr(0); du.textContent = fmt(total()); }
     if (!pk || !T) {
-      fetch(src).then(r => r.arrayBuffer()).then(decode).then(bf => {
+      const run = () => fetch(src).then(r => r.arrayBuffer()).then(decode).then(bf => {
         if (!T) { T = bf.duration; DUR.set(src, T); }
         const ch = bf.getChannelData(0), n = 45, s = Math.max(1, Math.floor(ch.length / n)), step = Math.max(1, Math.ceil(s / 200));
         const out = []; let mx = 0;
         for (let i = 0; i < n; i++) { let t = 0; for (let j = 0; j < s; j += step) t = Math.max(t, Math.abs(ch[i * s + j] || 0)); out.push(t); mx = Math.max(mx, t); }
         pk = out.map(v => v / (mx || 1)); PK.set(src, pk);
+        wfSet(wk, { t: T, p: pk.map(v => Math.round(v * 100)) });
         dr(ratio()); if (a.paused) du.textContent = fmt(total());
       }).catch(() => {});
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); run(); } }, { rootMargin: '120px' });
+        io.observe(w);
+      } else run();
     }
 
     a.ontimeupdate = () => { dr(ratio()); du.textContent = fmt(Math.min(a.currentTime, total() || a.currentTime)); };
