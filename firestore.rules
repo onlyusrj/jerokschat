@@ -71,6 +71,28 @@ service cloud.firestore {
       allow delete: if signedIn() && request.auth.uid == uid;
     }
 
+    // v59 Love Corner: server-side scheduled messages + daily care reminders (owner only; the Cloud Function reads them with admin rights).
+    match /lvSched/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['cid','fromUid','due','ttl','msg','createdAt'])
+        && request.resource.data.fromUid == request.auth.uid
+        && request.resource.data.due is int
+        && request.resource.data.msg.fromUid == request.auth.uid
+        && request.resource.data.msg.type == 'text'
+        && isMember(request.resource.data.cid);
+      allow read, delete: if signedIn() && resource.data.fromUid == request.auth.uid;
+      allow update: if false;
+    }
+    match /lvRules/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['cid','fromUid','toUid','kind','hm','tz','on','createdAt'])
+        && request.resource.data.fromUid == request.auth.uid
+        && isMember(request.resource.data.cid);
+      allow read, delete: if signedIn() && resource.data.fromUid == request.auth.uid;
+      allow update: if signedIn() && resource.data.fromUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['on']);
+    }
+
     match /chats/{cid} {
       // Non-members may only check a missing room; existing room metadata is members-only.
       allow get: if signedIn() && (!exists(/databases/$(database)/documents/chats/$(cid)) || request.auth.uid in resource.data.members);

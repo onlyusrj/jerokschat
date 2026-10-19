@@ -58,26 +58,62 @@
   }
   function attach(a, src) {   // gives the <audio> its local blob (once)
     if (a.__ready) return a.__ready;
-    a.__ready = getFile(src).then(f => { if (!a.__direct) a.src = f.url; return f; }).catch(err => { a.__ready = null; throw err; });
+    a.__ready = getFile(src).then(f => { a.__type = f.type; if (!a.__direct) a.src = f.url; return f; }).catch(err => { a.__ready = null; throw err; });
     return a.__ready;
   }
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  // v57: after play() resolves, check that the sound REALLY moves. If it is stuck (no progress), the element is reset and
+  // the voice note is downloaded again from scratch; if that fails too, the plain address is tried, then a toast shows details.
+  async function progressed(a) { const t0 = a.currentTime; await wait(1300); return a.paused || a.ended || a.currentTime > t0 + 0.05; }
+  const diag = a => 'ready ' + a.readyState + ', net ' + a.networkState + ', ' + (errName(a) || 'no error') + ', ' + (a.__type || 'unknown type') + (a.__direct ? ', direct' : '');
   async function startPlay(a, src) {
+    const step = async () => { await a.play(); return progressed(a); };
     try {
       if (!a.src) { try { await attach(a, src); } catch (e) { a.src = src; a.__direct = 1; } }
-      await a.play(); return true;
+      if (await step()) return true;
     } catch (err) {
       if (err && err.name === 'NotAllowedError') { toast('Tap play again'); return false; }
       if (err && err.name === 'AbortError') return false;
-      if (!a.__direct) { try { a.__direct = 1; a.src = src; a.load(); await a.play(); return true; } catch (e2) {} }
-      toast('Voice note cannot play: ' + (errName(a) || (err && (err.message || err.name)) || 'unknown error'));
-      return false;
     }
+    try {                                   // stuck or failed: reset the element and download again
+      a.pause(); FILES.delete(src); a.__ready = null; a.__direct = 0;
+      a.removeAttribute('src'); a.load();
+      await attach(a, src);
+      if (await step()) return true;
+    } catch (e2) {}
+    try {                                   // last try: the plain web address
+      a.pause(); a.__direct = 1; a.src = src; a.load();
+      if (await step()) return true;
+    } catch (e3) {}
+    toast('Voice note cannot play: ' + diag(a));
+    return false;
   }
 
   // same size for every voice note (they were stretched to the width of long reply quotes)
   const css = document.createElement('style');
   css.textContent = '.fxA{width:250px!important;min-width:0!important;max-width:100%!important;box-sizing:border-box}.fxA .fxW{flex:1 1 auto!important;min-width:0!important;width:auto!important}.fxA .fxP,.fxA .fxS{flex:none}.fxA small{flex:none;min-width:34px;text-align:right}';
   document.head.appendChild(css);
+
+  // v58: "read" voice notes + auto-play of the next one
+  const PK_KEY = 'onlyus-played', AUTO_KEY = 'onlyus-vauto';
+  let PLAYED = null;
+  const playedSet = () => { if (!PLAYED) { try { PLAYED = JSON.parse(localStorage.getItem(PK_KEY) || '[]'); } catch (e) { PLAYED = []; } if (!Array.isArray(PLAYED)) PLAYED = []; } return PLAYED; };
+  const isPlayed = k => playedSet().indexOf(k) >= 0;
+  const markPlayed = k => { const a = playedSet(); if (a.indexOf(k) >= 0) return false; a.push(k); if (a.length > 400) a.splice(0, a.length - 400); try { localStorage.setItem(PK_KEY, JSON.stringify(a)); } catch (e) {} return true; };
+  const autoOn = () => { try { return localStorage.getItem(AUTO_KEY) !== '0'; } catch (e) { return true; } };
+  // the next voice note right below this one (stops at any other kind of message), skipping ones already heard
+  function nextNote(w) {
+    const cur = w.closest && w.closest('.m'); if (!cur) return null;
+    let n = cur.nextElementSibling;
+    while (n) {
+      if (n.classList.contains('day')) { n = n.nextElementSibling; continue; }
+      const f = n.querySelector && n.querySelector('.fxA');
+      if (!f || f.__mine !== w.__mine) return null;
+      if (!f.__played()) return f;
+      n = n.nextElementSibling;
+    }
+    return null;
+  }
 
   function aud(d, m) {
     const src = m.url || m.data;
@@ -93,15 +129,22 @@
     pb.textContent = a.paused ? '▶' : '⏸';
     sp.textContent = a.playbackRate + '×';
 
+    const wk0 = wkey(src);
+    const accent = () => { try { w.style.color = 'var(--acc,#25d366)'; return getComputedStyle(w).color || '#25d366'; } catch (e) { return '#25d366'; } };
     const dr = pr => {
-      const x = cv.getContext('2d'), n = 45, bw = cv.width / n;
+      const x = cv.getContext('2d'), n = 45, bw = cv.width / n, acc = accent(), heard = isPlayed(wk0), moving = pr > 0;
       x.clearRect(0, 0, cv.width, cv.height);
       for (let i = 0; i < n; i++) {
         const v = pk ? pk[i] : .25 + .2 * Math.abs(Math.sin(i * 1.7 + src.length));
-        x.fillStyle = i / n <= pr ? '#ff8ad8' : '#ffffff66';
+        const done = i / n <= pr;
+        // never heard: grey. Heard: the chat's accent colour (from Settings). While playing: the played part is bright accent.
+        if (heard) { x.globalAlpha = moving && !done ? .4 : 1; x.fillStyle = acc; }
+        else { x.globalAlpha = 1; x.fillStyle = done && moving ? acc : '#ffffff66'; }
         const hh = Math.max(3, v * cv.height);
         x.fillRect(i * bw + 1, (cv.height - hh) / 2, bw - 2, hh);
       }
+      x.globalAlpha = 1;
+      w.classList.toggle('heard', heard);
     };
     dr(0); du.textContent = fmt(total());
 
@@ -119,27 +162,42 @@
       dr(ratio()); if (a.paused) du.textContent = fmt(total());
     }).catch(() => {});
     // when the bubble is on screen: download the voice note once (play-ready), then draw the waveform / length if needed
-    const onScreen = () => { attach(a, src).then(() => { if (!pk || !T) decodeWave(); }).catch(() => {}); };
+    const onScreen = () => { dr(ratio()); attach(a, src).then(() => { if (!pk || !T) decodeWave(); }).catch(() => {}); };
     if ('IntersectionObserver' in window) {
       const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); onScreen(); } }, { rootMargin: '120px' });
       io.observe(w);
     } else onScreen();
 
-    a.ontimeupdate = () => { dr(ratio()); du.textContent = fmt(Math.min(a.currentTime, total() || a.currentTime)); };
+    const meNum = (() => { try { return window.__us.me().num; } catch (e) { return null; } })();
+    w.__mine = !!meNum && m.from === meNum;
+    w.__played = () => isPlayed(wk0);
+    const heardNow = () => { if (markPlayed(wk0)) dr(ratio()); };
+    a.ontimeupdate = () => {
+      if (a.currentTime > 0.6) heardNow();            // started listening = "read"
+      dr(ratio()); du.textContent = fmt(Math.min(a.currentTime, total() || a.currentTime));
+    };
     a.onended = () => {
       if (!T) { T = a.currentTime; DUR.set(src, T); } // no other source: the real length is where playback ended
+      heardNow();
       pb.textContent = '▶'; a.currentTime = 0; dr(0); du.textContent = fmt(total());
+      if (playing === a) playing = null;
+      if (autoOn()) { const nx = nextNote(w); if (nx && nx.__start) setTimeout(() => nx.__start(), 250); }   // next voice note plays by itself
     };
     a.onpause = () => { pb.textContent = '▶'; };
     a.onplay = () => { pb.textContent = '⏸'; };
 
-    pb.onclick = async e => {
-      e.stopPropagation();
-      if (!a.paused) { a.pause(); pb.textContent = '▶'; return; }
+    const startNote = async () => {
+      if (!a.paused) return;
       if (playing && playing !== a) playing.pause();
       playing = a; pb.textContent = '⏸';
       const ok = await startPlay(a, src);
       if (!ok) { pb.textContent = '▶'; if (playing === a) playing = null; }
+    };
+    w.__start = startNote;
+    pb.onclick = async e => {
+      e.stopPropagation();
+      if (!a.paused) { a.pause(); pb.textContent = '▶'; return; }
+      startNote();
     };
     sp.onclick = e => { e.stopPropagation(); const r = a.playbackRate === 1 ? 1.5 : a.playbackRate === 1.5 ? 2 : 1; a.playbackRate = r; sp.textContent = r + '×'; };
     cv.onclick = e => {
@@ -181,6 +239,16 @@
       try { window.__us.toast(vttOn() ? 'Transcript on. If voice notes sound quiet, turn it off.' : 'Transcript off: clearer recording'); } catch (e) {}
     };
     paint();
+    const v = el('button', 'row'); v.id = 'vaRow'; v.type = 'button';
+    v.innerHTML = 'Auto-play next voice note<span id="vaSt"></span>';
+    after.parentNode.insertBefore(v, after);
+    const paint2 = () => { document.getElementById('vaSt').textContent = autoOn() ? 'On' : 'Off'; };
+    v.onclick = () => {
+      try { if (autoOn()) localStorage.setItem(AUTO_KEY, '0'); else localStorage.removeItem(AUTO_KEY); } catch (e) {}
+      paint2();
+      try { window.__us.toast(autoOn() ? 'Next voice note plays automatically' : 'Auto-play off'); } catch (e) {}
+    };
+    paint2();
   }
 
   mountRow();

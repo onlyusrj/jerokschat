@@ -157,3 +157,25 @@ V56 VOICE NOTE FIX 2 (voice-fix.js)
 - If the download itself fails, the plain web address is tried; if that fails too, a toast shows the real reason.
 - All voice notes now have the SAME size (before they stretched to the width of long reply quotes).
 - Cache v22: copy all files, fully close and reopen the app once.
+
+V57 VOICE NOTE FIX 3 (voice-fix.js)
+- After you press play the app now checks that the sound really moves. If it is stuck (the problem that only a restart fixed), the player is reset and the voice note is downloaded again from scratch, then the plain web address is tried. If all fail, a toast shows details (ready/net state, error, format).
+- Cache v23: copy all files, fully close and reopen the app once.
+
+V58 VOICE NOTES: "READ" COLOUR + AUTO-PLAY NEXT (voice-fix.js)
+- A voice note you have listened to (it started playing for more than half a second, or finished) is marked as heard on this phone. Its waveform then shows in the chat's accent colour (Settings > Chats > accent colour). Not heard yet = grey waveform. While playing, the part already played is bright and the rest is dimmed.
+- When a voice note finishes, the next voice note right below it that you have not heard plays by itself. It stops at the first message that is not a voice note, and never jumps between your voice notes and your partner's.
+- Settings > Chats has a new row "Auto-play next voice note" (On/Off).
+- Cache v24: copy all files, fully close and reopen the app once.
+
+V59 💞 LOVE CORNER (new file love-v59.js)
+Open it from: Chat tools (⋯) > 💞 Love Corner, or Our Space > 💞 Love Corner. The old ⏰ Schedule button now opens the new server-side scheduler.
+- 💓 Heartbeat: tap = one beat, hold = keeps beating (max ~15). Your partner gets a glowing heart, vibration and a soft "lub-dub" if the app is open, or a push (with a heartbeat vibration) if it is closed. Counters for both of you.
+- 🌦️ Heart weather: Sunny / Okay / Cloudy / Rainy / Stormy / Rainbow. A small badge shows next to the partner's name in the chat header for 24 h. Rainy or Stormy also sends a gentle "send some love" nudge to the partner (the other moods stay quiet).
+- 🌙 Good night: the button (floating chip in the chat + card in Love Corner) appears ONLY from 9 PM to 5 AM. It sends a sweet good-night message and when both of you have pressed it you both get a starry-night animation + chime and a night streak.
+- ⏰ Scheduled messages: now sent by the SERVER at the chosen time, even if both phones are off. The text is encrypted on your phone first (end-to-end stays on). Cancel any time in the list. (Old device-only schedules still fire if the app is open.)
+- 🥺 Miss-o-meter + 🎁 Our Wrapped: tap 🥺 any time (partner gets a push). Wrapped (This month / This year / All time) is a tap-through story: who talked more, "love you" count, WHO MISSED WHOM MORE (typed "miss you" / "miss pannuren" + 🥺 taps), who starts the chat, reply speed, night owls, favourite emoji, voice notes and photos, longest streak. Everything is calculated on the phone; nothing leaves the device.
+- 🍚 Care nudges: one tap asks Saptiya? / Thanni kudichiya? / Medicine edutiya? / Safe ah reach aayitiya? / Thoongala?  The partner answers with one tap (Ate ✅ / Not yet 🥺). Daily auto reminders at a time you choose (server, works with the app closed). Optional switch "Share my period tips with partner": the partner gets a daily sweet heads-up (day 1, period days, PMS days). Off by default, only the owner can switch it.
+- YOU MUST DEPLOY (once):  firebase deploy --only functions,firestore:rules
+  New rules: lvSched + lvRules (owner only). New functions: lvBeat, lvMiss, lvMood, lvCare, lvScheduler (every minute), lvCareScheduler (every 15 min), lvPeriodTips (hourly). Scheduled functions need the Blaze plan (you already use scheduled functions).
+- sw.js: notifications now vibrate (heartbeat pattern for 💓). Cache v25: copy all files, fully close and reopen the app once on both phones.
