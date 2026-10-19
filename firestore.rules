@@ -84,6 +84,21 @@ service cloud.firestore {
         && request.resource.data.createdAt is int;
       allow update, delete: if false;
 
+      // Status (24 h): members of the chat can read; only the author posts/deletes; a viewer may only add their own entry to `views`.
+      match /statuses/{sid} {
+        allow read: if isMember(cid);
+        allow create: if isMember(cid)
+          && request.resource.data.fromUid == request.auth.uid
+          && request.resource.data.keys().hasAll(['fromUid', 'ts', 'exp', 'type'])
+          && request.resource.data.type in ['img', 'vid', 'text']
+          && request.resource.data.ts is int
+          && request.resource.data.exp is int;
+        allow update: if isMember(cid)
+          && request.resource.data.fromUid == resource.data.fromUid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views']);
+        allow delete: if isMember(cid) && resource.data.fromUid == request.auth.uid;
+      }
+
       match /messages/{mid} {
         allow read: if isMember(cid);
         allow create: if isMember(cid)

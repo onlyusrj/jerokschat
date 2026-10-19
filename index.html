@@ -505,6 +505,12 @@ body::before,body::after,html::before,html::after,#vList::before,#vList::after{c
 .oldr{display:flex;gap:8px;justify-content:center;margin-top:8px}
 .oldr button{padding:6px 20px;border-radius:12px;border:0;font:inherit;font-weight:700;cursor:pointer;background:var(--acc);color:#fff}
 .oldr button.n{background:var(--line);color:var(--ink)}
+
+/* v53: chat opens without a blank flash */
+#vChat.ms-wait #ms{visibility:hidden}
+#vChat:not(.ms-wait) #ms{animation:msShow .16s ease-out}
+@keyframes msShow{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){#vChat:not(.ms-wait) #ms{animation:none}}
 </style>
 </head>
 <body>
@@ -614,7 +620,7 @@ const dig=s=>(s||'').replace(/\D/g,'');
 let me=LS.g('uc-me',null),contacts=LS.g('uc-contacts',[]),cur=null,cid='',unsub=[],msgs=new Map(),els=new Map(),first=true,lastTs=0,lastDay='',replyTo=null,delMe=new Set(),rec=null,hb=null,tyT=null,ty=0,peer=null,fs=null,auth=null,authUser=null;
 const toast=s=>{const t=$('toast');t.textContent=s;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',2500)};
 const show=id=>{document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==id))};
-window.__us={me:()=>me,toast,show,root:()=>cid?root():null,uid:()=>authUser&&authUser.uid,demo:()=>demo,save:()=>saveCloud(),setPhone:r=>setPhone(r),phone:()=>myPhone,fs:()=>fs,cid:()=>cid,cname:()=>cur&&cur.name,cuid:()=>cur&&cur.uid,contacts:()=>contacts,prep:c=>prepChat(c),send:o=>send(o),msgs:()=>msgs,els:()=>els,col:()=>col(),cur:()=>cur,list:()=>list(),ding:()=>ding()};
+window.__us={cidOf:c=>sha([me.num,c.num].sort().join('|')+'|'+c.code),me:()=>me,toast,show,root:()=>cid?root():null,uid:()=>authUser&&authUser.uid,demo:()=>demo,save:()=>saveCloud(),setPhone:r=>setPhone(r),phone:()=>myPhone,fs:()=>fs,cid:()=>cid,cname:()=>cur&&cur.name,cuid:()=>cur&&cur.uid,contacts:()=>contacts,prep:c=>prepChat(c),send:o=>send(o),msgs:()=>msgs,els:()=>els,col:()=>col(),cur:()=>cur,list:()=>list(),ding:()=>ding()};
 let myPhone='';
 // ---- phone number directory: phones/{sha256(number)} -> uid (number is NOT verified by SMS)
 const normPh=r=>{r=(r||'').trim();if(!/^(\+|00)/.test(r))return null;const d=r.replace(/\D/g,'').replace(/^00/,'');return d.length>=8&&d.length<=15?d:null};
@@ -765,7 +771,7 @@ function paintOld(){const ms=$('ms'),o=$('oldCard');if(o)o.remove();if(!cid||!ms
  ms.insertBefore(d,ms.firstChild)}
 function renderAll(keep){const ms=$('ms');ms.textContent='';els=new Map();lastDay='';lastTs=0;const fr=document.createDocumentFragment();
  [...msgs].sort((a,b)=>a[1].ts-b[1].ts).forEach(([id,m])=>{const e=bubble(m,id);if(!e)return;const d=fD(m.ts);if(d!=lastDay){lastDay=d;fr.appendChild(mkEl('div','day',d))}e.dataset.mid=id;fr.appendChild(e);els.set(id,e);lastTs=m.ts});
- ms.appendChild(fr);paintOld();if(!keep&&window.__toBottom)window.__toBottom(true)}
+ ms.appendChild(fr);paintOld();if(!keep&&window.__toBottom)window.__toBottom(true);$('vChat').classList.remove('ms-wait')}
 async function loadOlder(){if(oldBusy||!oldMore||!cid)return;oldBusy=true;const my=cid,ms=$('ms');
  /* remember which message is at the top of the screen so the view does not jump when older ones are added above it */
  let aId=null,aTop=0;{const mt=ms.getBoundingClientRect().top;for(const [id,e] of els){const r=e.getBoundingClientRect();if(r.bottom>mt+1){aId=id;aTop=r.top-mt;break}}}
@@ -780,7 +786,8 @@ async function prepChat(c){if(!c||!authUser)return false;cur=c;cid=await sha([me
 async function open(c){if(!authUser){show('vAuth');return}if(!c.uid){toast('Remove this old contact and add it again with your partner Firebase ID');return}cur=c;cid=await sha([me.num,c.num].sort().join('|')+'|'+c.code);if(window.__fx)await window.__fx.ready(c);window.__us.onopen&&window.__us.onopen();const rk='uc-room-'+cid;const roomCheck=async()=>{try{const room=await root().get();if(!room.exists){await root().set({members:[authUser.uid,c.uid],createdAt:Date.now()})}else if(!Array.isArray((room.data()||{}).members)||(room.data().members.indexOf(authUser.uid)<0)){LS.s(rk,0);toast('This account is not a member of this chat. Check the partner ID and shared code.');return false}LS.s(rk,1);return true}catch(e){if(LS.g(rk,0))return true;toast('Chat access blocked. Check Authentication and Firestore rules.');return false}};
  /* v50: this phone already verified the room once -> open instantly and re-check quietly (no server wait) */
  if(LS.g(rk,0)){roomCheck().then(ok=>{if(!ok&&cur===c)close()})}else if(!(await roomCheck()))return;msgs=new Map();els=new Map();first=true;oldMore=false;oldBusy=false;oldHide=false;lastTs=0;lastDay='';peer=null;replyTo=null;$('rep').style.display='none';
- delMe=new Set(LS.g('uc-del-'+cid,[]));$('ms').textContent='';$('cn').textContent=c.name;$('cav').textContent=c.name[0].toUpperCase();if(window.__pf)window.__pf.paint($('cav'),c.uid,c.name);$('cs').innerHTML='&nbsp;';show('vChat');if(window.__wpg)window.__wpg.apply();
+ delMe=new Set(LS.g('uc-del-'+cid,[]));$('ms').textContent='';$('cn').textContent=c.name;$('cav').textContent=c.name[0].toUpperCase();if(window.__pf)window.__pf.paint($('cav'),c.uid,c.name);$('cs').innerHTML='&nbsp;';{const vc=$('vChat');vc.classList.add('ms-wait');clearTimeout(window.__msw);window.__msw=setTimeout(()=>vc.classList.remove('ms-wait'),600)}
+ show('vChat');if(window.__wpg)window.__wpg.apply();
  /* v50: only the newest PAGE messages load when a chat opens; older ones come on request (card or scrolling up) */
  {const msEl=$('ms');if(!msEl.__oldScroll){msEl.__oldScroll=1;msEl.addEventListener('scroll',()=>{if(oldAuto()&&msEl.scrollTop<150)loadOlder()},{passive:true})}}
  unsub.push(col().orderBy('ts').limitToLast(PAGE).onSnapshot(...(demo?[]:[{includeMetadataChanges:true}]),snap=>{if(first&&snap.empty&&snap.metadata&&snap.metadata.fromCache&&!demo)return;let full=first,inc=false;
@@ -907,6 +914,7 @@ $('eb').onclick=()=>{const e=$('emo');if(e.style.display=='grid')e.style.display
 let onceOn=false;const takeOnce=()=>{const v=onceOn;onceOn=false;$('ob').classList.remove('on');return v};$('ob').onclick=()=>{onceOn=!onceOn;$('ob').classList.toggle('on',onceOn);toast(onceOn?'Next photo or video: view once':'View once off')};
 const CLOUDINARY_CLOUD='hb5szrd0',CLOUDINARY_PRESET='onlyus_chat',MAX_MEDIA=50*1024*1024;
 const upl=async(blob,type,raw)=>{if(blob.size>MAX_MEDIA)throw new Error('MAX_SIZE');const fd=new FormData();fd.append('file',blob,blob.name||('onlyus-'+Date.now()));fd.append('upload_preset',CLOUDINARY_PRESET);fd.append('folder','onlyus/chat/'+(cid||'unknown'));const resource=raw?'raw':type&&type.startsWith('video/')?'video':type&&type.startsWith('audio/')?'video':'image';const ep='https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/'+resource+'/upload';toast('Uploading… 0%');const xhr=new XMLHttpRequest();const result=await new Promise((resolve,reject)=>{xhr.open('POST',ep);xhr.upload.onprogress=e=>{if(e.lengthComputable)toast('Uploading… '+Math.round(e.loaded/e.total*100)+'%')};xhr.onload=()=>{try{const j=JSON.parse(xhr.responseText||'{}');if(xhr.status>=200&&xhr.status<300&&j.secure_url)resolve(j);else reject(new Error(j.error?.message||'Cloudinary upload failed'))}catch(err){reject(err)}};xhr.onerror=()=>reject(new Error('Network error during upload'));xhr.send(fd)});return{url:result.secure_url,cloudinaryId:result.public_id,resourceType:result.resource_type,format:result.format||'',bytes:result.bytes||blob.size}};
+window.__upl=upl;
 window.__sendMedia=async(f,once)=>{if(!f||!cid)return;once=!!once;
  try{if(f.size>MAX_MEDIA)return toast('File too big. Max 50 MB.');
   if(!/^(image|video)\//.test(f.type))return send(Object.assign({type:'doc',fileName:f.name,fileSize:f.size,mime:f.type||''},await upl(f,f.type,true)));
@@ -1871,5 +1879,6 @@ $('setb').addEventListener('click',stat);stat();
 <script src="chat-speed.js"></script>
 <script src="chat-v51.js"></script>
 <script src="home-v52.js"></script>
+<script src="status-v53.js"></script>
 </body>
 </html>

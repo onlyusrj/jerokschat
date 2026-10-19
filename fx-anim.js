@@ -27,7 +27,7 @@ const css=`
 @media (prefers-reduced-motion:no-preference){
 .ov.on,.hub-view.on{animation:fxFade .24s ease both}
 .ov.on>.card,.ov.on>.games-card,.ov.on>.tools-card{animation:fxCard .36s cubic-bezier(.2,.9,.3,1.12) both}
-.view.on{animation:fxFade .26s ease both}
+/* v53: removed .view.on fxFade (it faded every screen up from transparent = visible blink). Slide transitions live in home-v52.js */
 #viewer.on #vi,#viewer.on #vv{animation:fxZoom .32s cubic-bezier(.2,.9,.3,1.1) both}
 #viewer.on #vdl{animation:fxRise .4s .15s both}
 ${gen(RISE,'fxRise .46s cubic-bezier(.2,.8,.2,1)')}${gen(POP,'fxPop .45s cubic-bezier(.2,.9,.3,1.2)')}${gen(SLIDE,'fxSlide .4s ease')}

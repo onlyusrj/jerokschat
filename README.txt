@@ -128,3 +128,14 @@ V52 HOME SCREEN, TABS, CALL ICONS
 - Period moved into Our Space (the heart button): Our Space > Period opens the Period calendar. Back returns to Chats.
 - Chat header call buttons are now WhatsApp-style icons (phone handset, video camera).
 - New file home-v52.js. Cache v18: fully close and reopen the app once on both phones.
+
+V53 STATUS (WhatsApp style) + NO-BLINK SCREENS
+- Blink fixed: fx-anim.js faded every screen up from transparent (.view.on fxFade), and v52 slid screens with a fade too. Screens now only slide, and the chat message area fades in by itself once messages are drawn.
+- Status tab rebuilt like WhatsApp: "My status" row (+ button, count and time), "Recent updates" and "Viewed updates" with a ring around each photo (one segment per status, grey once viewed).
+- Post a photo, a video (up to 30 s, max 50 MB) or a text status (coloured backgrounds, tap the palette). Camera or gallery, several photos at once, a caption for each. Lasts 24 hours.
+- Your partner sees it in her Status tab, as a coloured ring around your photo in her chat list, and a dot on the Status tab. Tapping the ringed photo opens the status.
+- Viewer: progress bars, tap right/left for next/previous, hold to pause, swipe down or back to close. On your own status you see "Seen by ...". The trash button deletes it for everyone.
+- Stored in Firestore: chats/{chatId}/statuses/{id}. firestore.rules has a new block for it -> DEPLOY:  firebase deploy --only firestore:rules
+- Text statuses are encrypted like chat text when end-to-end is on; photos and videos go to Cloudinary like chat media.
+- Status is posted into every chat you have (one entry per chat, deleted together). No push notification yet for a new status (the dot / ring show when the app is open).
+- New file status-v53.js. Cache v19: fully close and reopen the app once on both phones.

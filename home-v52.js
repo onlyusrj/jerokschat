@@ -22,12 +22,12 @@
     '#cl,.status-list,.gv-grid,.period-scroll,.hub-content,#ms,.ci-body{overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}',
 
     /* ---- screen transitions ---- */
-    '@keyframes vtFR{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}',
-    '@keyframes vtFL{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:none}}',
-    '@keyframes vtUP{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}',
-    '.view.vt-fr{animation:vtFR .3s cubic-bezier(.2,.8,.2,1) backwards}',
-    '.view.vt-fl{animation:vtFL .3s cubic-bezier(.2,.8,.2,1) backwards}',
-    '.view.vt-up{animation:vtUP .28s cubic-bezier(.2,.8,.2,1) backwards}',
+    '@keyframes vtFR{from{transform:translateX(26px)}to{transform:none}}',
+    '@keyframes vtFL{from{transform:translateX(-26px)}to{transform:none}}',
+    '@keyframes vtUP{from{transform:translateY(10px)}to{transform:none}}',
+    '.view.vt-fr{animation:vtFR .26s cubic-bezier(.2,.8,.2,1) backwards}',
+    '.view.vt-fl{animation:vtFL .26s cubic-bezier(.2,.8,.2,1) backwards}',
+    '.view.vt-up{animation:vtUP .24s cubic-bezier(.2,.8,.2,1) backwards}',
     '@media(prefers-reduced-motion:reduce){.view.vt-fr,.view.vt-fl,.view.vt-up{animation:none}}',
 
     /* ---- header: Only Us + bigger icons ---- */
