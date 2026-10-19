@@ -25,9 +25,10 @@
   const AU = new Map(), DUR = new Map(), PK = new Map();
   let playing = null;
 
-  // v55: voice notes that will not play. Some files (e.g. recorded on an iPhone, or served with the wrong type / range
-  // headers by the CDN or the service worker) fail when the <audio> loads the web address directly. Fallback: download the
-  // file, tell the browser its real format from the first bytes, and play it from a local blob. Real errors are shown.
+  // v56: voice notes are small, so each one is downloaded ONCE, its real format is read from the first bytes, and it is
+  // played from a local blob. The same download gives the waveform and the length. This avoids CDN / service-worker range and
+  // content-type problems that made some voice notes silent. If the download fails we fall back to the plain web address
+  // and any real error is shown in a toast (instead of the play button silently going back).
   const sniff = u8 => {
     const t = (o, str) => str.split('').every((c, i) => u8[o + i] === c.charCodeAt(0));
     if (u8.length > 11 && t(4, 'ftyp')) return 'audio/mp4';
@@ -39,32 +40,49 @@
   };
   const toast = m => { try { window.__us.toast(m); } catch (e) {} };
   const errName = a => { const c = a && a.error && a.error.code; return ({ 1: 'aborted', 2: 'network', 3: 'decode', 4: 'format not supported' })[c] || ''; };
-  const tried = new WeakSet();
-  async function safePlay(a, src) {
-    try { await a.play(); return true; }
-    catch (err) {
+  const FILES = new Map();   // src -> Promise<{url,type}>
+  function getFile(src) {
+    let p = FILES.get(src);
+    if (!p) {
+      p = fetch(src).then(r => {
+        if (!r.ok) throw new Error('download ' + r.status);
+        return r.arrayBuffer().then(buf => ({ buf, ct: r.headers.get('content-type') || '' }));
+      }).then(o => {
+        if (!o.buf.byteLength) throw new Error('empty file');
+        const type = sniff(new Uint8Array(o.buf.slice(0, 16))) || o.ct || 'audio/webm';
+        return { url: URL.createObjectURL(new Blob([o.buf], { type })), type };
+      });
+      FILES.set(src, p); p.catch(() => FILES.delete(src));
+    }
+    return p;
+  }
+  function attach(a, src) {   // gives the <audio> its local blob (once)
+    if (a.__ready) return a.__ready;
+    a.__ready = getFile(src).then(f => { if (!a.__direct) a.src = f.url; return f; }).catch(err => { a.__ready = null; throw err; });
+    return a.__ready;
+  }
+  async function startPlay(a, src) {
+    try {
+      if (!a.src) { try { await attach(a, src); } catch (e) { a.src = src; a.__direct = 1; } }
+      await a.play(); return true;
+    } catch (err) {
       if (err && err.name === 'NotAllowedError') { toast('Tap play again'); return false; }
       if (err && err.name === 'AbortError') return false;
-    }
-    if (tried.has(a)) { toast('Voice note cannot play (' + (errName(a) || 'unknown error') + ')'); return false; }
-    tried.add(a);
-    try {
-      toast('Loading voice note…');
-      const r = await fetch(src); if (!r.ok) throw new Error('download ' + r.status);
-      const buf = await r.arrayBuffer(); if (!buf.byteLength) throw new Error('empty file');
-      const type = sniff(new Uint8Array(buf.slice(0, 16))) || r.headers.get('content-type') || 'audio/webm';
-      a.src = URL.createObjectURL(new Blob([buf], { type })); a.load();
-      await a.play(); return true;
-    } catch (err2) {
-      toast('Voice note cannot play: ' + (errName(a) || (err2 && (err2.message || err2.name)) || 'unknown error'));
+      if (!a.__direct) { try { a.__direct = 1; a.src = src; a.load(); await a.play(); return true; } catch (e2) {} }
+      toast('Voice note cannot play: ' + (errName(a) || (err && (err.message || err.name)) || 'unknown error'));
       return false;
     }
   }
 
+  // same size for every voice note (they were stretched to the width of long reply quotes)
+  const css = document.createElement('style');
+  css.textContent = '.fxA{width:250px!important;min-width:0!important;max-width:100%!important;box-sizing:border-box}.fxA .fxW{flex:1 1 auto!important;min-width:0!important;width:auto!important}.fxA .fxP,.fxA .fxS{flex:none}.fxA small{flex:none;min-width:34px;text-align:right}';
+  document.head.appendChild(css);
+
   function aud(d, m) {
     const src = m.url || m.data;
     let a = AU.get(src);
-    if (!a) { a = new Audio(); a.preload = 'metadata'; a.src = src; AU.set(src, a); }
+    if (!a) { a = new Audio(); a.preload = 'auto'; AU.set(src, a); }
     const w = el('div', 'fxA'), pb = el('button', 'fxP', '▶'), cv = el('canvas', 'fxW'), sp = el('button', 'fxS', '1×'), du = el('small', '', '');
     pb.type = sp.type = 'button'; cv.width = 180; cv.height = 34;
     w.append(pb, cv, sp, du); d.appendChild(w);
@@ -91,21 +109,21 @@
     // v50: only when the bubble is on screen, and remembered on this phone so it is never decoded twice
     const wk = wkey(src), saved = wfGet(wk);
     if (saved) { if (!T && saved.t) { T = saved.t; DUR.set(src, T); } if (!pk && saved.p) { pk = saved.p.map(x => x / 100); PK.set(src, pk); } dr(0); du.textContent = fmt(total()); }
-    if (!pk || !T) {
-      const run = () => fetch(src).then(r => r.arrayBuffer()).then(decode).then(bf => {
-        if (!T) { T = bf.duration; DUR.set(src, T); }
-        const ch = bf.getChannelData(0), n = 45, s = Math.max(1, Math.floor(ch.length / n)), step = Math.max(1, Math.ceil(s / 200));
-        const out = []; let mx = 0;
-        for (let i = 0; i < n; i++) { let t = 0; for (let j = 0; j < s; j += step) t = Math.max(t, Math.abs(ch[i * s + j] || 0)); out.push(t); mx = Math.max(mx, t); }
-        pk = out.map(v => v / (mx || 1)); PK.set(src, pk);
-        wfSet(wk, { t: T, p: pk.map(v => Math.round(v * 100)) });
-        dr(ratio()); if (a.paused) du.textContent = fmt(total());
-      }).catch(() => {});
-      if ('IntersectionObserver' in window) {
-        const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); run(); } }, { rootMargin: '120px' });
-        io.observe(w);
-      } else run();
-    }
+    const decodeWave = () => getFile(src).then(f => fetch(f.url)).then(r => r.arrayBuffer()).then(decode).then(bf => {
+      if (!T) { T = bf.duration; DUR.set(src, T); }
+      const ch = bf.getChannelData(0), n = 45, s = Math.max(1, Math.floor(ch.length / n)), step = Math.max(1, Math.ceil(s / 200));
+      const out = []; let mx = 0;
+      for (let i = 0; i < n; i++) { let t = 0; for (let j = 0; j < s; j += step) t = Math.max(t, Math.abs(ch[i * s + j] || 0)); out.push(t); mx = Math.max(mx, t); }
+      pk = out.map(v => v / (mx || 1)); PK.set(src, pk);
+      wfSet(wk, { t: T, p: pk.map(v => Math.round(v * 100)) });
+      dr(ratio()); if (a.paused) du.textContent = fmt(total());
+    }).catch(() => {});
+    // when the bubble is on screen: download the voice note once (play-ready), then draw the waveform / length if needed
+    const onScreen = () => { attach(a, src).then(() => { if (!pk || !T) decodeWave(); }).catch(() => {}); };
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); onScreen(); } }, { rootMargin: '120px' });
+      io.observe(w);
+    } else onScreen();
 
     a.ontimeupdate = () => { dr(ratio()); du.textContent = fmt(Math.min(a.currentTime, total() || a.currentTime)); };
     a.onended = () => {
@@ -115,14 +133,13 @@
     a.onpause = () => { pb.textContent = '▶'; };
     a.onplay = () => { pb.textContent = '⏸'; };
 
-    pb.onclick = e => {
+    pb.onclick = async e => {
       e.stopPropagation();
-      if (a.paused) {
-        if (playing && playing !== a) playing.pause();
-        playing = a;
-        pb.textContent = '⏸';
-        safePlay(a, src).then(ok => { if (!ok) { pb.textContent = '▶'; if (playing === a) playing = null; } });
-      } else { a.pause(); pb.textContent = '▶'; }
+      if (!a.paused) { a.pause(); pb.textContent = '▶'; return; }
+      if (playing && playing !== a) playing.pause();
+      playing = a; pb.textContent = '⏸';
+      const ok = await startPlay(a, src);
+      if (!ok) { pb.textContent = '▶'; if (playing === a) playing = null; }
     };
     sp.onclick = e => { e.stopPropagation(); const r = a.playbackRate === 1 ? 1.5 : a.playbackRate === 1.5 ? 2 : 1; a.playbackRate = r; sp.textContent = r + '×'; };
     cv.onclick = e => {

@@ -151,3 +151,9 @@ V54 SOUNDS (new file sounds-v54.js + 3 audio files)
 V55 VOICE NOTE PLAY FIX (voice-fix.js)
 - If a voice note will not play from its web address, the app now downloads it, detects its real format (mp4 / webm / ogg / mp3) and plays it from the phone's memory. If that also fails, the real reason is shown in a small toast (for example "format not supported") instead of silently doing nothing.
 - Cache v21: copy the files, fully close and reopen the app once.
+
+V56 VOICE NOTE FIX 2 (voice-fix.js)
+- Every voice note is now downloaded ONCE when its bubble is on screen, the real format is read from the file header, and it plays from the phone's memory (no more problems with CDN / service-worker range requests). The same download draws the waveform and the length.
+- If the download itself fails, the plain web address is tried; if that fails too, a toast shows the real reason.
+- All voice notes now have the SAME size (before they stretched to the width of long reply quotes).
+- Cache v22: copy all files, fully close and reopen the app once.
