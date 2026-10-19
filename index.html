@@ -790,7 +790,7 @@ async function open(c){if(!authUser){show('vAuth');return}if(!c.uid){toast('Remo
  show('vChat');if(window.__wpg)window.__wpg.apply();
  /* v50: only the newest PAGE messages load when a chat opens; older ones come on request (card or scrolling up) */
  {const msEl=$('ms');if(!msEl.__oldScroll){msEl.__oldScroll=1;msEl.addEventListener('scroll',()=>{if(oldAuto()&&msEl.scrollTop<150)loadOlder()},{passive:true})}}
- unsub.push(col().orderBy('ts').limitToLast(PAGE).onSnapshot(...(demo?[]:[{includeMetadataChanges:true}]),snap=>{if(first&&snap.empty&&snap.metadata&&snap.metadata.fromCache&&!demo)return;let full=first,inc=false;
+ unsub.push(col().orderBy('ts').limitToLast(PAGE).onSnapshot(...(demo?[]:[{includeMetadataChanges:true}]),snap=>{if(first&&snap.empty&&snap.metadata&&snap.metadata.fromCache&&!demo)return;let full=first,inc=false,incMedia=false;
   if(first)oldMore=snap.size>=PAGE;
   for(const ch of snap.docChanges({includeMetadataChanges:true})){const id=ch.doc.id,m=window.__fx?window.__fx.inn(ch.doc.data()):ch.doc.data();m.__p=!!(ch.doc.metadata&&ch.doc.metadata.hasPendingWrites);
    if(ch.type=='removed'){if(snap.size>=PAGE&&ch.oldIndex===0)continue; /* window slid forward: keep the older message on screen */ msgs.delete(id);const e=els.get(id);if(e)e.remove();els.delete(id);continue}
@@ -801,9 +801,9 @@ async function open(c){if(!authUser){show('vAuth');return}if(!c.uid){toast('Remo
     else{const n=bubble(m,id);if(e&&n){n.style.animation='none';e.replaceWith(n)}if(n){n.dataset.mid=id;els.set(id,n)}}
     /* v51: the send sound plays exactly when the clock turns into the first tick */
     if(prevM&&prevM.__p&&!m.__p&&m.from===me.num)premiumSound('send')}
-   else{if(!first&&m.from!==me.num)inc=true;if(m.ts>=lastTs&&!full)add(m,id);else full=true;if(demo&&!first&&!m.__p&&m.from===me.num)premiumSound('send')}}
+   else{if(!first&&m.from!==me.num){inc=true;if(m.type=='aud'||m.type=='img'||m.type=='vid')incMedia=true}if(m.ts>=lastTs&&!full)add(m,id);else full=true;if(demo&&!first&&!m.__p&&m.from===me.num)premiumSound('send')}}
   if(full)renderAll();
-  if(inc&&!mutedLocal()){ding();if(document.hidden&&'Notification' in window&&Notification.permission=='granted'){note(window.__nhHide&&window.__nhHide()?'OnlyUs':c.name,'New message')}}
+  if(inc&&!mutedLocal()){if(incMedia)premiumSound('media');else ding();if(document.hidden&&'Notification' in window&&Notification.permission=='granted'){note(window.__nhHide&&window.__nhHide()?'OnlyUs':c.name,'New message')}}
   first=false;seen()},e=>toast('Connection problem. Check internet and Firestore rules.')));
  unsub.push(pres().doc(c.uid).onSnapshot(s=>{peer=s.data()||null;stat()}));beat(0);hb=setInterval(()=>{if(document.visibilityState=='visible'){beat(0);stat()}},15000)}
 function mutedLocal(){try{return JSON.parse(localStorage.getItem('onlyus-muted')||'{}')[cid]===true}catch(e){return false}}
@@ -1879,6 +1879,6 @@ $('setb').addEventListener('click',stat);stat();
 <script src="chat-speed.js"></script>
 <script src="chat-v51.js"></script>
 <script src="home-v52.js"></script>
-<script src="status-v53.js"></script>
+<script src="status-v53.js"></script><script src="sounds-v54.js"></script>
 </body>
 </html>

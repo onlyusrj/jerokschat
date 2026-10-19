@@ -139,3 +139,11 @@ V53 STATUS (WhatsApp style) + NO-BLINK SCREENS
 - Text statuses are encrypted like chat text when end-to-end is on; photos and videos go to Cloudinary like chat media.
 - Status is posted into every chat you have (one entry per chat, deleted together). No push notification yet for a new status (the dot / ring show when the app is open).
 - New file status-v53.js. Cache v19: fully close and reopen the app once on both phones.
+
+V54 SOUNDS (new file sounds-v54.js + 3 audio files)
+- sound_send.mp3: your cleaned WhatsApp send sound. Plays exactly when your message gets its first tick (not before).
+- sound_media.mp3: one single beep (cut from your 3-beep file). Plays when your partner sends a voice note / photo / video while you are inside that chat.
+- ringtone.mp3: "Shape of You" rings in a loop on an incoming voice or video call, stops when you answer / decline / the call ends.
+- All three respect the existing Sound switch. If the phone blocks auto-play, the old ringtone is used as a fallback.
+- ANDROID STUDIO: in your WebView setup add  webView.settings.mediaPlaybackRequiresUserGesture = false  so the ringtone can start by itself when a call comes in.
+- Copy ALL files (including the 3 .mp3) into the assets folder. Cache v20: fully close and reopen the app once.
