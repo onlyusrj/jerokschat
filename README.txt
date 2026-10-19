@@ -147,3 +147,7 @@ V54 SOUNDS (new file sounds-v54.js + 3 audio files)
 - All three respect the existing Sound switch. If the phone blocks auto-play, the old ringtone is used as a fallback.
 - ANDROID STUDIO: in your WebView setup add  webView.settings.mediaPlaybackRequiresUserGesture = false  so the ringtone can start by itself when a call comes in.
 - Copy ALL files (including the 3 .mp3) into the assets folder. Cache v20: fully close and reopen the app once.
+
+V55 VOICE NOTE PLAY FIX (voice-fix.js)
+- If a voice note will not play from its web address, the app now downloads it, detects its real format (mp4 / webm / ogg / mp3) and plays it from the phone's memory. If that also fails, the real reason is shown in a small toast (for example "format not supported") instead of silently doing nothing.
+- Cache v21: copy the files, fully close and reopen the app once.

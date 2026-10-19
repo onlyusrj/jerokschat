@@ -61,7 +61,7 @@ async function mediaFetch(e){
   return fetch(r);
 }
 // ---- offline app shell (network first for our files, cache first for SDK/CDN files)
-const SHELL='onlyus-shell-v20';
+const SHELL='onlyus-shell-v21';
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(SHELL).then(c=>c.addAll(['./','./index.html','./nacl-fast.min.js','./jszip.min.js','./qr-gen.js','./ai-chat.js','./couple-plus.js','./fx-anim.js','./wallpaper-gallery.js','./stickers-pack.js','./notify-privacy.js','./voice-fix.js','./emoji-names.js','./liquid-glass.js','./chat-speed.js','./chat-v51.js','./home-v52.js','./status-v53.js','./sounds-v54.js','./sound_send.mp3','./sound_media.mp3','./ringtone.mp3','./profile-ui.js','./manifest.json','./icon-192.png','./icon-512.png','./icon-maskable-512.png','./apple-touch-icon.png','./firebase-config.js']).catch(()=>{})))});
 self.addEventListener('activate',e=>{e.waitUntil(Promise.all([clients.claim(),caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('onlyus-shell-')&&k!==SHELL).map(k=>caches.delete(k))))]))});
 self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url),own=u.origin===location.origin,cdn=['www.gstatic.com','fonts.gstatic.com','fonts.googleapis.com','cdnjs.cloudflare.com'].includes(u.hostname);if(!own&&isMedia(u)){e.respondWith(mediaFetch(e));return}if(!own&&!cdn)return;

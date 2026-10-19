@@ -25,6 +25,42 @@
   const AU = new Map(), DUR = new Map(), PK = new Map();
   let playing = null;
 
+  // v55: voice notes that will not play. Some files (e.g. recorded on an iPhone, or served with the wrong type / range
+  // headers by the CDN or the service worker) fail when the <audio> loads the web address directly. Fallback: download the
+  // file, tell the browser its real format from the first bytes, and play it from a local blob. Real errors are shown.
+  const sniff = u8 => {
+    const t = (o, str) => str.split('').every((c, i) => u8[o + i] === c.charCodeAt(0));
+    if (u8.length > 11 && t(4, 'ftyp')) return 'audio/mp4';
+    if (u8[0] === 0x1A && u8[1] === 0x45 && u8[2] === 0xDF && u8[3] === 0xA3) return 'audio/webm';
+    if (t(0, 'OggS')) return 'audio/ogg';
+    if (t(0, 'RIFF')) return 'audio/wav';
+    if (t(0, 'ID3') || (u8[0] === 0xFF && (u8[1] & 0xE0) === 0xE0)) return 'audio/mpeg';
+    return '';
+  };
+  const toast = m => { try { window.__us.toast(m); } catch (e) {} };
+  const errName = a => { const c = a && a.error && a.error.code; return ({ 1: 'aborted', 2: 'network', 3: 'decode', 4: 'format not supported' })[c] || ''; };
+  const tried = new WeakSet();
+  async function safePlay(a, src) {
+    try { await a.play(); return true; }
+    catch (err) {
+      if (err && err.name === 'NotAllowedError') { toast('Tap play again'); return false; }
+      if (err && err.name === 'AbortError') return false;
+    }
+    if (tried.has(a)) { toast('Voice note cannot play (' + (errName(a) || 'unknown error') + ')'); return false; }
+    tried.add(a);
+    try {
+      toast('Loading voice note…');
+      const r = await fetch(src); if (!r.ok) throw new Error('download ' + r.status);
+      const buf = await r.arrayBuffer(); if (!buf.byteLength) throw new Error('empty file');
+      const type = sniff(new Uint8Array(buf.slice(0, 16))) || r.headers.get('content-type') || 'audio/webm';
+      a.src = URL.createObjectURL(new Blob([buf], { type })); a.load();
+      await a.play(); return true;
+    } catch (err2) {
+      toast('Voice note cannot play: ' + (errName(a) || (err2 && (err2.message || err2.name)) || 'unknown error'));
+      return false;
+    }
+  }
+
   function aud(d, m) {
     const src = m.url || m.data;
     let a = AU.get(src);
@@ -84,8 +120,8 @@
       if (a.paused) {
         if (playing && playing !== a) playing.pause();
         playing = a;
-        const p = a.play(); if (p && p.catch) p.catch(() => { pb.textContent = '▶'; });
         pb.textContent = '⏸';
+        safePlay(a, src).then(ok => { if (!ok) { pb.textContent = '▶'; if (playing === a) playing = null; } });
       } else { a.pause(); pb.textContent = '▶'; }
     };
     sp.onclick = e => { e.stopPropagation(); const r = a.playbackRate === 1 ? 1.5 : a.playbackRate === 1.5 ? 2 : 1; a.playbackRate = r; sp.textContent = r + '×'; };
