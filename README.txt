@@ -118,3 +118,13 @@ V51 SEND FIX + CONTACT INFO + WHATSAPP CALL SCREENS
 - Incoming call screen: full screen, caller photo/name, round red Decline and green Answer buttons. Back key is ignored while ringing / in a call.
 - Ringtone: with the Android bridge (see ANDROID-BRIDGE.txt) the PHONE'S OWN ringtone and vibration play, following silent/vibrate mode. In a normal browser a built-in ring tone is used. The caller hears a soft ring-back tone while "Ringing...".
 - New file chat-v51.js. Cache v17: fully close and reopen the app once on both phones.
+
+V52 HOME SCREEN, TABS, CALL ICONS
+- Home header: "Only Us" on top; under it one row of bigger buttons: Settings, Sounds, Theme, Our Space, New chat. (The Rok/Jeru name and the tagline are gone. The Games button moved to the bottom tabs.)
+- Bottom tabs are now Chats | Status | Games with one shared bar and a sliding highlight. Tap the active tab to scroll to the top.
+- Swipe right-to-left to go to the next tab, left-to-right to go back. The screen follows your finger, then slides in. (Not on inputs, the calendar, canvases or sideways-scrolling strips.)
+- All screen changes slide/fade softly, and every button/row gives a small press animation.
+- Games tab: cards for all 9 live games. Tap one: it asks for the chat if needed, opens the games hub and sends the game request.
+- Period moved into Our Space (the heart button): Our Space > Period opens the Period calendar. Back returns to Chats.
+- Chat header call buttons are now WhatsApp-style icons (phone handset, video camera).
+- New file home-v52.js. Cache v18: fully close and reopen the app once on both phones.
