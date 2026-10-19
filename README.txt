@@ -106,3 +106,15 @@ V50 FAST CHATS + OLD MESSAGES + SAVED FILES + PLAIN BACKGROUND
 - Firebase demo mode got get()/endBefore() so paging can be tested without Firebase.
 - Search/media views that read the open chat only see the messages loaded so far (50 + whatever you loaded).
 - Cache v16: fully close and reopen the app once on both phones.
+
+V51 SEND FIX + CONTACT INFO + WHATSAPP CALL SCREENS
+- Flicker fix: every time the tick changed (clock -> sent -> delivered -> read) the whole message bubble was rebuilt and its pop-in animation replayed, so it blinked. Now only the tick is updated in place and the pop-in plays once, for brand-new messages only. Also the send button is no longer disabled while sending.
+- Send sound: it no longer plays the moment you press send. It plays when the clock turns into the first tick (sent to the server). Offline messages stay on the clock, silent, and the sound plays when they are finally sent.
+- Contact info page: tap the name or photo in the chat header. Audio / Video / Search buttons, About, Mute notifications, Media-links-docs, Starred, Disappearing messages, Advanced chat privacy, Chat theme, Encryption (security code to compare on both phones), Add to Favorites, Add to list, Export chat, Clear chat, Delete chat.
+  * Advanced chat privacy (per chat, this phone): blocks Export chat and the photo/video Save button. It cannot block screenshots.
+  * Favorites show a heart in the chat list. Lists show as filter chips above the chat list.
+  * Delete chat removes the chat from your list (messages stay in the cloud, add it again with the same code). Clear chat hides the loaded messages on this phone.
+- Call screen (WhatsApp style, liquid glass): blurred photo background, big avatar with pulsing rings, name, Calling / Ringing / Connecting / timer. Glass control bar: Speaker, Flip camera (video only), Video, Mute, End. Minimise arrow (green bar at the top: tap to return). Switching a voice call to video ends it and places a new video call.
+- Incoming call screen: full screen, caller photo/name, round red Decline and green Answer buttons. Back key is ignored while ringing / in a call.
+- Ringtone: with the Android bridge (see ANDROID-BRIDGE.txt) the PHONE'S OWN ringtone and vibration play, following silent/vibrate mode. In a normal browser a built-in ring tone is used. The caller hears a soft ring-back tone while "Ringing...".
+- New file chat-v51.js. Cache v17: fully close and reopen the app once on both phones.

@@ -1,0 +1,84 @@
+OnlyUs - make the phone's own ringtone ring for incoming calls (Android Studio WebView app)
+===========================================================================================
+A web page can NOT read the phone's ringtone. The app is a WebView, so give the page a tiny native helper.
+The web code (chat-v51.js + index.html) already looks for an object called "Android" and uses it when it exists.
+If you already have a JavascriptInterface named "Android", just add these methods to it.
+
+1) OnlyUsBridge.kt  (change the package line to your own)
+-----------------------------------------------------------
+package com.example.onlyus
+
+import android.content.Context
+import android.media.AudioAttributes
+import android.media.AudioManager
+import android.media.Ringtone
+import android.media.RingtoneManager
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.webkit.JavascriptInterface
+
+class OnlyUsBridge(private val ctx: Context) {
+    private val main = Handler(Looper.getMainLooper())
+    private var ringtone: Ringtone? = null
+    private val audio get() = ctx.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private val vib get() = ctx.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    private val keepPlaying = object : Runnable {            // looping for Android < 9
+        override fun run() { ringtone?.let { if (!it.isPlaying) it.play(); main.postDelayed(this, 1000) } }
+    }
+
+    @JavascriptInterface
+    fun startRingtone() { main.post {
+        stopNow()
+        val uri = RingtoneManager.getActualDefaultRingtoneUri(ctx, RingtoneManager.TYPE_RINGTONE)
+            ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+        ringtone = RingtoneManager.getRingtone(ctx, uri)?.apply {
+            audioAttributes = AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build()
+            if (Build.VERSION.SDK_INT >= 28) isLooping = true
+            play()
+        }
+        if (Build.VERSION.SDK_INT < 28) main.postDelayed(keepPlaying, 1000)
+        if (audio.ringerMode != AudioManager.RINGER_MODE_SILENT) {
+            val pattern = longArrayOf(0, 800, 700)
+            if (Build.VERSION.SDK_INT >= 26) vib.vibrate(VibrationEffect.createWaveform(pattern, 0))
+            else @Suppress("DEPRECATION") vib.vibrate(pattern, 0)
+        }
+    } }
+
+    @JavascriptInterface
+    fun stopRingtone() { main.post { stopNow() } }
+
+    @JavascriptInterface
+    fun setCallMode(on: Boolean) { audio.mode = if (on) AudioManager.MODE_IN_COMMUNICATION else AudioManager.MODE_NORMAL }
+
+    @JavascriptInterface
+    fun setSpeaker(on: Boolean) { audio.isSpeakerphoneOn = on }
+
+    private fun stopNow() {
+        main.removeCallbacks(keepPlaying)
+        ringtone?.stop(); ringtone = null
+        vib.cancel()
+    }
+}
+
+2) In your Activity, where the WebView is set up
+------------------------------------------------
+webView.settings.javaScriptEnabled = true
+webView.settings.mediaPlaybackRequiresUserGesture = false     // lets the call audio start without a tap
+webView.addJavascriptInterface(OnlyUsBridge(this), "Android") // the name MUST be "Android"
+
+3) AndroidManifest.xml (add if missing)
+---------------------------------------
+<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+<uses-permission android:name="android.permission.VIBRATE"/>
+(Calls also need RECORD_AUDIO and CAMERA, and your WebChromeClient.onPermissionRequest must grant them - you already need this for calls.)
+
+Limits (be aware)
+-----------------
+* The ringtone rings while the app is open (screen or background, process alive).
+* If the app is completely closed / killed, ringing needs a push message + a foreground service with a full-screen intent. That is a bigger native feature and is not included.
+* Ringtone volume, silent and vibrate mode are controlled by the phone's normal ringer settings.
