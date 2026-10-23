@@ -203,3 +203,7 @@ V64 (couple-v64.js + small edits)
 - Cache v31: copy ALL files (couple-v64.js and img/ are new), then fully close and reopen the app once.
 
 - v64b: 3-dots menu now opens as a row inside the header (Settings, Sound, Theme, New chat, Hide). Cache v32.
+
+- v64c: game covers are now embedded inside couple-v64.js (no img/ folder needed). Cache v33.
+
+- v64d: home screen scrolls as one page with animated scenes + date idea; PDFs open in an in-app viewer. Cache v34.
