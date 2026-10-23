@@ -125,8 +125,8 @@
   function arm(ms) { clearTimeout(hideT); if (active()) hideT = setTimeout(function () { if (active()) V.classList.add('ui-hide'); }, ms || 3500); }
   function syncCall() {
     if (!V) return;
-    if (active()) { if (!V.__armed) { V.__armed = true; V.classList.remove('ui-hide'); arm(3500); } }
-    else { V.__armed = false; clearTimeout(hideT); V.classList.remove('ui-hide'); }
+    if (active()) { if (!V.__armed) { V.__armed = true; if (V.classList.contains('ui-hide')) V.classList.remove('ui-hide'); arm(3500); } }
+    else { V.__armed = false; clearTimeout(hideT); if (V.classList.contains('ui-hide')) V.classList.remove('ui-hide'); }
   }
   if (V) {
     new MutationObserver(syncCall).observe(V, { attributes: true, attributeFilter: ['class'] });
