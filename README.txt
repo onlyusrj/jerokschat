@@ -193,3 +193,13 @@ Play together hub (and the Games tab) now has 4 more live 2-player games. Same r
 - 🃏 Color Cards (Uno-style): match colour or number, Skip (opponent loses turn), +2, Wild, Wild +4. Draw a card if you cannot play; if the drawn card fits you may play it or pass. First to empty the hand wins.
 - Like Wordle / Ludo dice, the hidden info (ships, hands) is stored in Firestore, so a very tech-savvy partner could peek.
 - Cache v27: copy ALL files (games-v60.js is new), fully close and reopen the app once on both phones.
+
+V64 (couple-v64.js + small edits)
+- Header: logo removed, "OnlyUs" text in the top-left corner.
+- "Our Space" is now a bottom tab right after Chats (couples mode only).
+- Default theme is Light (Settings > Chats > Theme still lets you pick Dark or System).
+- Games: cover pictures replace emojis. To use real photos, put <game>.jpg in img/games/ (ttt, c4, rps, memory, duel, draw, wyr, tod, ludo, dots, bship, trivia, cards); the .svg covers are the fallback.
+- Couples extras: floating hearts, "Together for N days" card, question of the day, heart burst on tap, bubble pop-in.
+- Cache v31: copy ALL files (couple-v64.js and img/ are new), then fully close and reopen the app once.
+
+- v64b: 3-dots menu now opens as a row inside the header (Settings, Sound, Theme, New chat, Hide). Cache v32.

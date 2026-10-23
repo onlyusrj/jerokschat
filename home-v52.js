@@ -82,6 +82,13 @@
   }).join('') + '</div>';
   document.body.appendChild(nav);
   var pill = nav.querySelector('.tn-pill');
+  /* v64: "Our Space" tab right after Chats (opens the couple hub overlay) */
+  var spBtn = el('button'); spBtn.type = 'button'; spBtn.id = 'tn_space'; spBtn.setAttribute('role', 'tab'); spBtn.setAttribute('aria-label', 'Our Space');
+  spBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>Our Space';
+  var chBtn = nav.querySelector('#tn_chats'); if (chBtn) chBtn.after(spBtn);
+  var root = document.documentElement;
+  var hubOpen = function () { var h = $('coupleHub'); return !!(h && h.classList.contains('on')); };
+  spBtn.addEventListener('click', function () { if (hubOpen()) return; var u = $('usb'); if (u) u.click(); });
 
   var tabIndex = function (id) { for (var i = 0; i < TABS.length; i++) if (TABS[i].id === id) return i; return -1; };
   var curView = function () { var v = document.querySelector('.view.on'); return v ? v.id : ''; };
@@ -96,17 +103,24 @@
   }
   nav.addEventListener('click', function (e) {
     var b = e.target.closest ? e.target.closest('button[data-i]') : null; if (!b) return;
-    var i = +b.getAttribute('data-i'); if (tabIndex(curView()) === i) { var sc = document.querySelector('#' + TABS[i].id + ' #cl,#' + TABS[i].id + ' .status-list,#vGames .gv-grid'); if (sc && sc.scrollTo) sc.scrollTo({ top: 0, behavior: 'smooth' }); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    var i = +b.getAttribute('data-i'); if (hubOpen()) { var hc = $('hubClose'); if (hc) hc.click(); if (tabIndex(curView()) === i) return; } else if (tabIndex(curView()) === i) { var sc = document.querySelector('#' + TABS[i].id + ' #cl,#' + TABS[i].id + ' .status-list,#vGames .gv-grid'); if (sc && sc.scrollTo) sc.scrollTo({ top: 0, behavior: 'smooth' }); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     goTab(i);
   });
 
   function syncNav() {
     var id = curView(), i = tabIndex(id);
     var lock = $('lock'), locked = lock && lock.classList.contains('on');
+    var reg = root.classList.contains('mode-reg'), n = reg ? 5 : 6, hub = !reg && hubOpen();
+    if (root.classList.contains('hub-open') !== hub) root.classList.toggle('hub-open', hub);
     nav.classList.toggle('on', i >= 0 && !locked);
     if (i >= 0) {
-      pill.style.transform = 'translateX(' + (i * 100) + '%)';
-      nav.querySelectorAll('button').forEach(function (b, k) { b.classList.toggle('on', k === i); b.setAttribute('aria-selected', k === i ? 'true' : 'false'); });
+      var pos = hub ? 1 : (i + (!reg && i >= 1 ? 1 : 0));
+      pill.style.width = 'calc(100% / ' + n + ')';
+      pill.style.transform = 'translateX(' + (pos * 100) + '%)';
+      nav.querySelectorAll('button').forEach(function (b) {
+        var on = b === spBtn ? hub : (!hub && +b.getAttribute('data-i') === i);
+        b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
     }
   }
 
@@ -130,6 +144,8 @@
   function watchViews() { document.querySelectorAll('.view').forEach(function (v) { mo.observe(v, { attributes: true, attributeFilter: ['class'] }); }); }
   watchViews();
   var lk = $('lock'); if (lk) mo.observe(lk, { attributes: true, attributeFilter: ['class'] });
+  var hb = $('coupleHub'); if (hb) mo.observe(hb, { attributes: true, attributeFilter: ['class'] });
+  new MutationObserver(syncNav).observe(root, { attributes: true, attributeFilter: ['class'] });
   syncNav();
 
   /* ===================================================== swipe between tabs */

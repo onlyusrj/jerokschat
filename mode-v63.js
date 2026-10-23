@@ -44,7 +44,7 @@
   function apply() {
     var m = get(), reg = m === 'regular';
     root.classList.toggle('mode-reg', reg);
-    var t = document.querySelector('#vList .lb-title'); if (t) t.textContent = reg ? 'Chats' : 'Only Us';
+    var t = document.querySelector('#vList .lb-title'); if (t) t.textContent = 'OnlyUs';
     var sp = document.querySelector('#splash b'); if (sp) sp.textContent = reg ? 'OnlyUs' : 'OnlyUs';
     var q = $('searchChats'); if (q) q.placeholder = reg ? 'Search chats…' : 'Search your chats…';
     var row = $('modeRow'); if (row) { var s = row.querySelector('small'); if (s) s.textContent = reg ? 'Now: Regular use. Tap to change' : 'Now: For couples. Tap to change'; }
