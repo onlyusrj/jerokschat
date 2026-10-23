@@ -45,15 +45,15 @@
     '#tabNav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(720px,100vw);box-sizing:border-box;z-index:8;display:none;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--line);box-shadow:0 -6px 18px rgba(30,16,56,.08)}',
     '#tabNav.on{display:block}',
     '#tabNav .tn-in{position:relative;display:flex}',
-    '#tabNav .tn-pill{position:absolute;top:0;bottom:0;left:0;width:calc(100% / 3);border-radius:18px;background:color-mix(in srgb,var(--acc) 17%,transparent);transition:transform .34s cubic-bezier(.3,1.25,.4,1);pointer-events:none}',
-    '#tabNav button{all:unset;cursor:pointer;position:relative;flex:1 1 0;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px 7px;border-radius:18px;color:var(--dim);font-size:12px;font-weight:600;-webkit-tap-highlight-color:transparent;transition:color .25s,transform .16s}',
+    '#tabNav .tn-pill{position:absolute;top:0;bottom:0;left:0;width:calc(100% / 5);border-radius:18px;background:color-mix(in srgb,var(--acc) 17%,transparent);transition:transform .34s cubic-bezier(.3,1.25,.4,1);pointer-events:none}',
+    '#tabNav button{all:unset;cursor:pointer;position:relative;flex:1 1 0;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px 7px;border-radius:18px;color:var(--dim);font-size:11.5px;font-weight:600;-webkit-tap-highlight-color:transparent;transition:color .25s,transform .16s}',
     '#tabNav button svg{width:25px;height:25px;fill:currentColor;transition:transform .3s cubic-bezier(.3,1.5,.4,1)}',
     '#tabNav button.on{color:var(--acc);font-weight:700}#tabNav button.on svg{transform:translateY(-1px) scale(1.12)}',
     '#tabNav button:active{transform:scale(.92)}',
 
     /* ---- games tab ---- */
     '#vGames .gv-hero{padding:18px 18px 6px}#vGames .gv-hero h2{margin:0 0 4px;font-size:25px;letter-spacing:-.02em}#vGames .gv-hero p{margin:0;color:var(--dim);font-size:14.5px}',
-    '#vGames .gv-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:14px 16px calc(96px + env(safe-area-inset-bottom,0px))}',
+    '#vGames .gv-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;align-content:start;flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:14px 16px calc(110px + env(safe-area-inset-bottom,0px))}#vGames .gv-hero{flex:0 0 auto}',
     '#vGames .gv-card{all:unset;cursor:pointer;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:128px;padding:16px 10px;border-radius:22px;background:var(--panel);border:1px solid var(--line);text-align:center;box-shadow:0 8px 22px rgba(36,20,70,.10)}',
     '#vGames .gv-card .gi{font-size:38px;line-height:1}#vGames .gv-card b{font-size:15px;color:var(--ink)}',
     '#vGames .gv-card:active{transform:scale(.95)}',
@@ -65,12 +65,16 @@
   var ICONS = {
     chats: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM7 9h10v2H7V9zm6 5H7v-2h6v2zm4-6H7V6h10v2z"/></svg>',
     status: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 10a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" opacity=".95"/></svg>',
+    calls: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>',
+    settings: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7.03 7.03 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.5.5 0 0 0-.61.22L2.74 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.26.42.5.42h3.84c.24 0 .45-.18.49-.42l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/></svg>',
     games: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.58 16.09l-1.09-7.66A3.996 3.996 0 0 0 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66A2.995 2.995 0 0 0 5.4 19.5c.78 0 1.5-.3 2.04-.83L9.12 17h5.76l1.68 1.67c.54.53 1.26.83 2.04.83 1.8 0 3.2-1.57 2.98-3.41zM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1zm4.5 2a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm2-3a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>'
   };
   var TABS = [
     { id: 'vList', key: 'chats', label: 'Chats' },
     { id: 'vStatus', key: 'status', label: 'Status' },
-    { id: 'vGames', key: 'games', label: 'Games' }
+    { id: 'vGames', key: 'games', label: 'Games' },
+    { id: 'vCalls', key: 'calls', label: 'Calls' },
+    { id: 'vSet', key: 'settings', label: 'Settings' }
   ];
   var nav = el('div'); nav.id = 'tabNav'; nav.setAttribute('role', 'tablist');
   nav.innerHTML = '<div class="tn-in"><span class="tn-pill"></span>' + TABS.map(function (t, i) {
@@ -86,6 +90,8 @@
     var t = TABS[i]; if (!t) return;
     if (t.id === 'vList') { U().show('vList'); }
     else if (t.id === 'vStatus') { var b = $('listStatus'); if (b) b.click(); else U().show('vStatus'); }
+    else if (t.id === 'vCalls') { U().show('vCalls'); }
+    else if (t.id === 'vSet') { var sb = $('setb'); if (sb) sb.click(); else U().show('vSet'); }
     else { buildGames(); U().show('vGames'); }
   }
   nav.addEventListener('click', function (e) {
@@ -176,27 +182,20 @@
   document.addEventListener('touchcancel', endDrag, { passive: true });
 
   /* ============================================================== games tab */
-  var GAMES = [['ttt', '❌⭕', 'Tic-Tac-Toe'], ['c4', '🔴🟡', 'Connect 4'], ['rps', '✊✋✌️', 'Rock Paper Scissors'], ['memory', '🧠', 'Memory Match'], ['duel', '⚡', 'Quick Duel'], ['draw', '🎨', 'Draw & Guess'], ['wyr', '🤔💞', 'Would You Rather'], ['tod', '💬🔥', 'Truth or Dare'], ['ludo', '🎲', 'Ludo']];
+  var GAMES = [['ttt', '❌⭕', 'Tic-Tac-Toe'], ['c4', '🔴🟡', 'Connect 4'], ['rps', '✊✋✌️', 'Rock Paper Scissors'], ['memory', '🧠', 'Memory Match'], ['duel', '⚡', 'Quick Duel'], ['draw', '🎨', 'Draw & Guess'], ['wyr', '🤔💞', 'Would You Rather'], ['tod', '💬🔥', 'Truth or Dare'], ['ludo', '🎲', 'Ludo'], ['dots', '🔲', 'Dots & Boxes'], ['bship', '🚢', 'Battleship'], ['trivia', '❓', 'Trivia Duel'], ['cards', '🃏', 'Color Cards']];
   var built = false;
   function buildGames() {
     if (built) return; var g = $('gvGrid'); if (!g) return; built = true;
     GAMES.forEach(function (x) {
       var b = el('button', 'gv-card', '<span class="gi">' + x[1] + '</span><b>' + x[2] + '</b>'); b.type = 'button';
-      b.onclick = function () { launch(x[2]); };
+      b.onclick = function () { launch(x[0]); };
       g.appendChild(b);
     });
   }
-  function launch(name) {
+  function launch(key) {
     var open = $('gmHome'); if (!open) return;
-    open.click(); // existing flow: pick the chat, open the games hub
-    var n = 0, iv = setInterval(function () {
-      var hub = $('gmView');
-      if (hub && hub.classList.contains('on')) {
-        var card = Array.prototype.slice.call(document.querySelectorAll('#gmBody .gmCard')).filter(function (c) { return c.textContent.indexOf(name) >= 0; })[0];
-        if (card) { clearInterval(iv); card.click(); return; }
-      }
-      if (++n > 120) clearInterval(iv);
-    }, 150);
+    window.__gmWant = key; // the games hub reads this and starts exactly this game
+    open.click();          // existing flow: pick the chat, open the games hub
   }
   buildGames();
 

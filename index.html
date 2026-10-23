@@ -537,6 +537,10 @@ body::before,body::after,html::before,html::after,#vList::before,#vList::after{c
   <div class="gv-hero"><h2>Play together 🎮</h2><p>Pick a game, send a request and play live with your partner.</p></div>
   <div class="gv-grid" id="gvGrid"></div>
 </div>
+<div class="view status-view" id="vCalls">
+  <div class="bar"><b>Calls</b><span class="sp"></span><button class="ic" id="clgClear" type="button" aria-label="Clear call log" title="Clear call log">🗑</button></div>
+  <div class="clg-list" id="clgList"></div>
+</div>
 <div class="view period-view" id="vPeriod">
   <div class="bar"><button class="ic" id="periodBack" type="button" aria-label="Back">←</button><b>Period Calendar</b><span class="sp"></span><button class="ic" id="periodToday" type="button" title="Jump to today" aria-label="Jump to today">📅</button></div>
   <div class="period-scroll">
@@ -636,7 +640,7 @@ async function findByPhone(raw){const d=normPh(raw);if(!d)return{err:'Start with
  try{const sn=await fs.collection('phones').doc(await phKey(d)).get();return sn.exists?{uid:sn.data().uid}:{err:'No OnlyUs account has that number yet. Ask her to save it in Settings, or use her Firebase UID.'}}
  catch(e){return{err:'Number lookup failed. Publish the updated firestore.rules.'}}}
 // ---- cloud backup of name + chat list (users/{uid})
-function saveCloud(){if(demo||!authUser||!fs)return Promise.resolve();return fs.collection('users').doc(authUser.uid).set({name:(me&&me.name)||'',phone:myPhone||'',contacts:contacts.filter(c=>c&&c.uid&&c.code).map(c=>({name:c.name||'',email:c.email||'',phone:c.phone||'',uid:c.uid,code:c.code})),updatedAt:Date.now()}).catch(()=>toast('Could not back up your chat list. Publish the updated firestore.rules.'))}
+function saveCloud(){if(demo||!authUser||!fs)return Promise.resolve();const d={name:(me&&me.name)||'',phone:myPhone||'',contacts:contacts.filter(c=>c&&c.uid&&c.code).map(c=>({name:c.name||'',email:c.email||'',phone:c.phone||'',uid:c.uid,code:c.code})),updatedAt:Date.now()},md=window.__mode&&window.__mode.get(),ref=fs.collection('users').doc(authUser.uid);const fail=()=>toast('Could not back up your chat list. Publish the updated firestore.rules.');if(!md)return ref.set(d).catch(fail);return ref.set(Object.assign({mode:md},d)).catch(()=>ref.set(d).catch(fail))}
 const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))].map(x=>x.toString(16).padStart(2,'0')).join('');
 const fT=t=>new Date(t).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
 const fD=t=>{const d=new Date(t),n=new Date();return d.toDateString()==n.toDateString()?'Today':d.toDateString()==new Date(n-864e5).toDateString()?'Yesterday':d.toLocaleDateString([], {day:'numeric',month:'long',year:'numeric'})};
@@ -716,7 +720,7 @@ function list(){ensureWatch();watchInvites();const l=$('cl');l.textContent='';$(
   const x=mkEl('button','ic x','✕');x.setAttribute('aria-label','Remove chat');x.onclick=e=>{e.stopPropagation();if(confirm('Remove this chat from the list? Messages stay saved.')){contacts.splice(i,1);LS.s('uc-contacts',contacts);saveCloud();list()}};r.appendChild(x);
   r.addEventListener('pointerdown',()=>{try{window.__fx&&window.__fx.ready(c)}catch(e){}},{passive:true});r.onclick=()=>open(c);r.onkeydown=e=>{if(e.key==='Enter')open(c)};l.appendChild(r)});try{window.__lists&&window.__lists.apply()}catch(e){}}
 function showInboxMessage(c,m){const b=$('inboxBanner');if(!b)return;$('inboxFrom').textContent=c.name||'New message';$('inboxText').textContent=preview(m);b.style.display='flex';clearTimeout(window.__inboxTimer);window.__inboxTimer=setTimeout(()=>{b.style.display='none'},5000);b.onclick=()=>{if(c){b.style.display='none';open(c)}};$('inboxClose').onclick=e=>{e.stopPropagation();b.style.display='none'}}
-$('sgo').onclick=async()=>{const n=$('sn').value.trim();if(!n)return toast('Enter the name your partner will see');if(!authUser)return show('vAuth');me={name:n,num:authUser.uid};LS.s('uc-me',me);show('vList');list();const ph=$('sph').value.trim();if(ph)await setPhone(ph);else saveCloud()};
+$('sgo').onclick=async()=>{const n=$('sn').value.trim();if(!n)return toast('Enter the name your partner will see');if(!authUser)return show('vAuth');me={name:n,num:authUser.uid};LS.s('uc-me',me);show('vList');list();window.__mode&&window.__mode.ask(true);const ph=$('sph').value.trim();if(ph)await setPhone(ph);else saveCloud()};
 $('addb').onclick=()=>$('modal').classList.add('on');$('mno').onclick=()=>$('modal').classList.remove('on');
 $('mok').onclick=async()=>{const n=$('mn').value.trim(),email=$('mp').value.trim().toLowerCase(),c=$('mc').value.trim(),ph=$('mph').value.trim();let u=$('mu').value.trim();if(!n||c.length<12||(!u&&!ph))return toast('Enter partner name, her phone number (or Firebase UID), and a shared code of 12+ characters');if(!authUser)return toast('Sign in first');
  if(ph&&!u){const r=await findByPhone(ph);if(r.err)return toast(r.err);u=r.uid}
@@ -1092,8 +1096,8 @@ else if(auth){auth.onAuthStateChanged(async user=>{authUser=user||null;if(!user)
  if(ok&&cloud&&cloud.name){
   const cc=(Array.isArray(cloud.contacts)?cloud.contacts:[]).filter(c=>c&&c.uid&&c.code).map(c=>({name:c.name||'Partner',email:c.email||'',phone:c.phone||'',num:c.uid,code:c.code,uid:c.uid}));
   let add=0;if(same)contacts.forEach(c=>{if(c&&c.uid&&c.code&&!cc.some(x=>x.uid===c.uid)){cc.push(c);add++}});
-  me={name:cloud.name,num:user.uid};myPhone=cloud.phone||'';contacts=cc;LS.s('uc-me',me);LS.s('uc-contacts',contacts);if(add)saveCloud();show('vList');list();return}
- if(same){me={name:me.name,num:user.uid};LS.s('uc-me',me);if(ok)saveCloud();else toast('Could not load your saved chats. Publish the updated firestore.rules.');show('vList');list();return}
+  if(window.__mode)window.__mode.fromCloud(cloud.mode);me={name:cloud.name,num:user.uid};myPhone=cloud.phone||'';contacts=cc;LS.s('uc-me',me);LS.s('uc-contacts',contacts);if(add)saveCloud();show('vList');list();return}
+ if(same){if(window.__mode)window.__mode.fromCloud(cloud&&cloud.mode);me={name:me.name,num:user.uid};LS.s('uc-me',me);if(ok)saveCloud();else toast('Could not load your saved chats. Publish the updated firestore.rules.');show('vList');list();return}
  me=null;myPhone='';contacts=[];LS.s('uc-me',null);LS.s('uc-contacts',[]);
  if(!ok)toast('Could not load your saved chats. Publish the updated firestore.rules.');
  show('vSetup')});}
@@ -1236,7 +1240,7 @@ $('shb').onclick=start;$('shYes').onclick=()=>{$('shReq').classList.remove('on')
 <script>
 (()=>{
 const $=id=>document.getElementById(id),U=()=>window.__us,R=()=>window.__ring;
-let ref=null,pc=null,loc=null,role='',sid=0,busy=false,unS=null,unI=null,pend=[],ringI=null,toT=null,connT=null,tick=null,t0=0,ice=null,inc=null,facing='user',spk=false,curK='',curUid='',curName='';const seen=new Set();
+let ref=null,pc=null,loc=null,role='',sid=0,busy=false,unS=null,unI=null,pend=[],ringI=null,toT=null,connT=null,tick=null,t0=0,ice=null,inc=null,facing='user',spk=false,curK='',curUid='',curName='',cv=false,cdec=false;const seen=new Set();
 const dref=k=>U().fs().collection('chats').doc(k).collection('share').doc('call'),fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 /* v51: optional native Android bridge (see ANDROID-BRIDGE.txt) - harmless when absent */
 const nat=(f,a)=>{try{if(window.Android&&typeof window.Android[f]==='function')window.Android[f](a)}catch(e){}};
@@ -1260,19 +1264,21 @@ function watch(){unS&&unS();unS=ref.onSnapshot(async s=>{const d=s.exists?s.data
  if(role==='B'&&d.st==='acc'&&d.offer&&!pc){mk();await pc.setRemoteDescription(JSON.parse(d.offer));flush();const a=await pc.createAnswer();await pc.setLocalDescription(a);await ref.update({answer:JSON.stringify(pc.localDescription)})}
  if(d.st==='dec'&&role==='A'){U().toast('Call declined');end(false)}
  if(d.st==='end'&&busy){U().toast(tick?'Call ended':'Missed call');end(false)}},err=>{U().toast('Call signalling error: '+(err.code||err.message||'read failed'));end(false)})}
-async function end(notify){if(notify&&ref){try{await ref.update({st:'end'})}catch(e){}}busy=false;role='';sid=0;pend=[];clearInterval(ringI);clearTimeout(toT);clearTimeout(connT);clearInterval(tick);tick=null;R()&&R().stopAll();nat('setCallMode',false);nat('setSpeaker',false);unS&&unS();unS=null;unI&&unI();unI=null;if(pc){try{pc.close()}catch(e){}pc=null}if(loc){loc.getTracks().forEach(t=>t.stop());loc=null}$('clR').srcObject=null;$('clL').srcObject=null;$('clView').classList.remove('on','conn','vid');$('clIn').classList.remove('on');$('clMini').classList.remove('on');ref=null;inc=null}
-async function start(v,k0,nm0,uid0){if(busy)return;const k=k0||U().cid();if(U().demo()||!k)return U().toast('Open a chat first');busy=true;const nm=nm0||U().cname(),uid=uid0||U().cuid();
+function logCall(){try{if(!busy||!sid||!curUid)return;const dur=tick?Math.floor((Date.now()-t0)/1e3):0,e={id:sid,uid:curUid,name:curName||'',dir:role==='A'?'out':'in',video:!!cv,t:Date.now(),dur:dur,st:dur?'done':(role==='A'?'noans':(cdec?'declined':'missed')),k:curK},key='onlyus-calllog-'+(U().uid()||''),a=JSON.parse(localStorage.getItem(key)||'[]');a.unshift(e);localStorage.setItem(key,JSON.stringify(a.slice(0,150)));window.dispatchEvent(new Event('onlyus-calllog'))}catch(x){}}
+async function end(notify){logCall();if(notify&&ref){try{await ref.update({st:'end'})}catch(e){}}busy=false;cdec=false;role='';sid=0;pend=[];clearInterval(ringI);clearTimeout(toT);clearTimeout(connT);clearInterval(tick);tick=null;R()&&R().stopAll();nat('setCallMode',false);nat('setSpeaker',false);unS&&unS();unS=null;unI&&unI();unI=null;if(pc){try{pc.close()}catch(e){}pc=null}if(loc){loc.getTracks().forEach(t=>t.stop());loc=null}$('clR').srcObject=null;$('clL').srcObject=null;$('clView').classList.remove('on','conn','vid');$('clIn').classList.remove('on');$('clMini').classList.remove('on');ref=null;inc=null}
+async function start(v,k0,nm0,uid0){if(busy)return;const k=k0||U().cid();if(U().demo()||!k)return U().toast('Open a chat first');busy=true;cv=!!v;cdec=false;const nm=nm0||U().cname(),uid=uid0||U().cuid();
  loc=await media(v);if(!loc){busy=false;return}ice=await window.__ice();ref=dref(k);role='A';sid=Date.now();curK=k;curUid=uid;
  try{await ref.set({by:U().uid(),name:U().me().name,st:'ring',n:sid,video:!!v})}catch(e){U().toast('Could not call. Publish the updated firestore.rules.');return end(false)}
  ui(nm,v,'Calling…',uid);watch();toT=setTimeout(()=>{if(busy&&!pc){U().toast('No answer');end(true)}},45e3)}
-U().onring=(c,k,d)=>{if(busy||seen.has(d.n))return;seen.add(d.n);busy=true;role='B';sid=d.n;ref=dref(k);ref.update({ack:true}).catch(()=>{});curK=k;curUid=c.uid;curName=c.name;inc={name:c.name,v:d.video,uid:c.uid};
+U().onring=(c,k,d)=>{if(busy||seen.has(d.n))return;seen.add(d.n);busy=true;role='B';cv=!!d.video;cdec=false;sid=d.n;ref=dref(k);ref.update({ack:true}).catch(()=>{});curK=k;curUid=c.uid;curName=c.name;inc={name:c.name,v:d.video,uid:c.uid};
  $('inN').textContent=c.name;$('inK').textContent=d.video?'OnlyUs video call':'OnlyUs voice call';cpaint(c.uid);$('clIn').classList.add('on');
  if(R())R().start();else{U().ding();ringI=setInterval(()=>U().ding(),2e3)}
  try{if(document.hidden&&'Notification' in window&&Notification.permission==='granted')new Notification('Incoming '+(d.video?'video':'voice')+' call',{body:c.name+' is calling you',tag:'onlyus-call',renotify:true,requireInteraction:true})}catch(e){}
  watch()};
 $('inY').onclick=async()=>{R()&&R().stop();clearInterval(ringI);$('clIn').classList.remove('on');const i=inc;if(!i)return;loc=await media(i.v);if(!loc){ref&&ref.update({st:'dec'}).catch(()=>{});return end(false)}ice=await window.__ice();ui(i.name,i.v,'Connecting…',i.uid);ref.update({st:'acc'}).catch(()=>{})};
-$('inD').onclick=()=>{ref&&ref.update({st:'dec'}).catch(()=>{});end(false)};
+$('inD').onclick=()=>{cdec=true;ref&&ref.update({st:'dec'}).catch(()=>{});end(false)};
 $('clE').onclick=()=>end(true);
+window.__callApi={start:(v,k,n,u)=>start(v,k,n,u),busy:()=>busy};
 $('clM').onclick=e=>{const t=loc&&loc.getAudioTracks()[0];if(t){t.enabled=!t.enabled;e.currentTarget.classList.toggle('act',!t.enabled)}};
 $('clC').onclick=async e=>{const t=loc&&loc.getVideoTracks()[0];if(t){t.enabled=!t.enabled;e.currentTarget.classList.toggle('act',!t.enabled);$('clL').style.visibility=t.enabled?'':'hidden';return}
  if(!confirm('Switch to a video call? This voice call ends and a video call starts.'))return;const k=curK,nm=curName,uid=curUid;await end(true);setTimeout(()=>start(true,k,nm,uid),700)};
@@ -1540,7 +1546,7 @@ window.__fx={ready,inn,out,edit,poll,aud,srStart,srStop,translate,pickChat,dlg,h
 (()=>{
 const $=id=>document.getElementById(id),U=()=>window.__us,h=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
 const NAME={ttt:'Tic-Tac-Toe',c4:'Connect 4',rps:'Rock Paper Scissors',memory:'Memory Match',duel:'Quick Duel',draw:'Draw & Guess',wyr:'Would You Rather',tod:'Truth or Dare',ludo:'Ludo'},ICON={ttt:'❌⭕',c4:'🔴🟡',rps:'✊✋✌️',memory:'🧠',duel:'⚡',draw:'🎨',wyr:'🤔💞',tod:'💬🔥',ludo:'🎲'};
-const FAST=()=>!!window.__gmFast,my=()=>U().uid(),R=k=>U().fs().collection('chats').doc(k).collection('share').doc('game');
+const EXT={};const FAST=()=>!!window.__gmFast,my=()=>U().uid(),R=k=>U().fs().collection('chats').doc(k).collection('share').doc('game');
 let K='',OPP=null,ref=null,un=null,D=null,inc=null,loc={},arb={};const shown=new Set();
 const idx=()=>D.p.indexOf(my()),opp=()=>{const u=D.p[1-idx()];return{uid:u,name:(D.names&&D.names[u])||(OPP&&OPP.name)||'Partner'}};
 const upd=u=>ref.update(u).catch(()=>U().toast('Game sync failed. Publish the updated firestore.rules.'));
@@ -1560,7 +1566,7 @@ function render(){const B=$('gmBody'),F=$('gmFoot');
  if(!live||D.st==='idle'||D.st==='dec'){if(live&&D.st==='dec'&&D.by===my())B.appendChild(h('p','gmMsg',opp().name+' declined 😔'));picker(B);return}
  const sc=D.sc||{};$('gmSc').textContent=COOP[D.game]?'':'You '+(sc[my()]||0)+' – '+(sc[opp().uid]||0)+' '+opp().name;
  if(D.st==='req'){if(D.by===my()){B.appendChild(h('p','gmMsg','Waiting for '+opp().name+' to accept '+NAME[D.game]+'…'));btn(F,'Cancel',()=>upd({st:'idle'}),1)}else{B.appendChild(h('p','gmMsg',opp().name+' wants to play '+NAME[D.game]+' '+ICON[D.game]));btn(F,'Accept',()=>upd({st:'play'}));btn(F,'Decline',()=>upd({st:'dec'}),1)}return}
- const box=h('div','gmBox');B.appendChild(box);({ttt:rTTT,c4:rC4,rps:rRPS,memory:rMem,duel:rDuel,draw:rDraw,wyr:rWYR,tod:rTOD,ludo:rLudo})[D.game](box);
+ const box=h('div','gmBox');B.appendChild(box);(({ttt:rTTT,c4:rC4,rps:rRPS,memory:rMem,duel:rDuel,draw:rDraw,wyr:rWYR,tod:rTOD,ludo:rLudo})[D.game]||EXT[D.game].render)(box);
  if(D.st==='end'){const w=D.res;box.appendChild(h('div','gmBan',COOP[D.game]?SUM[D.game]():w==='d'?'It’s a draw 🤝':w===my()?'You won! 🎉':opp().name+' won 🏆'));btn(F,'Play again',()=>request(D.game));btn(F,'Other games',()=>upd({st:'idle'}),1)}else btn(F,'Quit game',()=>{if(confirm('End this game?'))upd({st:'idle'})},1)}
 function onData(){if(D&&D.st==='play'){arbiters()}render()}
 // ---------- tic-tac-toe
@@ -1614,7 +1620,7 @@ function arbDraw(){const s=D.s,me=my(),dr=D.p[s.dr]===me;
  if(dr&&!s.wh&&!arb.pick){arb.pick=1;const w=WORDS[Math.floor(Math.random()*WORDS.length)];loc.word=w;const key='onlyus-gw-'+D.n+':'+s.rd+':'+hs(norm(w));try{localStorage.setItem(key,w)}catch(e){}upd({'s.wh':hs(norm(w)),'s.d':'','s.g':{},'s.ph':'draw','s.ok':'','s.rw':''});setTimeout(()=>{arb.pick=0},800);return}
  if(s.wh&&s.ph==='draw'&&dr){const sig=D.n+':'+s.rd+':'+s.wh;if(arb.tm!==sig){arb.tm=sig;if(!loc.word)try{loc.word=localStorage.getItem('onlyus-gw-'+sig)}catch(e){}setTimeout(()=>{if(D&&D.st==='play'&&D.s.ph==='draw'&&D.s.wh===s.wh&&D.s.rd===s.rd)upd({'s.ph':'done','s.rw':loc.word||'?'})},FAST()?4000:75000)}}
  if(s.ph==='done'&&D.p[0]===me){const sig=D.n+':'+s.rd;if(arb.nx!==sig){arb.nx=sig;setTimeout(()=>{if(!D||D.st!=='play'||D.s.rd!==s.rd||D.s.ph!=='done')return;if(s.rd>=4){const a=(D.sc||{})[D.p[0]]||0,b=(D.sc||{})[D.p[1]]||0;fin(a>b?D.p[0]:b>a?D.p[1]:'d',D.s)}else upd({'s.rd':s.rd+1,'s.dr':1-s.dr,'s.wh':'','s.d':'','s.g':{},'s.ph':'draw','s.ok':'','s.rw':''})},FAST()?700:4500)}}}
-function arbiters(){const A={rps:arbRPS,memory:arbMem,duel:arbDuel,draw:arbDraw,wyr:arbWYR,ludo:arbLudo};A[D.game]&&A[D.game]()}
+function arbiters(){const A={rps:arbRPS,memory:arbMem,duel:arbDuel,draw:arbDraw,wyr:arbWYR,ludo:arbLudo},f=A[D.game]||(EXT[D.game]&&EXT[D.game].arb);f&&f()}
 // ---------- would you rather (8 questions · co-op: how often do you match?)
 const COOP={wyr:1,tod:1},WN=8,SUM={wyr:()=>'You matched '+D.s.m+' of '+WN+' 💞',tod:()=>D.s.n>1?(D.s.n-1)+' turns played 💞':'Thanks for playing 💞'};
 const WYR=[['Beach holiday 🏖️','Mountain trip 🏔️'],['Biryani forever 🍗','Pizza forever 🍕'],['Movie night at home 🎬','Dinner at a fancy place 🍽️'],['Know the future 🔮','Change the past ⏪'],['Free travel for life ✈️','Free food for life 🍜'],['Morning person 🌅','Night owl 🌙'],['Sing every day 🎤','Dance every day 💃'],['Surprise gift 🎁','A gift you pick yourself 🛍️'],['Long drive with songs 🚗','Long walk with talks 🚶'],['Texting all day 💬','Calling all day 📞'],['Tea 🍵','Coffee ☕'],['Rainy day together 🌧️','Sunny day together ☀️'],['Cook together 👩‍🍳','Order in together 📦'],['Always 10 min early ⏰','Always 10 min late 🐢'],['Read minds 🧠','Be invisible 🫥'],['Big city life 🌆','Quiet village life 🌾'],['Cuddle all day 🧸','Adventure all day 🎢'],['No social media 📵','No movies ever 🎞️'],['A pet cat 🐱','A pet dog 🐶'],['Dance in the rain 💃','Stargaze all night ✨'],['Fly like a bird 🕊️','Breathe underwater 🐠'],['Beach wedding 🌊','Grand hall wedding 🏛️'],['Only sweet food 🍰','Only spicy food 🌶️'],['Always win arguments 🏆','Always make up fast 💞'],['Handwritten love letter 💌','Surprise voice note 🎙️'],['Road trip, no plan 🗺️','Perfectly planned trip 📋'],['Relive our first date 💫','Jump to our 50th anniversary 💍'],['Teleport anywhere 🌀','Stop time ⏸️'],['Pani puri 🥟','Ice cream 🍦'],['Be famous 🌟','Be rich but unknown 💰'],['Netflix marathon 📺','Game marathon 🎮'],['Live in a treehouse 🌳','Live on a houseboat ⛵'],['Bike ride together 🚲','Scooter ride together 🛵'],['Surprise party 🎉','Quiet day just us 🕯️'],['Hug 🤗','Kiss on the cheek 😘'],['Same meal for a year 🍛','Never eat out again 🏠'],['Wake up to a song 🎵','Wake up to a hug 🫶'],['Visit the past 🕰️','Visit the future 🚀'],['Morning chai together ☕','Midnight snacks together 🌙'],['Plan everything 📋','Go with the flow 🌊']];
@@ -1682,11 +1688,18 @@ function rLudo(B){const s=D.s,me=my(),i=idx(),act=D.st==='play'&&D.p[s.t]===me,m
 function arbLudo(){const s=D.s;if(!s.d||D.p[s.t]!==my())return;const key=D.n+'|'+(s.v||0);if(arb.ld===key)return;arb.ld=key;const v=s.v||0,n=D.n,mv=ldMoves(s,s.t,s.d),dl=FAST()?120:950,ok=()=>D&&D.game==='ludo'&&D.st==='play'&&D.n===n&&(D.s.v||0)===v;
  if(s.d===6&&(s.sx||0)>=2)setTimeout(()=>ok()&&ldPass('s'),dl*1.6);else if(!mv.length)setTimeout(()=>ok()&&ldPass('p'),dl*1.6);else if(mv.length===1)setTimeout(()=>ok()&&ldMove(mv[0]),dl)}
 // ---------- open / requests
-function openHub(k,o){K=k;OPP=o;un&&un();un=null;D=null;loc={};arb={};ref=R(k);$('gmView').classList.add('on');render();un=ref.onSnapshot(s=>{const nd=s.exists?s.data():null;if(nd&&D&&nd.n!==D.n){loc={};arb={}}D=nd;onData()},()=>U().toast('Games need the updated firestore.rules'))}
+function openHub(k,o,want){K=k;OPP=o;un&&un();un=null;D=null;loc={};arb={};ref=R(k);$('gmView').classList.add('on');render();let first=true;un=ref.onSnapshot(s=>{const nd=s.exists?s.data():null;if(nd&&D&&nd.n!==D.n){loc={};arb={}}D=nd;onData();
+  if(first){first=false;if(want&&INIT[want]){const fresh=nd&&nd.p&&nd.st==='req'&&Date.now()-nd.n<6e5,live=nd&&nd.p&&NAME[nd.game]&&(nd.st==='play'||fresh);
+   if(!live||nd.game===want&&nd.st!=='end'){if(!live||nd.st==='idle'||nd.st==='dec')request(want)}
+   else if(nd.st==='req'&&nd.by!==my()){/* partner already asked for a game: show their request */}
+   else if(nd.st==='req'&&nd.by===my()){request(want)}
+   else if(nd.game!==want&&nd.st==='play'){if(confirm(NAME[nd.game]+' is in progress. Quit it and start '+NAME[want]+'?'))request(want)}}}
+  },()=>U().toast('Games need the updated firestore.rules'))}
 window.__gm={D:()=>D,word:()=>loc.word,open:openHub};
+window.__gmApi={reg(k,o){NAME[k]=o.name;ICON[k]=o.icon;INIT[k]=o.init;EXT[k]=o},D:()=>D,loc:()=>loc,arb:()=>arb,my,opp,idx,upd,fin,h,put,btn,FAST,shuf,render,request,U};
 $('gmX').onclick=()=>{un&&un();un=null;$('gmView').classList.remove('on')};
 $('toolGames').onclick=()=>{$('chatTools').classList.remove('on');const c=U().cur();if(!c||U().demo())return U().toast('Open a connected chat first');openHub(U().cid(),{name:c.name,uid:c.uid})};
-$('gmHome').onclick=async()=>{if(U().demo())return U().toast('Games need a connected chat');const c=await window.__fx.pickChat();if(!c)return;if(!(await U().prep(c)))return;openHub(U().cid(),{name:c.name,uid:c.uid})};
+$('gmHome').onclick=async()=>{if(U().demo()){window.__gmWant=null;return U().toast('Games need a connected chat')}const want=window.__gmWant;window.__gmWant=null;const c=await window.__fx.pickChat();if(!c)return;if(!(await U().prep(c)))return;openHub(U().cid(),{name:c.name,uid:c.uid},want)};
 U().ongame=(c,k,d)=>{if($('gmView').classList.contains('on')&&K===k)return;if(d.st==='req'&&d.by!==my()&&Date.now()-d.n<6e5&&!shown.has(d.n)){shown.add(d.n);inc={c,k};$('gmInN').textContent=c.name+' wants to play '+NAME[d.game]+' '+ICON[d.game];$('gmIn').classList.add('on');U().ding()}};
 $('gmInY').onclick=()=>{$('gmIn').classList.remove('on');const c=inc.c,k=inc.k;openHub(k,{name:c.name,uid:c.uid});R(k).update({st:'play'}).catch(()=>{})};
 $('gmInD').onclick=()=>{$('gmIn').classList.remove('on');R(inc.k).update({st:'dec'}).catch(()=>{})};
@@ -1878,7 +1891,7 @@ $('setb').addEventListener('click',stat);stat();
 <script src="liquid-glass.js"></script>
 <script src="chat-speed.js"></script>
 <script src="chat-v51.js"></script>
-<script src="home-v52.js"></script>
-<script src="status-v53.js"></script><script src="sounds-v54.js"></script><script src="love-v59.js"></script>
+<script src="home-v52.js"></script><script src="home-v62.js"></script><script src="mode-v63.js"></script>
+<script src="status-v53.js"></script><script src="sounds-v54.js"></script><script src="love-v59.js"></script><script src="games-v60.js"></script>
 </body>
 </html>

@@ -179,3 +179,17 @@ Open it from: Chat tools (⋯) > 💞 Love Corner, or Our Space > 💞 Love Corn
 - YOU MUST DEPLOY (once):  firebase deploy --only functions,firestore:rules
   New rules: lvSched + lvRules (owner only). New functions: lvBeat, lvMiss, lvMood, lvCare, lvScheduler (every minute), lvCareScheduler (every 15 min), lvPeriodTips (hourly). Scheduled functions need the Blaze plan (you already use scheduled functions).
 - sw.js: notifications now vibrate (heartbeat pattern for 💓). Cache v25: copy all files, fully close and reopen the app once on both phones.
+
+V60 GAMES FIX (home-v52.js + index.html)
+- Games tab (next to Status): the game list can now be scrolled all the way down (it was stuck because the grid had no scroll area).
+- Games tab: the game you tap is now the game that starts. Before, the hub reopened the old Draw & Guess (still saved from the last time) whatever you picked. Now: if the old game is finished / not running, the chosen game's request is sent straight away; if a different game is still running, it asks "Quit it and start <game>?"; if your partner already sent you a request, that request is shown.
+- Cache v26: copy all files, fully close and reopen the app once.
+
+V61 NEW GAMES (new file games-v60.js + small hook in index.html)
+Play together hub (and the Games tab) now has 4 more live 2-player games. Same request / accept / score / play-again flow, same share/game document (NO firestore.rules change).
+- 🔲 Dots & Boxes (4x4 boxes): tap a dotted line; closing a box gives you another line. Most boxes wins.
+- 🚢 Battleship: each of you gets a random fleet (Shuffle until you like it, then Ready). Hit = shoot again, miss = turn passes. Sinking a ship is announced. First to sink all 5 ships wins.
+- ❓ Trivia Duel: 10 questions (general, India, Tamil Nadu), 20 seconds each, both answer at the same time, 1 point per correct answer.
+- 🃏 Color Cards (Uno-style): match colour or number, Skip (opponent loses turn), +2, Wild, Wild +4. Draw a card if you cannot play; if the drawn card fits you may play it or pass. First to empty the hand wins.
+- Like Wordle / Ludo dice, the hidden info (ships, hands) is stored in Firestore, so a very tech-savvy partner could peek.
+- Cache v27: copy ALL files (games-v60.js is new), fully close and reopen the app once on both phones.
