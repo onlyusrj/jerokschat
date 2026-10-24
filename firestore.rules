@@ -12,7 +12,12 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if signedIn() && request.auth.uid == uid;
       allow create, update: if signedIn() && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['name', 'phone', 'contacts', 'updatedAt', 'mode'])
+        && request.resource.data.keys().hasOnly(['name', 'phone', 'contacts', 'updatedAt', 'mode', 'ob'])
+        && (!('ob' in request.resource.data) || (request.resource.data.ob is map
+            && request.resource.data.ob.keys().hasOnly(['age', 'gender', 'since', 'title', 'lang'])
+            && (!('age' in request.resource.data.ob) || (request.resource.data.ob.age is int && request.resource.data.ob.age >= 12 && request.resource.data.ob.age <= 120))
+            && (!('title' in request.resource.data.ob) || (request.resource.data.ob.title is string && request.resource.data.ob.title.size() <= 40))
+            && (!('since' in request.resource.data.ob) || (request.resource.data.ob.since is string && request.resource.data.ob.since.size() <= 10))))
         && (!('mode' in request.resource.data) || request.resource.data.mode in ['couple', 'regular'])
         && (!('phone' in request.resource.data) || (request.resource.data.phone is string && request.resource.data.phone.size() <= 20))
         && request.resource.data.name is string
@@ -92,6 +97,16 @@ service cloud.firestore {
       allow read, delete: if signedIn() && resource.data.fromUid == request.auth.uid;
       allow update: if signedIn() && resource.data.fromUid == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['on']);
+    }
+
+    // v65: cloud backup of app settings (theme, stickers, labels, pins...). Only the owner can read or write it.
+    match /backups/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['at', 'json'])
+        && request.resource.data.at is number
+        && request.resource.data.json is string && request.resource.data.json.size() < 900000;
+      allow delete: if signedIn() && request.auth.uid == uid;
     }
 
     match /chats/{cid} {

@@ -10,6 +10,7 @@
   'use strict';
   var U = function () { return window.__us || {}; };
   var $ = function (id) { return document.getElementById(id); };
+  var T = function (k, d) { try { return window.__i18n ? window.__i18n.t(k, d) : d; } catch (e) { return d; } };
   var esc = function (t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var pad = function (n) { return String(n).padStart(2, '0'); };
   var ymd = function (d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
@@ -53,13 +54,13 @@
   var MOODS = [['sun', '☀️', 'Sunny', 'happy'], ['part', '⛅', 'Okay', 'so-so'], ['cloud', '☁️', 'Cloudy', 'low'], ['rain', '🌧️', 'Rainy', 'sad'], ['storm', '⛈️', 'Stormy', 'upset'], ['rbow', '🌈', 'Rainbow', 'so in love']];
   var MO = {}; MOODS.forEach(function (m) { MO[m[0]] = m; });
   var CARE = {
-    eat: { e: '🍚', q: 'Saptiya?', yes: 'Ate ✅', no: 'Not yet 🥺' },
-    water: { e: '💧', q: 'Thanni kudichiya?', yes: 'Drank ✅', no: 'Will do 🥤' },
-    med: { e: '💊', q: 'Medicine edutiya?', yes: 'Took it ✅', no: 'Not yet ⏰' },
-    safe: { e: '🚗', q: 'Safe ah reach aayitiya?', yes: 'Reached ✅', no: 'On the way 🛣️' },
-    sleep: { e: '😴', q: 'Thoongala? Rest edu da', yes: 'Going to sleep 😴', no: 'Few more min 🥺' }
+    eat: { e: '🍚', get q() { return T('care.eat', 'Did you eat?'); }, yes: 'Ate ✅', no: 'Not yet 🥺' },
+    water: { e: '💧', get q() { return T('care.water', 'Did you drink water?'); }, yes: 'Drank ✅', no: 'Will do 🥤' },
+    med: { e: '💊', get q() { return T('care.med', 'Did you take your medicine?'); }, yes: 'Took it ✅', no: 'Not yet ⏰' },
+    safe: { e: '🚗', get q() { return T('care.safe', 'Did you reach safely?'); }, yes: 'Reached ✅', no: 'On the way 🛣️' },
+    sleep: { e: '😴', get q() { return T('care.sleep', 'Not sleeping yet? Please rest.'); }, yes: 'Going to sleep 😴', no: 'Few more min 🥺' }
   };
-  var GN = ['Good night da 🌙💤 sweet dreams, naan irukken always 💕', 'Goodnight chellam 🌙 kanavula meet pannuvom 😴💞', 'Night night 🌙✨ unna miss pannuven, thoongu da 😘', 'Good night my love 💤🧸 naalaiku paakalam 💕'];
+  var GNL = function () { return [T('gn.1', 'Good night, sweet dreams. I am always with you. 💕'), T('gn.2', 'Good night, my love. See you in my dreams. 💕'), T('gn.3', 'Night night. I will miss you, sleep well. 💕'), T('gn.4', 'Good night, my love. See you tomorrow. 💕')]; };
   var gnOpen = function () { var h = new Date().getHours(); return h >= 21 || h < 5; };
   var nightKey = function () { var d = new Date(); if (d.getHours() < 5) d.setDate(d.getDate() - 1); return ymd(d); };
 
@@ -256,7 +257,7 @@
     var cid = U().cid(); if (!cid) return; if (!gnOpen()) return toast('Good night opens at 9 PM 🌙'); if (myNightDone(cid)) return toast('Already said good night 🌙');
     var nk = nightKey(), me = meId(), up = {}; up[me] = { d: nk, t: Date.now() }; up.h = {}; up.h[nk] = {}; up.h[nk][me] = Date.now();
     try { await dref(cid, 'lv_gn').set(up, { merge: true }); } catch (e) { return toast('Could not save. Publish the updated firestore.rules.'); }
-    try { U().send({ type: 'text', text: pick(GN) }); } catch (e) {}
+    try { U().send({ type: 'text', text: pick(GNL()) }); } catch (e) {}
     chime(); vib([60, 40, 60]); toast('Good night 🌙');
     paintChip(); refreshCard('lv_gn');
   }

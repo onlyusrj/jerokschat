@@ -93,8 +93,8 @@
       const code=(e&&e.code)||'';
       let msg='AI ippo busy-a irukku. Konjam neram kazhichu try pannunga 🙏';
       if(/resource-exhausted/.test(code))msg='Free limit mudinjiduchu. Konjam neram kazhichu (or naalaiku) try pannunga 💕';
-      else if(/bad-key/.test(code))msg='Gemini key sari illa or revoke aagirukku. Mela 🔑 button-la pudhu key podunga.';
-      else if(/bad-model/.test(code))msg='Gemini model name sari illa. firebase-config.js-la window.GEMINI_MODEL maathunga.';
+      else if(/bad-key/.test(code))msg='The Gemini key is invalid or was revoked. Add a new key using the key button at the top.';
+      else if(/bad-model/.test(code))msg='The Gemini model name is invalid. Change window.GEMINI_MODEL in firebase-config.js.';
       const d=e&&(e.detail||(e.name==='TypeError'?'network/CORS: '+e.message:e.message));
       if(d)msg+='\n('+String(d).slice(0,200)+')';
       hist.pop();save();

@@ -207,3 +207,46 @@ V64 (couple-v64.js + small edits)
 - v64c: game covers are now embedded inside couple-v64.js (no img/ folder needed). Cache v33.
 
 - v64d: home screen scrolls as one page with animated scenes + date idea; PDFs open in an in-app viewer. Cache v34.
+
+
+V65 EVERYDAY CHAT FEATURES  (new files: pro-v65.js, pro-media-v65.js, functions/linkpreview.js)
+What is new
+ Chat list     - Press and hold a chat (or right-click): Pin chat (up to 3), Archive chat, Remove chat. Archived chats sit under an "Archived" row.
+ Saved messages- Bookmark button in the three-dots row on the home screen. A private chat with yourself for notes, links, photos, PDFs.
+ Message info  - Press and hold a message > Info (type, sent, delivered, read, size, disappearing time).
+ Labels        - Press and hold a message > Label (Important, To-do, Idea, Money, Read later, Personal). Chat tools > Labels lists them all. Labels are saved on this phone.
+ @mention      - Type @ and the contact's first name to pick it. Mentions are highlighted; a mention of you has a soft highlight.
+ Link preview  - Links in messages are clickable and show a card with title, text and picture. Settings > Storage and data > Link previews turns it off.
+ Location      - Attach menu > Location. Sends a map card (OpenStreetMap). The location travels inside the encrypted message text.
+ Auto-translate- Chat tools > Auto-translate. Pick English / Tamil / Hindi / Telugu / Malayalam / Kannada. Incoming messages get a translation under them. Works for English <-> Indian scripts. Tanglish is NOT translated.
+ Chat sound    - Chat tools > Chat sound. A different tone (or silent) for each chat while the app is open.
+ Video message - Attach menu > Video message. Records up to 60 seconds, shown as a round video.
+ Scan document - Attach menu > Scan. Photo > straighten the corners > Enhanced / Black & white > many pages > one PDF.
+ Edit photo    - Pick a photo, then tap the pencil on the preview: crop, rotate, draw, text, emoji.
+ Storage       - Settings > Storage and data: how much media each chat uses on this phone, clear all or per chat.
+ Auto-download - Same page. Photos and videos: Always / Wi-Fi only / Never. Not downloaded media shows a Download button.
+ Backup        - Same page. Back up to a file or to the cloud, and restore. Only harmless settings are saved (theme, stickers, labels, pins, starred...). PIN, lock, encryption keys, AI key and contacts are never included. Your messages are already in the cloud.
+ Picture-in-picture - Button on the video call screen (browser). Android app: see ANDROID-BRIDGE.txt part C.
+
+How to install (IMPORTANT, in this order)
+ 1. Firebase Console > Firestore > Rules: paste the new firestore.rules and Publish (adds the cloud backup document).
+ 2. Functions: copy the functions folder, run  firebase deploy --only functions  (adds linkPreview). Without it links still work, you only get a simple card for YouTube links and no card for other sites.
+ 3. Hosting: copy ALL files (pro-v65.js and pro-media-v65.js are new; index.html, sw.js changed). Cache is now v35, close and reopen the app once.
+ 4. Android app: see ANDROID-BRIDGE.txt part A-E for location, camera and picture-in-picture.
+
+Limits to know
+ - Archive, pins, labels, chat sounds and download settings are saved on each phone separately (not shared with your partner and not synced between your phones, except through the backup).
+ - Notification sound when the app is fully closed is chosen by Android, not by the per-chat sound.
+ - Auto-translate and the map picture use free outside services (MyMemory, OpenStreetMap). Link previews use your own Firebase function.
+ - Scanner corner detection works best when the paper is brighter than the table. You can always drag the four corners.
+
+
+V66 INTRO, LANGUAGES, HOME + OUR SPACE  (new files: i18n-v66.js, onboard-v66.js)  Cache v36
+- First launch: premium intro with a language picker, then sign up, then (after the name step) welcome, age (12+), gender, love start date and a short animated tour.
+- Languages (13): English (default, never changes by itself), English (India), Hindi, Tamil, Spanish, Mandarin Chinese, Arabic (right-to-left), French, German, Japanese, Korean, Portuguese, Russian. Pick in the intro or Settings (first row).
+  Translated so far: intro, onboarding, home feature cards, Our Space title, tab names, care nudges, good-night messages. Other screens are still English.
+- Tanglish text removed: care nudges ("Did you eat?" ...), good-night messages, AI key messages, server reminders (functions/index.js, redeploy functions).
+- Home: animated heart next to OnlyUs, animated "What you can do" cards.
+- Our Space: fixed "Rok Jeru" title removed. Default is "Name 💕 Name" (or "Our Space"); tap the title to set your own.
+- firestore.rules: users/{uid} may now hold an "ob" map (age, gender, since, title, lang). Publish the rules again.
+- Install: copy ALL files, publish firestore.rules, firebase deploy --only functions, fully close and reopen the app.

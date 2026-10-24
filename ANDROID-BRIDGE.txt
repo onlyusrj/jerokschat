@@ -82,3 +82,61 @@ Limits (be aware)
 * The ringtone rings while the app is open (screen or background, process alive).
 * If the app is completely closed / killed, ringing needs a push message + a foreground service with a full-screen intent. That is a bigger native feature and is not included.
 * Ringtone volume, silent and vibrate mode are controlled by the phone's normal ringer settings.
+
+
+=====================================================================
+V65 - extra native bits for the new chat features (all optional)
+=====================================================================
+These features work in the browser as they are. In the Android WebView app they need a few lines in your Activity.
+
+A) Share location (attach menu > Location)
+------------------------------------------
+Manifest:
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+WebView settings:
+  webView.settings.setGeolocationEnabled(true)
+WebChromeClient (ask the user once, then allow the page):
+  override fun onGeolocationPermissionsShowPrompt(origin: String, cb: GeolocationPermissions.Callback) {
+      if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+          cb.invoke(origin, true, false)
+      } else {
+          pendingGeoCb = cb; pendingGeoOrigin = origin
+          ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 77)
+      }
+  }
+and in onRequestPermissionsResult (requestCode 77): pendingGeoCb?.invoke(pendingGeoOrigin, granted, false)
+
+B) Video message + Document scanner
+-----------------------------------
+They use the camera + microphone (video message) and the camera picker (scanner), the same as calls and photos.
+Your WebChromeClient.onPermissionRequest must grant VIDEO_CAPTURE + AUDIO_CAPTURE (already needed for calls) and
+onShowFileChooser must support  <input type=file capture>  (already needed for the camera button).
+
+C) Picture-in-picture for video calls (button on the call screen)
+------------------------------------------------------------------
+In the browser the button uses the normal Picture-in-Picture API. In the Android app add this to OnlyUsBridge
+so the whole call window can float over other apps:
+
+  @JavascriptInterface
+  fun enterPip() {
+      activity.runOnUiThread {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+              val p = PictureInPictureParams.Builder().setAspectRatio(Rational(9, 16)).build()
+              activity.enterPictureInPictureMode(p)
+          }
+      }
+  }
+Manifest, on your <activity>:  android:supportsPictureInPicture="true"
+  android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+Optional: override onUserLeaveHint() { enterPip() } while a video call is active, so Home also floats the call.
+
+D) Chat sound per chat
+----------------------
+The chosen tone plays while the app is open. When the app is closed, Android decides the notification sound.
+To set it per chat natively you need one notification channel per chat; that is a bigger native change, so it is not included.
+
+E) Backup file download
+-----------------------
+"Back up to a file" saves with a normal <a download>. Make sure your WebView has a DownloadListener
+(the same one the chat export uses).
