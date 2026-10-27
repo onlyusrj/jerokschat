@@ -215,7 +215,7 @@
   }
   document.addEventListener('click', function (e) {
     var t = e.target.closest && e.target.closest('.heart-orb,.o64card,.o64sc,#tn_space');
-    if (t) burst(e.clientX, e.clientY);
+    if (t && !(e.target.closest && e.target.closest('.h70mb,.o64nx'))) burst(e.clientX, e.clientY);
   }, true);
 
   /* ---------- 3) couple extras on the home screen ---------- */
@@ -227,14 +227,20 @@
   function buildTogether() {
     var c = $('o64Together'); if (!c) { c = el('div', 'o64card'); c.id = 'o64Together'; c.setAttribute('data-couple', ''); }
     var since = ls('onlyus-since'), n = since ? days(since) : -1;
-    var heart = '<svg class="o64h" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+    var h7 = (window.__h70 && window.__h70.together && window.__h70.together()) || {};
+    var heart = h7.emoji ? '<span class="o64h o64emo" aria-hidden="true">' + String(h7.emoji).replace(/[<>&"]/g, '') + '</span>' : '<svg class="o64h" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
     if (n < 0) {
       c.innerHTML = heart + '<small>Our days</small><div class="o64q">Set the day you became a couple and watch the days add up.</div><div class="o64btns"><button type="button" id="o64Set">Set our date</button></div>';
     } else {
       var next = MILE.filter(function (m) { return m > n; })[0] || (Math.ceil((n + 1) / 365) * 365), prev = MILE.filter(function (m) { return m <= n; }).pop() || 0;
       var y = Math.floor(n / 365), mo = Math.floor((n % 365) / 30), d = (n % 365) % 30;
-      c.innerHTML = heart + '<small>Together for</small><div class="o64days"><b>' + n + '</b><span>days</span></div><div class="o64sub">' + (y ? y + ' yr ' : '') + mo + ' mo ' + d + ' d · next milestone: day ' + next + ' (' + (next - n) + ' to go)</div><div class="o64bar"><i style="width:0"></i></div><div class="o64btns" style="margin-top:12px"><button type="button" class="alt" id="o64Set">Change date</button></div>';
-      var f = c.querySelector('.o64bar i'); setTimeout(function () { f.style.width = Math.max(4, Math.min(100, (n - prev) / (next - prev) * 100)) + '%'; }, 120);
+      var big = n, unit = 'days';
+      if (h7.unit === 'weeks') { big = Math.floor(n / 7); unit = big === 1 ? 'week' : 'weeks'; }
+      else if (h7.unit === 'months') { big = Math.floor(n / 30.4375); unit = big === 1 ? 'month' : 'months'; }
+      else if (h7.unit === 'ymd') { big = (y ? y + 'y ' : '') + mo + 'm'; unit = d + 'd'; }
+      else unit = n === 1 ? 'day' : 'days';
+      c.innerHTML = heart + '<small>' + (h7.label ? h7.label.replace(/[<>&"]/g, '') : 'Together for') + '</small><div class="o64days"><b>' + big + '</b><span>' + unit + '</span></div><div class="o64sub">' + (y ? y + ' yr ' : '') + mo + ' mo ' + d + ' d' + (h7.mile === false ? '' : ' · next milestone: day ' + next + ' (' + (next - n) + ' to go)') + '</div>' + (h7.mile === false ? '' : '<div class="o64bar"><i style="width:0"></i></div>') + '<div class="o64btns" style="margin-top:12px"><button type="button" class="alt" id="o64Set">Change date</button></div>';
+      var f = c.querySelector('.o64bar i'); if (f) setTimeout(function () { f.style.width = Math.max(4, Math.min(100, (n - prev) / (next - prev) * 100)) + '%'; }, 120);
     }
     var st = c.querySelector('#o64Set');
     if (st) st.onclick = function (e) {
@@ -250,16 +256,19 @@
 
   function buildQuestion() {
     var c = $('o64Question'); if (!c) { c = el('div', 'o64card'); c.id = 'o64Question'; c.setAttribute('data-couple', ''); }
-    var i = Math.floor(Date.now() / 864e5) % QS.length;
-    c.innerHTML = '<small>Question of the day</small><div class="o64q">' + QS[i] + '</div><div class="o64btns"><button type="button" id="o64Ask">Send to chat</button><button type="button" class="alt" id="o64Copy">Copy</button></div>';
+    var i = Math.floor(Date.now() / 864e5) % QS.length, qs = QS;
+    var pk = window.__h70 && window.__h70.pool && window.__h70.pool(QS); if (pk && pk.list && pk.list.length) { qs = pk.list; i = pk.i % qs.length; }
+    c.innerHTML = '<small>' + (pk && pk.label ? pk.label.replace(/[<>&"]/g, '') : 'Question of the day') + '</small><div class="o64q"></div><div class="o64btns"><button type="button" id="o64Ask">Send to chat</button><button type="button" class="alt" id="o64Copy">Copy</button><button type="button" class="alt o64nx" id="o64Next" aria-label="Another question">&#x21bb;</button></div>';
+    c.querySelector('.o64q').textContent = qs[i];
+    c.querySelector('#o64Next').onclick = function (e) { e.stopPropagation(); if (window.__h70 && window.__h70.shuffle) window.__h70.shuffle(); buildQuestion(); };
     c.querySelector('#o64Ask').onclick = function () {
-      var inp = document.querySelector('#cf textarea,#cf input[type="text"],#cf [contenteditable="true"]'), q = QS[i];
+      var inp = document.querySelector('#cf textarea,#cf input[type="text"],#cf [contenteditable="true"]'), q = qs[i];
       var ok = false;
       if (inp) { if (inp.isContentEditable) inp.textContent = q; else inp.value = q; inp.dispatchEvent(new Event('input', { bubbles: true })); ok = true; }
       try { navigator.clipboard && navigator.clipboard.writeText(q); } catch (e) { }
       try { window.__us && window.__us.toast && window.__us.toast(ok ? 'Open a chat and tap send 💌' : 'Copied. Paste it in your chat 💌'); } catch (e) { }
     };
-    c.querySelector('#o64Copy').onclick = function () { try { navigator.clipboard && navigator.clipboard.writeText(QS[i]); window.__us && window.__us.toast && window.__us.toast('Copied'); } catch (e) { } };
+    c.querySelector('#o64Copy').onclick = function () { try { navigator.clipboard && navigator.clipboard.writeText(qs[i]); window.__us && window.__us.toast && window.__us.toast('Copied'); } catch (e) { } };
     return c;
   }
 
@@ -277,6 +286,7 @@
     reveal(list);
   }
   mount();
+  window.__o64 = { together: buildTogether, question: buildQuestion };
   /* the day counter refreshes at midnight / when the app comes back */
   document.addEventListener('visibilitychange', function () { if (!document.hidden && $('o64Together')) { buildTogether(); buildQuestion(); reveal(document); } });
 })();

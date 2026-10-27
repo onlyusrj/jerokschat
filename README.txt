@@ -300,3 +300,26 @@ V69 FINISHING THE LIST  (new files: i18n-ui-v69.js, extras-v69.js)  Cache v39
 - More translations (107 labels x 11 languages): sign-in, settings, chat tools, Our Space tabs, plans, couple tools.
   Anything not in the list stays English. Add more in i18n-ui-v69.js.
 - Deploy:  firebase deploy --only functions
+
+
+V69b SETTINGS SCROLL FIX (i18n-v66.js, plans-v67.js, sw.js)  Cache v40
+- Settings could barely scroll: the Language / Your plan / Invite a couple rows and the Colour theme card were inserted OUTSIDE the scrolling area (#setBody), leaving only ~100px (0 on small phones) to scroll in. They now live inside the Settings menu, so the whole list scrolls. They no longer show on sub-pages (Profile, Account...).
+- "Delete my account" moved into the Settings menu too.
+- Copy ALL changed files, fully close and reopen the app once.
+
+V69c PLANS OFF (plans-v67.js, functions/index.js, sw.js)  Cache v41
+- Master switch  PLANS_ON = false  in plans-v67.js (and in functions/index.js). While it is false: no "Your plan" and no "Invite a couple" row in Settings, no paywall screen,
+  no PRO/PLUS badges or locks (all games, scenes, colour themes, glass look, export, big files, stickers, HD calls and Couple tools are open for everyone).
+- Server (while off): everyone gets the Plus upload limits and 30 AI messages a day (AI_LIMIT_PLANS_OFF in functions/index.js; change that number if you want more/less).
+- To bring plans back: set PLANS_ON = true in BOTH files.
+- DEPLOY:  firebase deploy --only functions   (needed so AI chat and upload limits follow the switch). Copy all changed files, fully close and reopen the app once.
+
+V70 HOME STUDIO  (new file: home-v70.js; small edits in couple-v64.js, couple-v68.js, index.html, sw.js)  Cache v42
+- Home: every card has a small ⋯ (Hide / Move up / Move down / Customize). Hiding shows an Undo bar.
+- "Customize home" (button at the bottom of Home, or Settings > Customize home): switch cards on/off and reorder (Our days, Question of the day, Our little moments, Couple tools, What you can do), plus search bar, floating hearts, AI button, QR button, heart next to OnlyUs, and an optional greeting (Good morning, Name).
+- Card look: Gradient / Glass / Solid / Outline, corners Round / Soft / Square, size, card colour.
+- Question of the day: topic (All, Sweet, Fun, Deep, Dreams, Mine), every day or every app open, your own questions, custom card title, ↻ button for another question.
+- Our days card: own title, emoji instead of the heart, count in days / weeks / months / years+months, milestone bar on/off.
+- Couple tools: hide single info chips (streak, partner time, weather, reached safely) and single tiles.
+- NEW chat list design: Cards (default) / Classic / Compact, photo shape circle / rounded / square, unread badge number or dot, show/hide last message and time, ✕ remove button hidden by default (press and hold a chat to remove).
+- Everything is saved on THIS phone (localStorage onlyus-h70). Copy ALL changed files, fully close and reopen the app once.

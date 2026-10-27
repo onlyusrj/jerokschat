@@ -57,7 +57,10 @@
     var v = document.getElementById('vSet'); if (!v || document.getElementById('o66LangRow')) return;
     var bar = v.querySelector('.bar'), row = document.createElement('div'); row.id = 'o66LangRow'; row.className = 'o66langrow'; row.setAttribute('role', 'button'); row.tabIndex = 0;
     row.innerHTML = '<span data-i18n="lang">' + t('lang') + '</span><span id="o66LangNow">' + name(cur) + '</span>';
-    row.onclick = function () { pick(); }; if (bar) bar.after(row); else v.prepend(row);
+    row.onclick = function () { pick(); };
+    /* v69b: rows live INSIDE the scrolling #spMenu (they used to sit outside #setBody and squeezed the scroll area to ~100px) */
+    var sm = document.getElementById('spMenu'), sr = sm && sm.querySelector('.spsearch');
+    if (sr) sr.after(row); else if (sm) sm.prepend(row); else if (bar) bar.after(row); else v.prepend(row);
   }
   window.__i18n = { t: t, set: set, get: function () { return cur; }, pick: pick, name: name, langs: LANGS, apply: apply };
   var q = 0; function soon() { if (q) return; q = setTimeout(function () { q = 0; apply(); settingsRow(); }, 60); }

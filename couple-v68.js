@@ -101,7 +101,7 @@
   var WX = function (c) { return c === 0 ? 'Clear' : c < 4 ? 'Cloudy' : c < 50 ? 'Fog' : c < 70 ? 'Rain' : c < 80 ? 'Snow' : c < 90 ? 'Showers' : 'Storm'; };
   async function strip() {
     var s = $('o68Strip'); if (!s) return; var c = await ctx(); if (!c) { s.innerHTML = '<div class="o68chip"><small>Add your partner to see your streak, their local time and more.</small></div>'; return; }
-    var chips = {}, draw = function () { s.innerHTML = ['streak', 'time', 'wx', 'arr'].map(function (k) { return chips[k] || ''; }).join(''); };
+    var chips = {}, draw = function () { s.innerHTML = ['streak', 'time', 'wx', 'arr'].map(function (k) { return (chips[k] || '').replace('class="o68chip"', 'class="o68chip" data-k="' + k + '"'); }).join(''); };
     var tz = Intl.DateTimeFormat().resolvedOptions().timeZone, k = 'o68tz' + c.uid;
     if (ls(k) !== dayKey(Date.now())) { hub(c, 'tz_' + c.uid).set({ tz: tz, ts: Date.now(), name: c.name }).then(function () { ls(k, dayKey(Date.now())); }).catch(function () { }); }
     var sk = JSON.parse(ls('o68streak') || 'null');

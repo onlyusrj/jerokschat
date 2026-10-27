@@ -15,9 +15,13 @@
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
 
   /* ---------- plan state ---------- */
+  /* MASTER SWITCH. false = plans are OFF for now: no paywall, no "Your plan" / "Invite a couple" rows, no PRO/PLUS badges or locks;
+     every feature works for everyone. Set to true to bring the plans back (also set PLANS_ON in functions/index.js). */
+  var PLANS_ON = false;
   var LIM = { free: { video: 15, doc: 10, scenes: 2 }, pro: { video: 50, doc: 25, scenes: 6 }, plus: { video: 200, doc: 100, scenes: 6 } };
   var FREE_GAMES = ['Tic-Tac-Toe', 'Connect 4', 'Rock Paper Scissors', 'Would You Rather', 'Truth or Dare'];
   function current() {
+    if (!PLANS_ON) return 'plus';
     if (ls('onlyus-dev') === '1') { var d = ls('onlyus-dev-plan'); if (d === 'pro' || d === 'plus') return d; }
     try { var p = JSON.parse(ls('onlyus-plan') || 'null'); if (p && p.until > Date.now() && ['active', 'trial', 'grace'].indexOf(p.status) > -1 && (p.plan === 'pro' || p.plan === 'plus')) return p.plan; } catch (e) { }
     return 'free';
@@ -70,6 +74,7 @@
     '#o67Pal{margin:12px 16px;padding:14px 16px;border-radius:16px;background:var(--panel,#fff);border:1px solid var(--line,#ddd);color:var(--ink,#222)}#o67Pal b{display:block;font-size:15px;margin-bottom:10px}',
     '.o67sw{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.o67sw button{all:unset;cursor:pointer;text-align:center;font-size:11px;font-weight:600;position:relative}.o67sw i{display:block;width:100%;aspect-ratio:1;border-radius:16px;margin-bottom:4px;border:3px solid transparent;box-sizing:border-box}.o67sw button.on i{border-color:var(--ink,#222)}.o67sw .lk{position:absolute;top:3px;inset-inline-end:3px;font-size:9px;font-weight:800;background:#0009;color:#fff;border-radius:6px;padding:1px 5px}',
     '.o67blk{display:none;position:fixed;left:0;right:0;bottom:0;z-index:30;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:var(--panel,#fff);border-top:1px solid var(--line,#ddd);text-align:center;color:var(--ink,#222);font-size:14px}.o67blk.on{display:block}.o67blk button{all:unset;cursor:pointer;margin-inline-start:8px;color:var(--acc,#8657d9);font-weight:800}',
+    '#setBody .o66langrow,#setBody #o67Pal{margin-left:0;margin-right:0}#setBody #o67Del{margin-left:0;margin-right:0}',
     '#o67Del{margin:18px 16px 30px;padding:14px 16px;border-radius:16px;border:1px solid #d93a4a55;color:#d93a4a;font-weight:700;text-align:center;cursor:pointer}'
   ].join('\n');
   document.head.appendChild(css);
@@ -80,6 +85,7 @@
   /* ---------- paywall ---------- */
   var PRICES = { pro: [2.99, 33.99], plus: [5.99, 67.99] };
   function paywall(reason) {
+    if (!PLANS_ON) return;
     var old = $('o67Pay'); if (old) old.remove();
     var per = 1, o = el('div'), cur = current(); o.id = 'o67Pay';
     function html() {
@@ -151,11 +157,16 @@
   /* ---------- settings rows ---------- */
   function planRow() {
     var v = $('vSet'); if (!v) return;
+    if (!PLANS_ON) {
+      ['o67PlanRow', 'o67RefRow'].forEach(function (id) { var x = $(id); if (x) x.remove(); });
+      var b0 = $('setBody'); if (b0 && !$('o67Del')) { var d0 = el('div'); d0.id = 'o67Del'; d0.setAttribute('role', 'button'); d0.tabIndex = 0; d0.textContent = 'Delete my account'; d0.onclick = deleteDlg; ($('spMenu') || b0).appendChild(d0); }
+      return;
+    }
     var r = $('o67PlanRow'), n = { free: 'Free', pro: 'Couple Pro', plus: 'Couple Pro Plus' }[current()];
     if (!r) { r = el('div', 'o66langrow'); r.id = 'o67PlanRow'; r.setAttribute('role', 'button'); r.tabIndex = 0; r.onclick = function () { paywall(''); }; var a = $('o66LangRow'); if (a) a.after(r); else return; }
     var s = '<span>Your plan</span><span>' + n + '</span>'; if (r.innerHTML !== s) r.innerHTML = s;
     var rr = $('o67RefRow'); if (!rr) { rr = el('div', 'o66langrow'); rr.id = 'o67RefRow'; rr.setAttribute('role', 'button'); rr.tabIndex = 0; rr.innerHTML = '<span>Invite a couple</span><span>1 week Pro</span>'; rr.onclick = referralDlg; r.after(rr); }
-    var body = $('setBody'); if (body && !$('o67Del')) { var d = el('div'); d.id = 'o67Del'; d.setAttribute('role', 'button'); d.tabIndex = 0; d.textContent = 'Delete my account'; d.onclick = deleteDlg; body.appendChild(d); }
+    var body = $('setBody'); if (body && !$('o67Del')) { var d = el('div'); d.id = 'o67Del'; d.setAttribute('role', 'button'); d.tabIndex = 0; d.textContent = 'Delete my account'; d.onclick = deleteDlg; (document.getElementById('spMenu') || body).appendChild(d); }
   }
 
   /* ---------- block + report ---------- */
