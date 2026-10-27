@@ -250,3 +250,53 @@ V66 INTRO, LANGUAGES, HOME + OUR SPACE  (new files: i18n-v66.js, onboard-v66.js)
 - Our Space: fixed "Rok Jeru" title removed. Default is "Name 💕 Name" (or "Our Space"); tap the title to set your own.
 - firestore.rules: users/{uid} may now hold an "ob" map (age, gender, since, title, lang). Publish the rules again.
 - Install: copy ALL files, publish firestore.rules, firebase deploy --only functions, fully close and reopen the app.
+
+
+V67 SECURITY, PLANS, LOCKS, THEMES, BLOCK/REPORT, DELETE ACCOUNT  (new file: plans-v67.js)  Cache v37
+- Minimum age is now 16 (onboarding, translations, firestore.rules).
+- firestore.rules: block list (users/{uid}/blocks), blocked users cannot write to the chat, reports collection (write-only),
+  planByUid/{uid} (server-written plan), top-level statuses readable only by the owner, message size limits.
+  PUBLISH THE RULES AGAIN.
+- functions: deleteMyAccount (new), aiChat now needs a Pro/Plus plan (Free 0, Pro 30, Plus 200 messages a day).
+  Deploy:  firebase deploy --only functions,firestore:rules
+- Plans: Free / Couple Pro / Couple Pro Plus, paywall screen (Settings > Your plan), 3-day trial text, monthly and yearly.
+  Locks for Free: 8 of 13 games, scenes beyond the first 2, liquid glass look, AI chat, chat export, large videos and files,
+  Pro and Plus colour themes (Settings > Colour theme: 2 free, 6 Pro, 6 Plus).
+- The plan is read from Firestore planByUid/{uid} = { plan:'pro'|'plus', status:'active'|'trial'|'grace', until:<ms> }.
+  Nothing writes it yet: it will be written by the server after Google Play billing is connected (Capacitor step).
+  To test now, write that document in the Firebase console, or in the app's browser console:
+  localStorage['onlyus-dev']='1'; localStorage['onlyus-dev-plan']='pro'   (REMOVE THIS BEFORE RELEASE)
+- Chat tools: new Block and Report buttons. Settings (bottom): Delete my account.
+- Not done yet: Google Play billing and AdMob (need Capacitor), HD calls lock, storage quotas on the server,
+  new Pro/Plus stickers, accept-before-chat flow, new features (streak, recap, vault, live map...), more translations.
+
+
+V68 COUPLE TOOLS  (new file: couple-v68.js)  Cache v38
+Home screen > "Couple tools": chat streak, partner's local time, weather where they are (when they share their location), safe-arrival notice,
+and 9 tiles:
+  Free : Live map (stops after 1 hour), Countdown, Daily question (both answer, then both are shown)
+  Pro  : Live map without the 1 hour limit, Bucket list, Time capsule letters, Year recap
+  Plus : AI helpers (date planner, love letter; uses the AI limit of the plan), Safe arrival, Private vault (PIN, notes and photos stay on this phone)
+- Shared data is stored in chats/{cid}/coupleHub/* (members only, blocked users cannot write). Not end-to-end encrypted.
+- Live map: asks for consent first, shares only with the partner and only while the app is open. Uses OpenStreetMap tiles through Leaflet when online,
+  with a built-in cute map as the fallback. For a public launch check the OpenStreetMap tile usage policy or use a paid tile provider.
+- Streak and recap read your latest 300 / 1500 messages' timestamps (not their content).
+- functions: no push notification is sent when the receiver has blocked the sender. Redeploy functions.
+- Needs a native app later (Capacitor): location permission prompt inside the Android app, background location, AdMob ads, Google Play billing, widget.
+
+
+V69 FINISHING THE LIST  (new files: i18n-ui-v69.js, extras-v69.js)  Cache v39
+- Signed uploads + plan limits + storage quota on the server: functions signUpload.
+  One-time setup:  firebase functions:secrets:set CLOUDINARY_API_KEY  and  CLOUDINARY_API_SECRET
+  and in Cloudinary create a SIGNED upload preset named  onlyus_chat_signed  (copy the settings of onlyus_chat).
+  Until the secrets exist the app quietly keeps using the old unsigned preset. When you are ready, switch onlyus_chat to
+  "signed only" or delete it so nobody can bypass the limits.
+  Limits: video 15 / 50 / 200 MB, documents 10 / 25 / 100 MB, images 25 MB, storage per couple 1 / 10 / 50 GB (counted in usage/{cid}).
+- Referral: functions getReferralCode and claimReferral. Settings > "Invite a couple". Inviter and their partner get 7 days of Couple Pro
+  per couple that joins (max 8 weeks). A paid plan is never replaced.
+- HD calls: Plus 720p, others 480p (camera picture only).
+- Extra sticker packs in the sticker panel: Kitty (Pro) and Cosmic (Plus), drawn in code.
+- Our Space: every tab opens with its own animation.
+- More translations (107 labels x 11 languages): sign-in, settings, chat tools, Our Space tabs, plans, couple tools.
+  Anything not in the list stays English. Add more in i18n-ui-v69.js.
+- Deploy:  firebase deploy --only functions

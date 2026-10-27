@@ -107,7 +107,7 @@
     function render() {
       var h = '';
       if (step === 0) h = '<div class="o66step"><div class="o66logo">' + HEART + '</div><h2>' + T('welcome') + (name ? ', ' + esc(name) : '') + '</h2><p>' + T('setup') + '</p><button class="o66btn" id="o66N" type="button">' + T('next') + '</button></div>';
-      else if (step === 1) h = '<div class="o66step"><div class="o66glass"><label>' + T('age') + '</label><input id="o66Age" type="number" inputmode="numeric" min="12" max="120" value="' + (ob.age || '') + '"><div class="o66err" id="o66Err"></div>' +
+      else if (step === 1) h = '<div class="o66step"><div class="o66glass"><label>' + T('age') + '</label><input id="o66Age" type="number" inputmode="numeric" min="16" max="120" value="' + (ob.age || '') + '"><div class="o66err" id="o66Err"></div>' +
         '<label style="margin-top:8px">' + T('gender') + '</label><div class="o66chips" id="o66G">' + [['m', 'g_m'], ['f', 'g_f'], ['n', 'g_n'], ['p', 'g_p']].map(function (g) { return '<button type="button" data-g="' + g[0] + '"' + (ob.gender === g[0] ? ' class="on"' : '') + '>' + T(g[1]) + '</button>'; }).join('') + '</div>' +
         '<label style="margin-top:16px">' + T('since') + '</label><input id="o66Since" type="date" value="' + esc(ob.since) + '"></div><button class="o66btn" id="o66N" type="button" disabled>' + T('cont') + '</button><button class="o66link" id="o66Later" type="button">' + T('later') + '</button></div>';
       else { var f = FEATS[step - 2]; h = '<div class="o66step"><div class="o66ico">' + ICO[f[0]] + '</div><h2>' + T(f[1] + 't') + '</h2><p>' + T(f[1] + 'd') + '</p><button class="o66btn" id="o66N" type="button">' + T(step === total - 1 ? 'cont' : 'next') + '</button>' + (step < total - 1 ? '<button class="o66link" id="o66Skip" type="button">' + T('skip') + '</button>' : '') + '</div>'; }
@@ -118,7 +118,7 @@
       var sk = $('o66Skip'); if (sk) sk.onclick = finish;
       if (step === 1) {
         var age = $('o66Age'), err = $('o66Err'), go = $('o66N');
-        var check = function () { var a = parseInt(age.value, 10); ob.age = a || 0; var bad = a > 0 && a < 12; err.textContent = bad ? T('minage') : ''; go.disabled = !(a >= 12 && a <= 120); };
+        var check = function () { var a = parseInt(age.value, 10); ob.age = a || 0; var bad = a > 0 && a < 16; err.textContent = bad ? T('minage') : ''; go.disabled = !(a >= 16 && a <= 120); };
         age.oninput = check; check();
         $('o66G').onclick = function (e) { var b = e.target.closest('button'); if (!b) return; ob.gender = b.getAttribute('data-g'); this.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); }); };
         $('o66Since').onchange = function () { ob.since = this.value; };

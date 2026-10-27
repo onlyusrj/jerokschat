@@ -9,13 +9,20 @@ service cloud.firestore {
     }
 
     // Each person's own name + chat list (partner UID + shared code). Only that person can read/write it.
+    // true unless the other member of this chat has blocked the caller
+    function notBlocked(cid) {
+      let m = get(/databases/$(database)/documents/chats/$(cid)).data.members;
+      let other = m[0] == request.auth.uid ? m[1] : m[0];
+      return !exists(/databases/$(database)/documents/users/$(other)/blocks/$(request.auth.uid));
+    }
+
     match /users/{uid} {
       allow read: if signedIn() && request.auth.uid == uid;
       allow create, update: if signedIn() && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['name', 'phone', 'contacts', 'updatedAt', 'mode', 'ob'])
         && (!('ob' in request.resource.data) || (request.resource.data.ob is map
             && request.resource.data.ob.keys().hasOnly(['age', 'gender', 'since', 'title', 'lang'])
-            && (!('age' in request.resource.data.ob) || (request.resource.data.ob.age is int && request.resource.data.ob.age >= 12 && request.resource.data.ob.age <= 120))
+            && (!('age' in request.resource.data.ob) || (request.resource.data.ob.age is int && request.resource.data.ob.age >= 16 && request.resource.data.ob.age <= 120))
             && (!('title' in request.resource.data.ob) || (request.resource.data.ob.title is string && request.resource.data.ob.title.size() <= 40))
             && (!('since' in request.resource.data.ob) || (request.resource.data.ob.since is string && request.resource.data.ob.since.size() <= 10))))
         && (!('mode' in request.resource.data) || request.resource.data.mode in ['couple', 'regular'])
@@ -35,6 +42,13 @@ service cloud.firestore {
           && request.resource.data.token.size() > 0
           && request.resource.data.token.size() <= 2000;
       }
+      match /blocks/{blockedUid} {
+        allow read, delete: if signedIn() && request.auth.uid == uid;
+        allow create, update: if signedIn() && request.auth.uid == uid
+          && blockedUid != uid
+          && request.resource.data.keys().hasOnly(['at'])
+          && request.resource.data.at is int;
+      }
       match /period/config {
         allow read, write: if signedIn() && request.auth.uid == uid;
       }
@@ -42,6 +56,25 @@ service cloud.firestore {
 
     // Phone directory: lets a partner find your account by number. Lookup of one number only, no listing.
     // Doc id is a hash of the number. A number can be linked to one account (first come, first served).
+    // reports are write-only for users; read them in the Firebase console or with the Admin SDK
+    match /reports/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['by', 'target', 'cid', 'reason', 'note', 'ts'])
+        && request.resource.data.by == request.auth.uid
+        && request.resource.data.target is string && request.resource.data.target.size() <= 128
+        && request.resource.data.cid is string && request.resource.data.cid.size() <= 128
+        && request.resource.data.reason in ['spam', 'harassment', 'inappropriate', 'underage', 'other']
+        && request.resource.data.note is string && request.resource.data.note.size() <= 300
+        && request.resource.data.ts is int;
+      allow read, update, delete: if false;
+    }
+
+    // plan of each user (written only by the server after a verified Google Play purchase)
+    match /planByUid/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
     match /phones/{h} {
       allow get: if signedIn();
       allow list: if false;
@@ -67,7 +100,7 @@ service cloud.firestore {
     }
 
     match /statuses/{uid} {
-      allow read: if signedIn();
+      allow read: if signedIn() && request.auth.uid == uid;
       allow create, update: if signedIn() && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['name','text','ts','updatedAt'])
         && request.resource.data.name is string
@@ -125,7 +158,7 @@ service cloud.firestore {
       // Status (24 h): members of the chat can read; only the author posts/deletes; a viewer may only add their own entry to `views`.
       match /statuses/{sid} {
         allow read: if isMember(cid);
-        allow create: if isMember(cid)
+        allow create: if isMember(cid) && notBlocked(cid)
           && request.resource.data.fromUid == request.auth.uid
           && request.resource.data.keys().hasAll(['fromUid', 'ts', 'exp', 'type'])
           && request.resource.data.type in ['img', 'vid', 'text']
@@ -139,9 +172,11 @@ service cloud.firestore {
 
       match /messages/{mid} {
         allow read: if isMember(cid);
-        allow create: if isMember(cid)
+        allow create: if isMember(cid) && notBlocked(cid)
           && request.resource.data.fromUid == request.auth.uid
-          && request.resource.data.keys().hasAll(['fromUid', 'from', 'ts', 'type']);
+          && request.resource.data.keys().hasAll(['fromUid', 'from', 'ts', 'type'])
+          && (!('text' in request.resource.data) || (request.resource.data.text is string && request.resource.data.text.size() <= 8000))
+          && (!('data' in request.resource.data) || (request.resource.data.data is string && request.resource.data.data.size() <= 950000));
         allow update: if isMember(cid)
           && request.resource.data.fromUid == resource.data.fromUid
           && request.resource.data.from == resource.data.from
@@ -171,11 +206,13 @@ service cloud.firestore {
       }
       // Real-time multiplayer games. Only chat members can see or change the shared game state.
       match /games/{gid} {
-        allow read, write: if isMember(cid);
+        allow read: if isMember(cid);
+        allow write: if isMember(cid) && notBlocked(cid);
       }
       // Private shared couple hub: notes, moods, memories, dates, surprises, places, music and lists.
       match /coupleHub/{hid} {
-        allow read, write: if isMember(cid);
+        allow read: if isMember(cid);
+        allow write: if isMember(cid) && notBlocked(cid);
       }
       match /presence/{pid} {
         allow read: if isMember(cid);
