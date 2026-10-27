@@ -8,7 +8,7 @@ const $=id=>document.getElementById(id),U=()=>window.__us||{},ms=$('ms'),box=$('
 if(!ms||!box||window.__wpg)return;
 const toast=m=>{try{U().toast(m)}catch(e){}};
 const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}},set=(k,v)=>{try{localStorage.setItem(k,v);return true}catch(e){return false}};
-const KC=c=>'onlyus-wp2-'+c, MAXCH=700000;
+const KC=c=>'onlyus-wp2-'+c, MAXCH=700000, DEF=6, MAXP=15; // v71: DEF = design shown until one of you picks something (6 = Sakura), MAXP = number of built-in designs
 const mem=new Map(), bases=new Map();
 const cidNow=()=>{try{return U().cid()||''}catch(e){return ''}};
 const uid=()=>{try{return U().uid()||''}catch(e){return ''}};
@@ -19,12 +19,12 @@ const st0=document.createElement('style');st0.id='v48wp';st0.textContent=`
 .wpGal button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:10px 14px;cursor:pointer;font:600 14px system-ui,sans-serif}
 .wpGal #wpPick{background:var(--acc);color:#fff;border-color:var(--acc)}
 .wpGal label{display:none;flex:1 1 100%;font:13px system-ui,sans-serif;color:var(--dim)}.wpGal label input{width:100%;margin-top:4px;accent-color:var(--acc)}
-.wpGal #wpClear{display:none}.wpGal.has #wpClear,.wpGal.anyw #wpClear{display:block}.wpGal.has label{display:block}
+.wpGal #wpDef{display:block}.wpGal #wpClear{display:none}.wpGal.has #wpClear,.wpGal.anyw #wpClear{display:block}.wpGal.has label{display:block}
 .wpThumb{width:44px;height:44px;border-radius:12px;background-size:cover;background-position:center;border:2px solid var(--acc);display:none}.wpGal.has .wpThumb{display:block}
 .wpShared{flex:1 1 100%;font:12.5px system-ui,sans-serif;color:var(--dim)}`;
 document.head.appendChild(st0);
 const g=document.createElement('div');g.className='wpGal';
-g.innerHTML='<div class="wpThumb" id="wpThumb"></div><button id="wpPick" type="button">🖼 Choose from gallery</button><button id="wpClear" type="button">Remove wallpaper</button><label>Dim photo for easier reading<input id="wpDim" type="range" min="0" max="70" value="25" aria-label="Dim wallpaper"></label><div class="wpShared">💕 Same wallpaper for both of you. When one changes it, the other sees it too.</div><input id="wpFile" type="file" accept="image/*" hidden>';
+g.innerHTML='<div class="wpThumb" id="wpThumb"></div><button id="wpPick" type="button">🖼 Choose from gallery</button><button id="wpDef" type="button">⭐ Default design</button><button id="wpClear" type="button">Remove wallpaper</button><label>Dim photo for easier reading<input id="wpDim" type="range" min="0" max="70" value="25" aria-label="Dim wallpaper"></label><div class="wpShared">💕 Same wallpaper for both of you. When one changes it, the other sees it too.</div><input id="wpFile" type="file" accept="image/*" hidden>';
 box.appendChild(g);
 
 /* ---- state per chat ---- */
@@ -42,14 +42,16 @@ function save(cid,s){
   mem.set(cid,s);
   if(!set(KC(cid),JSON.stringify(s)))set(KC(cid),JSON.stringify(Object.assign({},s,{img:''}))); // photo too big for storage: Firestore cache still has it
 }
+// v71: a chat nobody has ever set (ts 0, nothing chosen) shows the default design. 'Remove wallpaper' sets ts, so plain stays plain.
+function eff(s){return (!s.img&&!s.p&&!s.ts)?Object.assign({},s,{p:DEF}):s}
 function paintUI(s){
   box.querySelectorAll('.wallpaper-picker button').forEach(b=>b.classList.toggle('on',!s.img&&+b.dataset.w===s.p));
   const has=!!s.img;g.classList.toggle('has',has);g.classList.toggle('anyw',has||!!s.p);
   if(has){$('wpThumb').style.backgroundImage='url("'+s.img+'")';$('wpDim').value=s.dim}
 }
 function apply(){
-  const cid=cidNow();if(!cid)return;const s=load(cid);
-  for(let i=1;i<=5;i++)ms.classList.remove('chat-wallpaper-'+i);
+  const cid=cidNow();if(!cid)return;const s=eff(load(cid));
+  for(let i=1;i<=MAXP+5;i++)ms.classList.remove('chat-wallpaper-'+i);
   ms.classList.remove('chat-wallpaper-img');ms.style.removeProperty('--wp-img');
   if(s.img){ms.classList.add('chat-wallpaper-img');ms.style.setProperty('--wp-img','url("'+s.img+'")');ms.style.setProperty('--wp-dim',String(s.dim/100))}
   else if(s.p)ms.classList.add('chat-wallpaper-'+s.p);
@@ -96,6 +98,7 @@ $('wpFile').onchange=async e=>{
     push(cid,{p:0,img:url,dim:load(cid).dim,ts:0});
     toast('Wallpaper set for both of you 🖼');
   }catch(err){console.error(err);toast('Could not read that photo')}};
+$('wpDef').onclick=()=>{const cid=cidNow();if(!cid)return toast('Open a chat first');push(cid,{p:DEF,img:'',dim:25,ts:0});toast('Default wallpaper set for both of you ⭐')};
 $('wpClear').onclick=()=>{const cid=cidNow();if(!cid)return;push(cid,{p:0,img:'',dim:25,ts:0});toast('Wallpaper removed for both of you')};
 let dt;$('wpDim').oninput=e=>{const cid=cidNow();if(!cid)return;const s=load(cid);s.dim=+e.target.value;ms.style.setProperty('--wp-dim',String(s.dim/100));clearTimeout(dt);dt=setTimeout(()=>push(cid,Object.assign({},load(cid))),800)};
 // built-in designs
