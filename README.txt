@@ -323,3 +323,24 @@ V70 HOME STUDIO  (new file: home-v70.js; small edits in couple-v64.js, couple-v6
 - Couple tools: hide single info chips (streak, partner time, weather, reached safely) and single tiles.
 - NEW chat list design: Cards (default) / Classic / Compact, photo shape circle / rounded / square, unread badge number or dot, show/hide last message and time, ✕ remove button hidden by default (press and hold a chat to remove).
 - Everything is saved on THIS phone (localStorage onlyus-h70). Copy ALL changed files, fully close and reopen the app once.
+
+
+V71 WALLPAPERS + SORRY  (new files: wallpaper-pack-v71.js, sorry-v71.js; edits in wallpaper-gallery.js, index.html, sw.js)  Cache v43
+- 10 new built-in chat wallpapers (6-15): Sakura, Hearts, Starry night, Aurora, Sunset, Ocean waves, Forest, Moon & clouds, Doodles, Soft dots.
+  Drawn in code (no image files), work offline, look right in light AND dark theme. Chat tools > Wallpaper shows previews of all 15 designs.
+- DEFAULT: design 6 "Sakura" (soft pink petals) shows in every chat where nobody has picked a wallpaper yet.
+  "Remove wallpaper" = plain chat (stays plain). New button "Default design" brings the Sakura one back. Still shared with your partner like before.
+  To change the default: in wallpaper-gallery.js change  DEF=6  to another number (1-15).
+- SORRY corner: Chat tools > 💌 Sorry.
+  Words (Tanglish / English, tap + edit + send), My sorry (what I did + how you felt + what I'll do next time -> one proper apology),
+  Need time ("konjam time venum, 30 nimisham la pesuren" so silence is not read as ignoring), Make-up (sorry coupons: ice cream, hug, movie night... and a pinky promise),
+  Stickers (3 animated sorry stickers). Everything is sent as a normal chat message/sticker: NO rules change, NO deploy needed.
+- Copy ALL changed files, fully close and reopen the app once (service worker cache v43).
+
+
+V72 VOICE NOTE + SPEED FIX  (edits in index.html, plans-v67.js, i18n-v66.js, sw.js)  Cache v44
+- Uploads (voice, photo, video, files) now have a real timeout. Before, a stalled connection could hang forever and the voice note never sent.
+- If the signed upload (plan limits) fails for any reason, the app retries once with the plain preset instead of giving up.
+- Voice notes retry 2 more times automatically and now show the REAL reason ("Upload timed out", "Network error during upload", Cloudinary message...) instead of one generic toast.
+- Speed: plans-v67.js and i18n-v66.js re-scanned the whole page on every DOM change, including every upload-progress toast update (about 10 times a second). They now ignore toast changes. The signUpload wait was cut from 15s to 6s and the 1.5s background check now runs every 4s and only when the app is visible.
+- BOTH phones need the new files, because each phone does its own upload.

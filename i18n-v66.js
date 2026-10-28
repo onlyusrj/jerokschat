@@ -64,6 +64,7 @@
   }
   window.__i18n = { t: t, set: set, get: function () { return cur; }, pick: pick, name: name, langs: LANGS, apply: apply };
   var q = 0; function soon() { if (q) return; q = setTimeout(function () { q = 0; apply(); settingsRow(); }, 60); }
-  new MutationObserver(soon).observe(document.body, { childList: true, subtree: true });
+  var inToast = function (n) { while (n) { if (n.id === 'toast' || n.id === 'hubToast') return true; n = n.parentNode; } return false; };
+  new MutationObserver(function (ms) { for (var i = 0; i < ms.length; i++) { if (!inToast(ms[i].target)) { soon(); return; } } }).observe(document.body, { childList: true, subtree: true });
   apply(); settingsRow();
 })();

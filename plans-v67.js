@@ -228,7 +228,7 @@
   /* ---------- signed uploads (plan limits and storage quota are checked on the server) ---------- */
   window.__signUp = async function (blob, type, raw, cid) {
     var kind = raw ? 'doc' : (type && type.indexOf('video/') === 0) ? 'video' : (type && type.indexOf('audio/') === 0) ? 'audio' : 'image';
-    try { var r = await window.firebase.functions().httpsCallable('signUpload', { timeout: 15000 })({ kind: kind, size: blob.size, cid: cid || '' }); return r.data; }
+    try { var r = await window.firebase.functions().httpsCallable('signUpload', { timeout: 6000 })({ kind: kind, size: blob.size, cid: cid || '' }); return r.data; }
     catch (e) {
       if (e && e.code === 'functions/resource-exhausted') { toast(e.message || 'Plan limit reached.'); if (current() !== 'plus') paywall('You reached the limit of your plan.'); var x = new Error('PLAN_LIMIT'); x.planLimit = true; throw x; }
       return null; /* not configured yet or offline: the app falls back to the old unsigned upload */
@@ -258,8 +258,10 @@
   /* ---------- keep everything in sync ---------- */
   function applyAll() { listen(); lockGames(); lockScenes(); planRow(); palCard(); applyPal(); tools(); blockUI(); if (current() === 'free') R.classList.remove('lg'); }
   var q = 0; function soon() { if (q) return; q = setTimeout(function () { q = 0; applyAll(); }, 120); }
-  new MutationObserver(soon).observe(document.body, { childList: true, subtree: true });
-  setInterval(function () { listen(); blockUI(); }, 1500);
+  /* v72: ignore toast text changes (upload progress fires ~10x/second) so the whole page is not re-scanned each time */
+  var inToast = function (n) { while (n) { if (n.id === 'toast' || n.id === 'hubToast') return true; n = n.parentNode; } return false; };
+  new MutationObserver(function (ms) { for (var i = 0; i < ms.length; i++) { if (!inToast(ms[i].target)) { soon(); return; } } }).observe(document.body, { childList: true, subtree: true });
+  setInterval(function () { if (!document.hidden) { listen(); blockUI(); } }, 4000);
   window.addEventListener('onlyus-lang', soon);
   applyAll();
 })();
