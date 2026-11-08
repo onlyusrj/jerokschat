@@ -386,3 +386,14 @@ CALLS (screen off / network change):
  - Android Studio side: see ANDROID-BRIDGE.txt, section V75 (CallService foreground service, HangupReceiver, bridge method, MainActivity onPause change, manifest lines).
    Without those native lines Android puts the WebView to sleep soon after the screen turns off.
  - iPhone: not possible in a web app / PWA (iOS stops the microphone when the screen locks). Only a native iOS app with CallKit can do it.
+
+
+V76 SMOOTH MOTION FOR THE PLAIN BITS  (new: motion-v76.js; edits: index.html, sw.js)  Cache v48
+Already animated before (not touched): screen slides + press feedback + tab pill + swipe between tabs (home-v52.js), dialog OPEN + list entrances (fx-anim.js), message pop-in (couple-v64.js), call rings.
+New, only the gaps:
+ - Dialogs / sheets (.ov): CLOSING fades out and the card sinks, instead of vanishing. Dialogs made by other modules (o67 / o68 / h75) get an open animation too.
+ - Toast: springs up and fades away instead of blinking in and out.
+ - Settings-style checkboxes (inputs with an id) become animated switches with a spring knob and glow. Checklist boxes (data-i / data-bucket) stay normal.
+ - Chat list and message list no longer bounce the page behind them (overscroll-behavior: contain).
+ - Uses the separate `translate` / `scale` CSS properties, so it never fights existing transforms. Off for "reduce motion".
+ - Developer note: classList.remove('x') on a class that is not there STILL fires a MutationObserver on the class attribute. Guard with contains() or the observer loops forever (that bug was caught in testing).
