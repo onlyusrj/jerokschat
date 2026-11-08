@@ -344,3 +344,45 @@ V72 VOICE NOTE + SPEED FIX  (edits in index.html, plans-v67.js, i18n-v66.js, sw.
 - Voice notes retry 2 more times automatically and now show the REAL reason ("Upload timed out", "Network error during upload", Cloudinary message...) instead of one generic toast.
 - Speed: plans-v67.js and i18n-v66.js re-scanned the whole page on every DOM change, including every upload-progress toast update (about 10 times a second). They now ignore toast changes. The signUpload wait was cut from 15s to 6s and the 1.5s background check now runs every 4s and only when the app is visible.
 - BOTH phones need the new files, because each phone does its own upload.
+
+
+V73 ACCOUNT SYNC + LOVE MAZE 3D  (new: account-sync-v73.js, maze3d-v73.js; edits: index.html, onboard-v66.js, firestore.rules, sw.js)  Cache v45
+1) ACCOUNT SETTINGS FOLLOW THE ACCOUNT
+   - Theme, language, palette, font size, home layout, muted/starred/pinned/hidden chats, voice settings ... are saved to users/{uid}/prefs/app a few seconds after you change them.
+   - Sign in on any phone: they are restored (app reloads ONCE, shows "Restoring your settings"). Another account on the same phone starts clean.
+   - Welcome / onboarding done + intro seen are saved too, so a finished welcome never shows again for that account on any phone.
+     The first-launch intro now only shows when someone taps "Create account" (a returning user signing in never sees it).
+   - Notification permission is asked once per account (the phone's own Allow/Deny is decided by Android/iOS per device and cannot be synced by any app).
+   - BUG FIXED: saveCloud() used set() without merge, so every contact-list save erased the welcome data stored on the same document. Now merge:true.
+   - Never synced: app lock, biometric, encryption keys, vault, AI key, call logs, avatar/wallpaper images.
+   - !! PUBLISH firestore.rules (new rule: users/{uid}/prefs/{doc}). Without it settings still work on the phone but are not backed up.
+2) 🌹 LOVE MAZE 3D  (Games > Love Maze 3D, same request/accept flow as other games, no extra rule)
+   Both phones get the SAME maze. Walk in first person (left thumb = walk, right thumb = look; keyboard WASD/arrows), collect 💗 hearts (each lights the radar),
+   📡 Radar shows the direction to your partner, find each other to win. Hot/cold hint uses real path distance. Partner is a glowing figure with name tag.
+   Position sync: one small write about every 1.4 s while moving. Free plan: the game card is locked like the other new games; to make it free add 'Love Maze 3D' to FREE_GAMES in plans-v67.js.
+
+
+V74 LAUNCH ANIMATION  (new: splash-anim.svg; edits: index.html, sw.js)  Cache v46
+- The logo + "OnlyUs" + "just us two" launch screen is gone. The bunny animation (splash-anim.svg, 2 s loop) plays instead, centred on the old dark purple background
+  (soft pink #fff0f5 when the app theme is light). It plays one full loop, then fades out as soon as the app is ready (hard limit about 3.5 s + loop).
+- To swap the animation later: replace splash-anim.svg with another SVG/GIF/WebP of the same file name (or change the src in the #splash element).
+- The small logo in the chat-list header is not part of the launch screen and was left as it is.
+
+
+V75 HOME: ISLANDS + LITTLE ONES + REASONS JAR, and CALLS THAT SURVIVE SCREEN-OFF  (new: home-cute-v75.js; edits: index.html, home-v70.js, sw.js, ANDROID-BRIDGE.txt)  Cache v47
+HOME (couples mode). Three new cards, all in Customize home (hide / move up / move down) and shown under "Our days" by default:
+ 1) 🏝️ Our two islands - sky over each island follows that person's local time (sun / moon / stars). Middle chip: km apart if BOTH share live location,
+    otherwise the time difference. Needs nothing new (uses the tz_ / loc_ docs the couple tools already write). Tap the card for hearts.
+ 2) 🐰🐱 Our little ones - shared kitty + bunny (rename by tapping a name). They sleep 11pm-6am (tap to wake), get hungry (8h) / very hungry (18h) if nobody feeds them
+    (Feed = every 4 h per person), jump when your partner opens the app, hug when one of you taps Hug (the other phone shows it live + vibrates).
+    Level = love from feeds + hugs. Tap them for sweet lines, tap 3 times for a spin.
+ 3) 🫙 Reasons I love you - jar of notes. Add (3 a day each, 200 letters), Pull a note (unread partner notes first), All (delete only your own). "NEW" badge for unread notes,
+    toast + jar shake when your partner adds one.
+ Data: chats/{cid}/coupleHub/pets and /jar (rules already allow chat members). Live listeners run ONLY while Home is on screen and the app is visible.
+ Cards use content-visibility (off-screen = no animation work) and respect "reduce motion".
+CALLS (screen off / network change):
+ - Web side (already in index.html): ICE restart when Wi-Fi <-> mobile switches or the link drops (call is kept for up to 15 s instead of ending at once),
+   lock-screen "Call with <name>" controls + Hang up (where supported), and Android.callActive(true|false) for the native side.
+ - Android Studio side: see ANDROID-BRIDGE.txt, section V75 (CallService foreground service, HangupReceiver, bridge method, MainActivity onPause change, manifest lines).
+   Without those native lines Android puts the WebView to sleep soon after the screen turns off.
+ - iPhone: not possible in a web app / PWA (iOS stops the microphone when the screen locks). Only a native iOS app with CallKit can do it.

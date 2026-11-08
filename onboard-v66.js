@@ -167,12 +167,14 @@
   /* ---------- when to show things ---------- */
   var tries = 0, introT = setInterval(function () {
     tries++; var a = $('vAuth');
-    if (a && a.classList.contains('on') && !ls('onlyus-intro')) { showIntro(); clearInterval(introT); }
-    else if (tries > 240 || ls("onlyus-intro")) clearInterval(introT);
+    var at = $('authTitle'), creating = !!(at && /^create/i.test(at.textContent || ''));
+    if (a && a.classList.contains('on') && creating && !ls('onlyus-intro')) { showIntro(); clearInterval(introT); }
+    else if (tries > 4800 || ls("onlyus-intro")) clearInterval(introT);
   }, 500);
   setInterval(function () {
     var l = $('vList'), u = uid();
     if (!l || !l.classList.contains('on') || !u || $('o66Ob')) return;
+    if (window.__acctSync && !window.__acctSync.ready()) return;
     if (ls('onlyus-ob-done-' + u) || (getOb() || {}).done) return;
     var me = U().me && U().me(); if (!me || !me.name) return;
     start();

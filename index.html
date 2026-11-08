@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="preload" href="splash-anim.svg" as="image" type="image/svg+xml">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="OnlyUs"><link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -11,10 +12,7 @@
 <style id="splashCss">
 #splash{position:fixed;inset:0;z-index:2147483000;background:#191027;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .45s ease,visibility .45s;opacity:1}
 #splash.out{opacity:0;visibility:hidden;pointer-events:none}
-#splash img{width:132px;height:132px;border-radius:50%;box-shadow:0 0 42px #b06cff66;animation:spl 1.6s ease-in-out infinite}
-#splash b{margin-top:22px;color:#fff;font:600 26px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;letter-spacing:.5px}
-#splash small{position:absolute;bottom:calc(34px + env(safe-area-inset-bottom,0px));color:#cbb8ee;font:13px system-ui,sans-serif;opacity:.85}
-@keyframes spl{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+#splash img{width:min(78vw,380px);height:min(78vw,380px);display:block;margin-top:-6vh;-webkit-user-drag:none;user-select:none}
 </style>
 
 <style>
@@ -518,7 +516,8 @@ body::before,body::after,html::before,html::after,#vList::before,#vList::after{c
 <div class="ov" id="mpv" role="dialog" aria-modal="true" aria-label="Preview"><div class="mpvTop"><button type="button" class="mpvB" id="mpvX" aria-label="Close preview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button><span style="flex:1"></span><button type="button" class="mpvB" id="mpvO" aria-label="View once"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2.2"/><text x="12" y="16.6" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="sans-serif">1</text></svg></button></div><div class="mpvBody" id="mpvBody"></div><div class="mpvBot"><span id="mpvHint" class="mpvHint">Keep in chat</span><span style="flex:1"></span><button type="button" class="mpvSend" id="mpvS" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div></div>
 <div class="ov" id="qrOv" role="dialog" aria-modal="true" aria-label="QR code"><div class="qrCard"><button class="qrX" id="qrClose" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button><div class="qrTabs"><button id="qrT1" class="on" type="button">My code</button><button id="qrT2" type="button">Scan code</button></div><div id="qrP1" class="qrPane"><div class="qrBox"><canvas id="qrCv"></canvas></div><b id="qrNm"></b><small>Your partner can scan this code to add you. Keep it private.</small><button class="btn l" id="qrNew" type="button">Reset my QR</button></div><div id="qrP2" class="qrPane" hidden><div class="qrCam"><video id="qrVid" playsinline muted></video><div class="qrFrame"></div></div><small id="qrHint">Point the camera at your partner’s OnlyUs QR</small><label class="btn l" for="qrFile">Choose from gallery</label><input id="qrFile" type="file" accept="image/*" hidden></div></div></div>
 <div class="ov" id="aiOv" role="dialog" aria-modal="true" aria-label="OnlyUs AI"><div class="aiTop"><button id="aiClose" type="button" aria-label="Close AI chat">←</button><b>✨ OnlyUs AI<small>your little assistant</small></b><button id="aiKey" type="button" aria-label="Set Gemini key" title="Gemini key">🔑</button><button id="aiClear" type="button" aria-label="Clear AI chat" title="Clear chat">🗑</button></div><div id="aiMsgs" aria-live="polite"></div><div class="aiNote">AI can make mistakes. Your AI chat is not shared with your partner.</div><div class="aiBot"><textarea id="aiIn" rows="1" maxlength="4000" placeholder="Ask OnlyUs AI…" aria-label="Message OnlyUs AI"></textarea><button id="aiSend" type="button" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div></div>
-<div id="splash" aria-hidden="true"><img src="icon-192.png" alt=""><b>OnlyUs</b><small>just us two 💕</small></div>
+<div id="splash" aria-hidden="true"><img src="splash-anim.svg" alt="" fetchpriority="high" decoding="async" draggable="false"></div>
+<script>try{var __t=localStorage.getItem("onlyus-theme"),__l=__t==="light"||(__t!=="dark"&&matchMedia("(prefers-color-scheme: light)").matches);if(__l)document.getElementById("splash").style.background="#fff0f5"}catch(e){}</script>
 <div id="lock" role="dialog" aria-modal="true" aria-label="App lock"><div class="lkw"><div class="lkh">♡</div><h2 id="lkT">Enter passcode</h2><div id="lkD"><i></i><i></i><i></i><i></i></div><p id="lkM" role="status"></p><div id="lkP"></div><button id="lkX" type="button">Cancel</button><button id="lkBio" type="button">Use Face ID / fingerprint</button></div></div>
 <div id="offBar" role="status">You’re offline. Messages will send automatically when you’re back 🕓</div>
 <div id="dg" aria-label="Calculator"><div id="dgD">0</div><div id="dgK"></div></div>
@@ -641,7 +640,7 @@ async function findByPhone(raw){const d=normPh(raw);if(!d)return{err:'Start with
  try{const sn=await fs.collection('phones').doc(await phKey(d)).get();return sn.exists?{uid:sn.data().uid}:{err:'No OnlyUs account has that number yet. Ask her to save it in Settings, or use her Firebase UID.'}}
  catch(e){return{err:'Number lookup failed. Publish the updated firestore.rules.'}}}
 // ---- cloud backup of name + chat list (users/{uid})
-function saveCloud(){if(demo||!authUser||!fs)return Promise.resolve();const d={name:(me&&me.name)||'',phone:myPhone||'',contacts:contacts.filter(c=>c&&c.uid&&c.code).map(c=>({name:c.name||'',email:c.email||'',phone:c.phone||'',uid:c.uid,code:c.code})),updatedAt:Date.now()},md=window.__mode&&window.__mode.get(),ref=fs.collection('users').doc(authUser.uid);const fail=()=>toast('Could not back up your chat list. Publish the updated firestore.rules.');if(!md)return ref.set(d).catch(fail);return ref.set(Object.assign({mode:md},d)).catch(()=>ref.set(d).catch(fail))}
+function saveCloud(){if(demo||!authUser||!fs)return Promise.resolve();const d={name:(me&&me.name)||'',phone:myPhone||'',contacts:contacts.filter(c=>c&&c.uid&&c.code).map(c=>({name:c.name||'',email:c.email||'',phone:c.phone||'',uid:c.uid,code:c.code})),updatedAt:Date.now()},md=window.__mode&&window.__mode.get(),ref=fs.collection('users').doc(authUser.uid);const fail=()=>toast('Could not back up your chat list. Publish the updated firestore.rules.');if(!md)return ref.set(d,{merge:true}).catch(fail);return ref.set(Object.assign({mode:md},d),{merge:true}).catch(()=>ref.set(d,{merge:true}).catch(fail))}
 const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))].map(x=>x.toString(16).padStart(2,'0')).join('');
 const fT=t=>new Date(t).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
 const fD=t=>{const d=new Date(t),n=new Date();return d.toDateString()==n.toDateString()?'Today':d.toDateString()==new Date(n-864e5).toDateString()?'Yesterday':d.toLocaleDateString([], {day:'numeric',month:'long',year:'numeric'})};
@@ -867,7 +866,7 @@ const closeSheet=()=>$('sheet').classList.remove('on');$('sheet').onclick=e=>{if
 function react(m,id,e){col().doc(id).update({['r.'+me.num]:(m.r||{})[me.num]==e?firebase.firestore.FieldValue.delete():e}).catch(()=>{})}
 $('repx').onclick=()=>{replyTo=null;$('rep').style.display='none'};
 async function send(o){if(!cid||!cur){toast('Open your chat with your partner first.');return false}const m=Object.assign({from:me.num,fromUid:authUser?authUser.uid:'',ts:Date.now(),type:'text',text:''},o);if(replyTo)m.rep=replyTo;
- if('Notification' in window&&Notification.permission=='default')Notification.requestPermission();const orig=m.text;try{if(window.__fx)await window.__fx.out(m);const pend=col().add(m);if(replyTo){replyTo=null;$('rep').style.display='none'}pend.catch(e=>{console.error('OnlyUs send failed:',e);toast('Message not sent: '+(e&&e.code?e.code+' — ':'')+(e&&e.message?e.message:'Check internet and Firestore rules'));if(orig&&!ta.value.trim()){ta.value=orig;sync()}});return true}catch(e){console.error('OnlyUs send failed:',e);toast('Message not sent: '+(e&&e.message?e.message:'error'));return false}}
+ if('Notification' in window&&Notification.permission=='default'&&!localStorage.getItem('onlyus-asked-notif')){localStorage.setItem('onlyus-asked-notif','1');Notification.requestPermission()}const orig=m.text;try{if(window.__fx)await window.__fx.out(m);const pend=col().add(m);if(replyTo){replyTo=null;$('rep').style.display='none'}pend.catch(e=>{console.error('OnlyUs send failed:',e);toast('Message not sent: '+(e&&e.code?e.code+' — ':'')+(e&&e.message?e.message:'Check internet and Firestore rules'));if(orig&&!ta.value.trim()){ta.value=orig;sync()}});return true}catch(e){console.error('OnlyUs send failed:',e);toast('Message not sent: '+(e&&e.message?e.message:'error'));return false}}
 const ta=$('in');
 const IC={mic:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z"/></svg>',send:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>'};function sync(){const has=!!ta.value.trim(),m=$('mic');if(m.__s!==has){m.__s=has;m.innerHTML=has?IC.send:IC.mic;m.setAttribute('aria-label',has?'Send':'Voice message')}const c=$('camb');if(c)c.style.display=has?'none':''}
 ta.oninput=()=>{ta.style.height='auto';ta.style.height=Math.min(110,ta.scrollHeight)+'px';sync();if(!ty){ty=1;beat(1)}clearTimeout(tyT);tyT=setTimeout(()=>{ty=0;beat(0)},2000)};
@@ -1060,7 +1059,7 @@ on('periodSave',async()=>{
  state.cycle=cycle;state.length=len;state.remind=$('periodRemind').checked;
  if(start){const set=new Set(state.days);expand(start,len).forEach(d=>set.add(d));state.days=[...set].sort()}
  persist();render();fillForm();
- if(state.remind&&'Notification' in window&&Notification.permission==='default'){try{await Notification.requestPermission()}catch(e){}}
+ if(state.remind&&'Notification' in window&&Notification.permission==='default'&&!localStorage.getItem('onlyus-asked-notif')){localStorage.setItem('onlyus-asked-notif','1');try{await Notification.requestPermission()}catch(e){}}
  checkReminder();toast('Saved')});
 on('periodClear',()=>{if(!confirm('Delete all period dates from this device and your account?'))return;state={days:[],cycle:28,length:5,remind:true,updatedAt:0};persist();fillForm();render();toast('Period tracker cleared')});
 load();fillForm();render();setInterval(checkReminder,30*60*1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkReminder()});
@@ -1250,20 +1249,29 @@ let ref=null,pc=null,loc=null,role='',sid=0,busy=false,unS=null,unI=null,pend=[]
 const dref=k=>U().fs().collection('chats').doc(k).collection('share').doc('call'),fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 /* v51: optional native Android bridge (see ANDROID-BRIDGE.txt) - harmless when absent */
 const nat=(f,a)=>{try{if(window.Android&&typeof window.Android[f]==='function')window.Android[f](a)}catch(e){}};
+/* v75: call survives screen-off / network change */
+let rn=0,lrn=0,lran=0,lrq=0,rst=0,fgv=0,fT=null,rgT=null;
 async function media(v){const au={echoCancellation:true,noiseSuppression:true,autoGainControl:true},g=o=>navigator.mediaDevices.getUserMedia(o);try{return await g({audio:au,video:v?{facingMode:'user'}:false})}catch(e){if(v){try{const x=await g({audio:true,video:false});U().toast('Camera unavailable, using audio only');return x}catch(e2){}}U().toast('Allow the microphone'+(v?' and camera':'')+' to make calls');return null}}
 function cpaint(uid){['clAv','inAv'].forEach(id=>{const a=$(id);if(a&&window.__pf)window.__pf.paint(a,uid,curName);else if(a)a.textContent=(curName||'?')[0].toUpperCase()});const p=window.__pf&&uid?window.__pf.getPeer(uid):'';['clBg','inBg'].forEach(id=>{const b=$(id);if(b)b.style.backgroundImage=p?'url('+p+')':''})}
 function ui(name,v,s,uid){curName=name;$('clN').textContent=name;$('clS').textContent=s;$('clT').textContent='';$('clMiniN').textContent=name;$('clMiniT').textContent='';
  const vid=!!(v&&loc&&loc.getVideoTracks().length),V=$('clView');V.classList.toggle('vid',vid);V.classList.remove('conn');
  ['clC','clM','clSp'].forEach(i=>$(i).classList.remove('act'));spk=false;facing='user';
  $('clL').srcObject=vid?loc:null;$('clL').style.transform='scaleX(-1)';$('clL').style.visibility='';cpaint(uid);V.classList.add('on')}
-function mk(){pc=new RTCPeerConnection(ice);clearTimeout(connT);connT=setTimeout(()=>{if(busy&&!tick){U().toast('Could not connect the call. The network blocks direct calls. Open Settings → Calls & whiteboard check to set up a TURN server.');end(true)}},25000);const uid=U().uid(),n=sid,r=ref;
+function mk(){pc=new RTCPeerConnection(ice);pc.oniceconnectionstatechange=()=>{const x=pc&&pc.iceConnectionState;clearTimeout(rgT);if(x==='disconnected')rgT=setTimeout(needRestart,3000);else if(x==='failed')needRestart()};clearTimeout(connT);connT=setTimeout(()=>{if(busy&&!tick){U().toast('Could not connect the call. The network blocks direct calls. Open Settings → Calls & whiteboard check to set up a TURN server.');end(true)}},25000);const uid=U().uid(),n=sid,r=ref;
  pc.onicecandidate=e=>{if(e.candidate)r.collection('ice').add({n,from:uid,c:JSON.stringify(e.candidate)}).catch(err=>{U().toast('Call ICE error: '+(err.code||err.message||'write failed'))})};
  pc.ontrack=e=>{$('clR').srcObject=e.streams[0];$('clR').play().catch(()=>{})};
- pc.onconnectionstatechange=()=>{const s=pc&&pc.connectionState;if(s==='connected'&&!tick){clearTimeout(toT);clearTimeout(connT);t0=Date.now();$('clS').textContent='';$('clView').classList.add('conn');R()&&R().stopAll();nat('setCallMode',true);const up=()=>{const t=fmt(Math.floor((Date.now()-t0)/1e3));$('clT').textContent=t;$('clMiniT').textContent=t};up();tick=setInterval(up,1e3)}if(busy&&['failed','closed'].includes(s)){U().toast('Call connection lost');end(true)}};
+ pc.onconnectionstatechange=()=>{const s=pc&&pc.connectionState;if(s==='connected'&&!tick){clearTimeout(toT);clearTimeout(connT);t0=Date.now();$('clS').textContent='';$('clView').classList.add('conn');R()&&R().stopAll();nat('setCallMode',true);nat('callActive',true);bgCall(true);const up=()=>{const t=fmt(Math.floor((Date.now()-t0)/1e3));$('clT').textContent=t;$('clMiniT').textContent=t};up();tick=setInterval(up,1e3)}if(s==='connected'){fgv=0;clearTimeout(fT)}if(busy&&s==='closed'){U().toast('Call connection lost');end(true)}if(busy&&s==='failed'){if(tick&&!fgv){fgv=1;needRestart();clearTimeout(fT);fT=setTimeout(()=>{fgv=0;if(busy&&pc&&pc.connectionState!=='connected'){U().toast('Call connection lost');end(true)}},15000)}else if(!tick){U().toast('Call connection lost');end(true)}}};
  loc.getTracks().forEach(t=>pc.addTrack(t,loc));
  unI&&unI();unI=r.collection('ice').onSnapshot(s=>s.docChanges().forEach(c=>{if(c.type!=='added')return;const d=c.doc.data();if(d.n!==n||d.from===uid||!pc)return;const x=JSON.parse(d.c);pc.remoteDescription?pc.addIceCandidate(x).catch(err=>U().toast('Call ICE apply error: '+(err.message||'failed'))):pend.push(x)}),err=>U().toast('Call ICE read error: '+(err.code||err.message||'read failed')))}
 const flush=()=>{pend.forEach(x=>pc&&pc.addIceCandidate(x).catch(err=>U().toast('Call ICE apply error: '+(err.message||'failed'))));pend=[]};
+async function restartIce(){if(!pc||!busy||role!=='A'||rst)return;rst=1;try{const o=await pc.createOffer({iceRestart:true});await pc.setLocalDescription(o);rn=Date.now();await ref.update({ro:JSON.stringify(pc.localDescription),rn})}catch(e){}finally{setTimeout(()=>{rst=0},4000)}}
+const needRestart=()=>{if(!busy||!pc)return;if(role==='A')restartIce();else if(ref){ref.update({rq:Date.now()}).catch(()=>{})}};
+function bgCall(on){try{const ms=navigator.mediaSession;if(!ms)return;if(on){ms.metadata=new MediaMetadata({title:'Call with '+(curName||'OnlyUs'),artist:'OnlyUs',artwork:[{src:'icon-192.png',sizes:'192x192',type:'image/png'}]});ms.playbackState='playing';try{ms.setActionHandler('hangup',()=>end(true))}catch(e){}}else{ms.playbackState='none';try{ms.setActionHandler('hangup',null)}catch(e){}ms.metadata=null}}catch(e){}}
+window.__callHangup=()=>end(true);window.__callActive=()=>busy;
 function watch(){unS&&unS();unS=ref.onSnapshot(async s=>{const d=s.exists?s.data():null;if(!d||d.n!==sid)return;
+ if(role==='B'&&d.ro&&d.rn>sid&&d.rn>lrn&&pc){lrn=d.rn;try{await pc.setRemoteDescription(JSON.parse(d.ro));const a=await pc.createAnswer();await pc.setLocalDescription(a);await ref.update({ra:JSON.stringify(pc.localDescription),ran:d.rn})}catch(e){}}
+ if(role==='A'&&d.ra&&d.ran===rn&&d.ran>lran&&pc&&pc.signalingState==='have-local-offer'){lran=d.ran;try{await pc.setRemoteDescription(JSON.parse(d.ra))}catch(e){}}
+ if(role==='A'&&d.rq&&d.rq>sid&&d.rq>lrq){lrq=d.rq;restartIce()}
  if(role==='A'&&d.ack&&d.st==='ring'){$('clS').textContent='Ringing…';R()&&R().back()}
  if(role==='A'&&d.st==='acc'&&!pc){R()&&R().stopAll();mk();const o=await pc.createOffer();await pc.setLocalDescription(o);await ref.update({offer:JSON.stringify(pc.localDescription)});$('clS').textContent='Connecting…'}
  if(role==='A'&&d.answer&&pc&&!pc.remoteDescription){await pc.setRemoteDescription(JSON.parse(d.answer));flush()}
@@ -1271,7 +1279,7 @@ function watch(){unS&&unS();unS=ref.onSnapshot(async s=>{const d=s.exists?s.data
  if(d.st==='dec'&&role==='A'){U().toast('Call declined');end(false)}
  if(d.st==='end'&&busy){U().toast(tick?'Call ended':'Missed call');end(false)}},err=>{U().toast('Call signalling error: '+(err.code||err.message||'read failed'));end(false)})}
 function logCall(){try{if(!busy||!sid||!curUid)return;const dur=tick?Math.floor((Date.now()-t0)/1e3):0,e={id:sid,uid:curUid,name:curName||'',dir:role==='A'?'out':'in',video:!!cv,t:Date.now(),dur:dur,st:dur?'done':(role==='A'?'noans':(cdec?'declined':'missed')),k:curK},key='onlyus-calllog-'+(U().uid()||''),a=JSON.parse(localStorage.getItem(key)||'[]');a.unshift(e);localStorage.setItem(key,JSON.stringify(a.slice(0,150)));window.dispatchEvent(new Event('onlyus-calllog'))}catch(x){}}
-async function end(notify){logCall();if(notify&&ref){try{await ref.update({st:'end'})}catch(e){}}busy=false;cdec=false;role='';sid=0;pend=[];clearInterval(ringI);clearTimeout(toT);clearTimeout(connT);clearInterval(tick);tick=null;R()&&R().stopAll();nat('setCallMode',false);nat('setSpeaker',false);unS&&unS();unS=null;unI&&unI();unI=null;if(pc){try{pc.close()}catch(e){}pc=null}if(loc){loc.getTracks().forEach(t=>t.stop());loc=null}$('clR').srcObject=null;$('clL').srcObject=null;$('clView').classList.remove('on','conn','vid');$('clIn').classList.remove('on');$('clMini').classList.remove('on');ref=null;inc=null}
+async function end(notify){logCall();if(notify&&ref){try{await ref.update({st:'end'})}catch(e){}}busy=false;cdec=false;role='';sid=0;pend=[];clearInterval(ringI);clearTimeout(toT);clearTimeout(connT);clearInterval(tick);tick=null;R()&&R().stopAll();nat('setCallMode',false);nat('callActive',false);bgCall(false);rn=lrn=lran=lrq=rst=fgv=0;clearTimeout(fT);clearTimeout(rgT);nat('setSpeaker',false);unS&&unS();unS=null;unI&&unI();unI=null;if(pc){try{pc.close()}catch(e){}pc=null}if(loc){loc.getTracks().forEach(t=>t.stop());loc=null}$('clR').srcObject=null;$('clL').srcObject=null;$('clView').classList.remove('on','conn','vid');$('clIn').classList.remove('on');$('clMini').classList.remove('on');ref=null;inc=null}
 async function start(v,k0,nm0,uid0){if(busy)return;const k=k0||U().cid();if(U().demo()||!k)return U().toast('Open a chat first');busy=true;cv=!!v;cdec=false;const nm=nm0||U().cname(),uid=uid0||U().cuid();
  loc=await media(v);if(!loc){busy=false;return}ice=await window.__ice();ref=dref(k);role='A';sid=Date.now();curK=k;curUid=uid;
  try{await ref.set({by:U().uid(),name:U().me().name,st:'ring',n:sid,video:!!v})}catch(e){U().toast('Could not call. Publish the updated firestore.rules.');return end(false)}
@@ -1570,10 +1578,10 @@ function render(){const B=$('gmBody'),F=$('gmFoot');
  B.textContent='';F.textContent='';loc.dv=null;const live=D&&NAME[D.game]&&D.p&&!(D.st==='req'&&Date.now()-D.n>6e5);
  $('gmT').textContent=live&&D.st!=='idle'&&D.st!=='dec'?NAME[D.game]:'Games';$('gmSc').textContent='';
  if(!live||D.st==='idle'||D.st==='dec'){if(live&&D.st==='dec'&&D.by===my())B.appendChild(h('p','gmMsg',opp().name+' declined 😔'));picker(B);return}
- const sc=D.sc||{};$('gmSc').textContent=COOP[D.game]?'':'You '+(sc[my()]||0)+' – '+(sc[opp().uid]||0)+' '+opp().name;
+ const sc=D.sc||{};$('gmSc').textContent=(COOP[D.game]||(EXT[D.game]&&EXT[D.game].coop))?'':'You '+(sc[my()]||0)+' – '+(sc[opp().uid]||0)+' '+opp().name;
  if(D.st==='req'){if(D.by===my()){B.appendChild(h('p','gmMsg','Waiting for '+opp().name+' to accept '+NAME[D.game]+'…'));btn(F,'Cancel',()=>upd({st:'idle'}),1)}else{B.appendChild(h('p','gmMsg',opp().name+' wants to play '+NAME[D.game]+' '+ICON[D.game]));btn(F,'Accept',()=>upd({st:'play'}));btn(F,'Decline',()=>upd({st:'dec'}),1)}return}
  const box=h('div','gmBox');B.appendChild(box);(({ttt:rTTT,c4:rC4,rps:rRPS,memory:rMem,duel:rDuel,draw:rDraw,wyr:rWYR,tod:rTOD,ludo:rLudo})[D.game]||EXT[D.game].render)(box);
- if(D.st==='end'){const w=D.res;box.appendChild(h('div','gmBan',COOP[D.game]?SUM[D.game]():w==='d'?'It’s a draw 🤝':w===my()?'You won! 🎉':opp().name+' won 🏆'));btn(F,'Play again',()=>request(D.game));btn(F,'Other games',()=>upd({st:'idle'}),1)}else btn(F,'Quit game',()=>{if(confirm('End this game?'))upd({st:'idle'})},1)}
+ if(D.st==='end'){const w=D.res;box.appendChild(h('div','gmBan',COOP[D.game]?SUM[D.game]():(EXT[D.game]&&EXT[D.game].coop)?EXT[D.game].sum():w==='d'?'It’s a draw 🤝':w===my()?'You won! 🎉':opp().name+' won 🏆'));btn(F,'Play again',()=>request(D.game));btn(F,'Other games',()=>upd({st:'idle'}),1)}else btn(F,'Quit game',()=>{if(confirm('End this game?'))upd({st:'idle'})},1)}
 function onData(){if(D&&D.st==='play'){arbiters()}render()}
 // ---------- tic-tac-toe
 const LN=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]],lnT=b=>{for(const[a,c,d]of LN)if(b[a]&&b[a]===b[c]&&b[a]===b[d])return b[a];return ''};
@@ -1735,11 +1743,13 @@ $('setb').addEventListener('click',stat);stat();
 /* ===== v30 fixes: scroll-to-latest, keep keyboard, Android back button, splash ===== */
 (function(){
  const $=id=>document.getElementById(id);
- // --- splash (WhatsApp style): logo shows at launch, fades out once app is ready
- const t0=Date.now(),sp=$('splash');
- const hideSplash=()=>{if(!sp||sp.__h)return;sp.__h=1;const w=Math.max(0,900-(Date.now()-t0));setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),600)},w)};
+ // --- splash (v74): the bunny animation plays at launch (one full 2 s loop), then fades out once the app is ready
+ const sp=$('splash'),spi=sp&&sp.querySelector('img');let a0=0;
+ const startAnim=()=>{if(!a0)a0=Date.now()};
+ if(spi){if(spi.complete&&spi.naturalWidth)startAnim();else{spi.addEventListener('load',startAnim);spi.addEventListener('error',startAnim)}setTimeout(startAnim,1200)}
+ const hideSplash=()=>{if(!sp||sp.__h)return;sp.__h=1;const w=Math.max(0,2000-(Date.now()-(a0||Date.now())));setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),600)},w)};
  if(document.readyState==='complete')hideSplash();else addEventListener('load',hideSplash);
- setTimeout(hideSplash,3000);
+ setTimeout(hideSplash,3500);
 
  // --- always land on the newest message (no visible scrolling through old ones)
  let stickUntil=0,userScrolled=false;
@@ -1897,9 +1907,9 @@ $('setb').addEventListener('click',stat);stat();
 <script src="liquid-glass.js"></script>
 <script src="chat-speed.js"></script>
 <script src="chat-v51.js"></script>
-<script src="home-v52.js"></script><script src="home-v62.js"></script><script src="mode-v63.js"></script><script src="couple-v64.js"></script><script src="i18n-v66.js"></script><script src="onboard-v66.js"></script><script src="plans-v67.js"></script><script src="couple-v68.js"></script><script src="i18n-ui-v69.js"></script><script src="extras-v69.js"></script>
+<script src="home-v52.js"></script><script src="home-v62.js"></script><script src="mode-v63.js"></script><script src="couple-v64.js"></script><script src="i18n-v66.js"></script><script src="account-sync-v73.js"></script><script src="onboard-v66.js"></script><script src="plans-v67.js"></script><script src="couple-v68.js"></script><script src="i18n-ui-v69.js"></script><script src="extras-v69.js"></script>
 <script src="home-v70.js"></script><script src="sorry-v71.js"></script>
-<script src="status-v53.js"></script><script src="sounds-v54.js"></script><script src="love-v59.js"></script><script src="games-v60.js"></script>
+<script src="status-v53.js"></script><script src="sounds-v54.js"></script><script src="love-v59.js"></script><script src="games-v60.js"></script><script src="maze3d-v73.js"></script><script src="home-cute-v75.js"></script>
 <script src="pro-v65.js"></script><script src="pro-media-v65.js"></script>
 </body>
 </html>

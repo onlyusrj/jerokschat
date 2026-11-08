@@ -140,3 +140,118 @@ E) Backup file download
 -----------------------
 "Back up to a file" saves with a normal <a download>. Make sure your WebView has a DownloadListener
 (the same one the chat export uses).
+
+
+=====================================================================
+V75 - CALLS THAT KEEP TALKING WITH THE SCREEN OFF  (Android Studio WebView app)
+=====================================================================
+What the web code (index.html) now does by itself:
+  * calls "Ongoing call" controls on the lock screen (MediaSession, Hang up button where the phone supports it)
+  * when the Wi-Fi / mobile data changes, or the connection drops for a moment, the call re-connects by itself (ICE restart, up to 15 s) instead of ending
+  * it tells the phone when a call is really connected / ended:  Android.callActive(true|false)   <- you add this method, below
+Without the native part below, Android puts the WebView (and its microphone) to sleep a few seconds after the screen turns off.
+With it, a small "OnlyUs call" notification stays on and the call keeps going.
+
+1) Manifest (AndroidManifest.xml)
+---------------------------------
+<uses-permission android:name="android.permission.RECORD_AUDIO"/>
+<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+<uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+Inside <application>:
+<service android:name=".CallService" android:exported="false" android:foregroundServiceType="microphone"/>
+<receiver android:name=".HangupReceiver" android:exported="false"/>
+
+2) CallService.kt  (new file, change the package line)
+-------------------------------------------------------
+package com.example.onlyus
+
+import android.app.*
+import android.content.Context
+import android.content.Intent
+import android.content.pm.ServiceInfo
+import android.net.wifi.WifiManager
+import android.os.Build
+import android.os.IBinder
+import android.os.PowerManager
+import androidx.core.app.NotificationCompat
+
+class CallService : Service() {
+    private var wake: PowerManager.WakeLock? = null
+    private var wifi: WifiManager.WifiLock? = null
+    override fun onBind(i: Intent?): IBinder? = null
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == "STOP") { release(); stopForeground(STOP_FOREGROUND_REMOVE); stopSelf(); return START_NOT_STICKY }
+        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= 26) nm.createNotificationChannel(NotificationChannel("call", "Ongoing call", NotificationManager.IMPORTANCE_LOW))
+        val open = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP), PendingIntent.FLAG_IMMUTABLE)
+        val hang = PendingIntent.getBroadcast(this, 1, Intent(this, HangupReceiver::class.java), PendingIntent.FLAG_IMMUTABLE)
+        val n = NotificationCompat.Builder(this, "call")
+            .setSmallIcon(R.mipmap.ic_launcher).setContentTitle("OnlyUs call").setContentText("Tap to return to the call")
+            .setOngoing(true).setCategory(NotificationCompat.CATEGORY_CALL).setContentIntent(open)
+            .addAction(0, "Hang up", hang).build()
+        if (Build.VERSION.SDK_INT >= 29) startForeground(42, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE) else startForeground(42, n)
+        if (wake == null) wake = (getSystemService(Context.POWER_SERVICE) as PowerManager).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "onlyus:call").apply { setReferenceCounted(false); acquire(3 * 60 * 60 * 1000L) }
+        if (wifi == null) wifi = (applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager).createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "onlyus:call").apply { setReferenceCounted(false); acquire() }
+        return START_NOT_STICKY
+    }
+    private fun release() { wake?.let { if (it.isHeld) it.release() }; wake = null; wifi?.let { if (it.isHeld) it.release() }; wifi = null }
+    override fun onDestroy() { release(); super.onDestroy() }
+}
+
+3) HangupReceiver.kt  (new file) - the "Hang up" button in the notification
+-------------------------------------------------------------------------
+package com.example.onlyus
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+
+class HangupReceiver : BroadcastReceiver() {
+    override fun onReceive(c: Context, i: Intent) {
+        MainActivity.web?.post { MainActivity.web?.evaluateJavascript("window.__callHangup&&window.__callHangup()", null) }
+    }
+}
+
+4) Add to OnlyUsBridge (the same class that already has startRingtone / setCallMode)
+------------------------------------------------------------------------------------
+    @JavascriptInterface
+    fun callActive(on: Boolean) {
+        MainActivity.callOn = on
+        val i = Intent(ctx, CallService::class.java)
+        if (on) { if (Build.VERSION.SDK_INT >= 26) ctx.startForegroundService(i) else ctx.startService(i) }
+        else { i.action = "STOP"; ctx.startService(i) }
+    }
+
+5) MainActivity - keep the WebView awake while a call is on
+------------------------------------------------------------
+companion object { var web: WebView? = null; @Volatile var callOn = false }
+
+// after you create the WebView:
+web = webView
+
+override fun onPause() {
+    if (callOn) { webView.resumeTimers() }          // do NOT pause the WebView during a call
+    else webView.onPause()
+    super.onPause()
+}
+override fun onResume() { webView.onResume(); super.onResume() }
+override fun onDestroy() { if (web === webView) web = null; super.onDestroy() }
+
+// Android 13+: ask once for the notification permission (so the "OnlyUs call" notification shows):
+if (Build.VERSION.SDK_INT >= 33) requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 91)
+Your WebChromeClient.onPermissionRequest must still grant AUDIO_CAPTURE (already needed for calls).
+
+6) Optional but helps on Xiaomi / Oppo / Vivo / Samsung
+-------------------------------------------------------
+Settings > Apps > OnlyUs > Battery > "Unrestricted" (or "No restrictions"), and allow "Autostart". These brands kill background apps even with a foreground service.
+
+Limits (be honest with yourself)
+--------------------------------
+* iPhone: a web app / PWA cannot keep the microphone running with the screen locked. iOS stops it. Only a real native iOS app (CallKit) can. Nothing in the web code can change that.
+* Android Chrome / installed PWA (no WebView): Chrome usually keeps an active call going with the screen off and shows its own "using microphone" notification. The lock-screen controls above help.
+* A call that RINGS while the app is closed needs a high-priority push (FCM) + full-screen-intent activity. That is a bigger native feature and is not included here.

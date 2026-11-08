@@ -32,6 +32,15 @@ service cloud.firestore {
         && request.resource.data.contacts is list
         && request.resource.data.contacts.size() <= 100;
       allow delete: if false;
+      // v73: account settings (theme, language, muted chats, welcome-done flags ...) so they follow the account to any phone.
+      match /prefs/{doc} {
+        allow read: if signedIn() && request.auth.uid == uid;
+        allow create, update: if signedIn() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['kv', 'ts', 'updatedAt'])
+          && request.resource.data.kv is map && request.resource.data.kv.size() <= 60
+          && request.resource.data.ts is map && request.resource.data.ts.size() <= 60;
+        allow delete: if false;
+      }
       match /devices/{deviceId} {
         allow read, delete: if signedIn() && request.auth.uid == uid;
         allow create, update: if signedIn() && request.auth.uid == uid

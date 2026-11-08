@@ -15,8 +15,8 @@
 
   /* ------------------------------------------------------------ settings */
   var DEF = {
-    sec: { together: 1, question: 1, scenes: 1, tools: 1, feat: 1, search: 1, hearts: 1, ai: 1, qr: 1, hdrheart: 1, greet: 0 },
-    order: ['together', 'question', 'scenes', 'tools', 'feat'],
+    sec: { together: 1, isle: 1, pets: 1, jar: 1, question: 1, scenes: 1, tools: 1, feat: 1, search: 1, hearts: 1, ai: 1, qr: 1, hdrheart: 1, greet: 0 },
+    order: ['together', 'isle', 'pets', 'question', 'jar', 'scenes', 'tools', 'feat'],
     card: 'gradient', radius: 'round', size: 'comfy', acc: '',
     qsrc: 'all', qmode: 'day', qmine: [], qlabel: '', qshift: 0,
     tLabel: '', tEmoji: '', tUnit: 'days', tMile: 1,
@@ -26,7 +26,8 @@
   };
   var SEC = {
     together: ['#o64Together', 'Our days'], question: ['#o64Question', 'Question of the day'], scenes: ['#o64Scenes', 'Our little moments'],
-    tools: ['#o68Tools', 'Couple tools'], feat: ['#o66Feat', 'What you can do']
+    tools: ['#o68Tools', 'Couple tools'], feat: ['#o66Feat', 'What you can do'],
+    isle: ['#h75Isle', 'Our two islands'], pets: ['#h75Pets', 'Our little ones'], jar: ['#h75Jar', 'Reasons I love you']   /* v75 */
   };
   var CHIPS = [['streak', 'Chat streak'], ['time', "Partner's local time"], ['wx', "Partner's weather"], ['arr', 'Reached safely']];
   var TILES = [['map', 'Live map'], ['count', 'Countdown'], ['qa', 'Daily question'], ['bucket', 'Bucket list'], ['cap', 'Time capsule'], ['recap', 'Year recap'], ['ai', 'AI helpers'], ['arrive', 'Safe arrival'], ['vault', 'Private vault']];
@@ -57,7 +58,17 @@
   function getp(path) { return path.split('.').reduce(function (o, k) { return o == null ? o : o[k]; }, cfg); }
   function setp(path, v) { var p = path.split('.'), o = cfg; while (p.length > 1) { var k = p.shift(); if (o[k] == null || typeof o[k] !== 'object') o[k] = {}; o = o[k]; } o[p[0]] = v; }
   // keep the order list complete (new sections appended)
-  function fixOrder() { var o = cfg.order.filter(function (k) { return SEC[k]; }); Object.keys(SEC).forEach(function (k) { if (o.indexOf(k) < 0) o.push(k); }); cfg.order = o; }
+  var PREF = ['together', 'isle', 'pets', 'question', 'jar', 'scenes', 'tools', 'feat'];
+  function fixOrder() {
+    var o = cfg.order.filter(function (k) { return SEC[k]; });
+    Object.keys(SEC).forEach(function (k) {                    // a section this phone has never seen: put it where it belongs, not at the very end
+      if (o.indexOf(k) >= 0) return; var at = 0, pi = PREF.indexOf(k);
+      if (pi < 0) { o.push(k); return; }
+      for (var i = pi - 1; i >= 0; i--) { var j = o.indexOf(PREF[i]); if (j >= 0) { at = j + 1; break; } }
+      o.splice(at, 0, k);
+    });
+    cfg.order = o;
+  }
 
   /* ------------------------------------------------------------ hooks used by couple-v64.js */
   var sessQ = null;
