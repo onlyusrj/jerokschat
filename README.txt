@@ -413,3 +413,10 @@ HOME (couples mode) now looks like an iPhone home screen, in frosted-glass style
  - Stickers stop animating (and unload) whenever Home is not on screen. Hide the whole board in Customize home ("Home board").
  - The bottom tab bar is now a floating glass dock.
 GAMES PAGE: Chess and Love Maze 3D now have cards with pictures like the other games (they were missing from the grid). Chess opens your partner chat and starts the chess tool.
+
+
+V78 HOME ORDER + NO FLASH + GLASS SETTINGS + PORTRAIT  (edits: index.html, sw.js, ANDROID-BRIDGE.txt)  Cache v51
+ - Home: the chat card list is now first, right under the top bar. The search bar is hidden.
+ - No more old-home flash: home content stays hidden (splash stays up) until the new board is built, max 4.5 s.
+ - Settings page, its sub-pages and dialogs use glass cards (blur, shine). Glass OFF = same shapes with solid cards.
+ - Portrait only: manifest, screen lock where allowed, and a 'turn upright' cover in landscape on phones. Android: add android:screenOrientation="portrait" (see ANDROID-BRIDGE.txt E).

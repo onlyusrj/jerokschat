@@ -255,3 +255,8 @@ Limits (be honest with yourself)
 * iPhone: a web app / PWA cannot keep the microphone running with the screen locked. iOS stops it. Only a real native iOS app (CallKit) can. Nothing in the web code can change that.
 * Android Chrome / installed PWA (no WebView): Chrome usually keeps an active call going with the screen off and shows its own "using microphone" notification. The lock-screen controls above help.
 * A call that RINGS while the app is closed needs a high-priority push (FCM) + full-screen-intent activity. That is a bigger native feature and is not included here.
+
+
+E) Portrait only (v78)
+----------------------
+Manifest, on your <activity>:  android:screenOrientation="portrait"
