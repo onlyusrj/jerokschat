@@ -397,3 +397,19 @@ New, only the gaps:
  - Chat list and message list no longer bounce the page behind them (overscroll-behavior: contain).
  - Uses the separate `translate` / `scale` CSS properties, so it never fights existing transforms. Off for "reduce motion".
  - Developer note: classList.remove('x') on a class that is not there STILL fires a MutationObserver on the class attribute. Guard with contains() or the observer loops forever (that bug was caught in testing).
+
+
+V77 GLASS HOME BOARD + STICKERS + GAME PICTURES  (new: home-board-v77.js, sticker-cat-love.svg, sticker-bird-pair.svg, img/games/chess.svg, img/games/maze3d.svg; edits: index.html, home-v70.js, home-v52.js, couple-v64.js, sw.js)  Cache v50
+HOME (couples mode) now looks like an iPhone home screen, in frosted-glass style (light + dark):
+  [photo widget "Us" 2x2 with days together] [Chat] [Calls]
+                                             [your cat-in-love sticker] [your bird-pair sticker]   <- the sticker spot, both animated, tap = bounce + hearts
+  [calendar widget: month grid, today circled, anniversary day marked  |  next milestone (e.g. 97 days to 730 days)]
+  [Games] [Our Space]  [photo widget "Memories" 2x2]
+  [Status] [Themes]
+  [Sorry] [Love Maze] [Chess] [Little ones] [Reasons jar] + every Couple-tools tile (Period, Vault, ...)
+ - The old long lists ("What you can do" and "Couple tools", one below another) are hidden when the board is on; their features are the tiles (tools tiles still trigger the real tool).
+ - Photo widgets: tap the camera badge to choose a photo (kept on this phone, resized). Tap the widget itself: Us -> Our Space (or asks the day you met), Memories -> Our Space > Memories.
+ - Calendar uses the "together since" date. Tap the milestone box to open Dates (or to set the date first).
+ - Stickers stop animating (and unload) whenever Home is not on screen. Hide the whole board in Customize home ("Home board").
+ - The bottom tab bar is now a floating glass dock.
+GAMES PAGE: Chess and Love Maze 3D now have cards with pictures like the other games (they were missing from the grid). Chess opens your partner chat and starts the chess tool.

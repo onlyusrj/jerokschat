@@ -198,7 +198,7 @@
   document.addEventListener('touchcancel', endDrag, { passive: true });
 
   /* ============================================================== games tab */
-  var GAMES = [['ttt', '❌⭕', 'Tic-Tac-Toe'], ['c4', '🔴🟡', 'Connect 4'], ['rps', '✊✋✌️', 'Rock Paper Scissors'], ['memory', '🧠', 'Memory Match'], ['duel', '⚡', 'Quick Duel'], ['draw', '🎨', 'Draw & Guess'], ['wyr', '🤔💞', 'Would You Rather'], ['tod', '💬🔥', 'Truth or Dare'], ['ludo', '🎲', 'Ludo'], ['dots', '🔲', 'Dots & Boxes'], ['bship', '🚢', 'Battleship'], ['trivia', '❓', 'Trivia Duel'], ['cards', '🃏', 'Color Cards']];
+  var GAMES = [['ttt', '❌⭕', 'Tic-Tac-Toe'], ['c4', '🔴🟡', 'Connect 4'], ['rps', '✊✋✌️', 'Rock Paper Scissors'], ['memory', '🧠', 'Memory Match'], ['duel', '⚡', 'Quick Duel'], ['draw', '🎨', 'Draw & Guess'], ['wyr', '🤔💞', 'Would You Rather'], ['tod', '💬🔥', 'Truth or Dare'], ['ludo', '🎲', 'Ludo'], ['dots', '🔲', 'Dots & Boxes'], ['bship', '🚢', 'Battleship'], ['trivia', '❓', 'Trivia Duel'], ['cards', '🃏', 'Color Cards'], ['chess', '♟️', 'Chess'], ['maze3d', '🌹', 'Love Maze 3D']];
   var built = false;
   function buildGames() {
     if (built) return; var g = $('gvGrid'); if (!g) return; built = true;
@@ -208,7 +208,14 @@
       g.appendChild(b);
     });
   }
+  function openChess() {                       // v77: chess lives inside a chat, so open the partner chat first, then its Chess tool
+    var us = window.__us || {}, cs = (us.contacts && us.contacts()) || [];
+    if (!cs.length) { try { us.toast('Add your partner first'); } catch (e) { } return; }
+    us.open(cs[0]);
+    setTimeout(function () { var t = $('toolChess'); if (t) t.click(); }, 480);
+  }
   function launch(key) {
+    if (key === 'chess') { openChess(); return; }
     var open = $('gmHome'); if (!open) return;
     window.__gmWant = key; // the games hub reads this and starts exactly this game
     open.click();          // existing flow: pick the chat, open the games hub
