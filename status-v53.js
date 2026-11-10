@@ -471,5 +471,5 @@
   setInterval(function () { sweep(); watch(); if (sv && sv.classList.contains('on') && !(vw && vw.classList.contains('on'))) render(); else applyRings(); }, 20000);
   setTimeout(function () { watch(); applyRings(); }, 1500);
   setTimeout(function () { watch(); applyRings(); }, 6000);
-  window.__status = { render: render, watch: watch, post: postDoc, open: openViewer, rings: applyRings, docs: allDocs };
+  window.__status = { mine: mineGroups, theirs: theirs, seen: isSeen, ago: ago, sheet: openSheet, text: openText, contacts: contacts, uid: myUid, render: render, watch: watch, post: postDoc, open: openViewer, rings: applyRings, docs: allDocs };
 })();

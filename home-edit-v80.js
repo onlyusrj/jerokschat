@@ -5,8 +5,12 @@
 (function () {
   'use strict';
   if (window.__h80) return;
+  /* Default home layout (what a fresh install shows): calendar row, then Games / Our Space / Memories, Status, three Boxes, Daily question, Themes */
+  var DEF = { o: ['ph1', 'chat', 'calls', 'st0', 'st1', 'cal', 'games', 'space', 'ph2', 'status', 'fdef1', 'fdef2', 't:qa', 'themes', 'fdef3'], h: [], z: {},
+    f: { fdef1: { n: 'Box', i: ['sorry', 't:map', 'maze', 'chess'] }, fdef2: { n: 'Box', i: ['t:count', 't:arrive', 'pets', 'jar'] }, fdef3: { n: 'Box', i: ['t:cap', 't:vault', 't:bucket', 't:recap', 't:ai'] } } };
+  var dflt = function () { return JSON.parse(JSON.stringify(DEF)); };
   var KEY = 'onlyus-h80', R = document.documentElement, EDIT = 0, G = null, S = load(), D = null, LP = null, swallow = 0, MO;
-  function load() { try { var s = JSON.parse(localStorage.getItem(KEY) || '{}'); return { o: s.o || [], h: s.h || [], f: s.f || {}, z: s.z || {} }; } catch (e) { return { o: [], h: [], f: {}, z: {} }; } }
+  function load() { try { var raw = localStorage.getItem(KEY); if (!raw) return dflt(); var s = JSON.parse(raw); return { o: s.o || [], h: s.h || [], f: s.f || {}, z: s.z || {} }; } catch (e) { return dflt(); } }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } }
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
@@ -24,7 +28,7 @@
   var isTile = function (c) { return !!(c && !isF(c) && !c.classList.contains('w2') && !c.classList.contains('w4') && c.querySelector('[data-a]')); };
   var NAMES = { ph1: ['🖼️', 'Photo: Us'], ph2: ['🖼️', 'Photo: Memories'], cal: ['📅', 'Calendar'], st0: ['✨', 'Sticker 1'], st1: ['✨', 'Sticker 2'] };
   function lab(c, id) { var l = c.querySelector('.h77l'); return l ? l.textContent : (NAMES[id] ? NAMES[id][1] : id); }
-  function icon(c, id) { var i = c.querySelector('.ic'); return i ? i.innerHTML : '<span>' + (NAMES[id] ? NAMES[id][0] : '•') + '</span>'; }
+  function icon(c, id) { var i = c.querySelector('.ic'); if (i) return i.innerHTML; var v = c.querySelector('svg'); return v ? v.outerHTML : '<span>' + (NAMES[id] ? NAMES[id][0] : '•') + '</span>'; }
 
   /* ---------------- apply saved layout to the board grid */
   function apply() {
@@ -95,7 +99,7 @@
     else if (a === 'unf') { var F = S.f[cidv]; if (F) { var at = S.o.indexOf(cidv); S.o.splice.apply(S.o, [at < 0 ? S.o.length : at, 1].concat(F.i)); delete S.f[cidv]; save(); apply(); } }
     else if (a === 'out') { var FF = S.f[el.dataset.f]; if (FF) { FF.i = FF.i.filter(function (x) { return x !== id; }); S.o.push(id); save(); closeOv(); apply(); } }
     else if (a === 'go') { var t = G.querySelector('[data-h80id="' + CSS.escape(id) + '"] button,[data-h80id="' + CSS.escape(id) + '"] [data-a]'); closeOv(); setTimeout(function () { if (t) t.click(); }, 140); }
-    else if (a === 'reset') { S = { o: [], h: [], f: {}, z: {} }; save(); closeOv(); apply(); toast('Home layout reset'); }
+    else if (a === 'reset') { S = dflt(); save(); closeOv(); apply(); toast('Home layout reset'); }
   }
   function merge(d, t) {
     var di = d.dataset.h80id, ti = t.dataset.h80id, fid;

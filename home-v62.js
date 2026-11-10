@@ -116,6 +116,7 @@
   var cv = $('vCalls');
   if (cv) new MutationObserver(function () { if (cv.classList.contains('on')) renderCalls(); }).observe(cv, { attributes: true, attributeFilter: ['class'] });
   window.addEventListener('onlyus-calllog', function () { if (cv && cv.classList.contains('on')) renderCalls(); });
+  window.__calllog = { render: renderCalls, load: load, back: callBack };
   var clr = $('clgClear');
   if (clr) clr.onclick = function () { if (!load().length) return; if (!confirm('Clear your call log on this phone?')) return; try { localStorage.removeItem(key()); } catch (e) { } renderCalls(); };
 

@@ -439,3 +439,14 @@ V81 TABS  (edits: home-v52.js, home-board-v77.js, sw.js)  Cache v54
  - Tabs: Home | Our Space (sparkle icon) | Activity (Status + Calls with a switch) | Games | Settings.
  - Swiping now follows that order, so Home -> Our Space works. Our Space can be swiped too.
  - Liquid wave sweep on every tab change / swipe.
+
+
+V82 FASTER WAVE + DEFAULT HOME LAYOUT  (edits: home-v52.js, home-edit-v80.js)
+ - Liquid wave 0.66 s -> 0.4 s, lighter and glossier.
+ - Fresh installs (no saved layout) get the layout from the owner's screenshot: calendar row, Games, Our Space, Memories, Status, Box, Box, Daily question, Themes, Box. 'Reset home layout' returns to this layout too.
+ - Boxes now show real icons for Sorry/Maze/Chess/Little ones/Jar instead of dots.
+
+
+V83 ACTIVITY PAGE  (new: activity-v83.js; edits: home-v52.js, status-v53.js, home-v62.js, index.html, sw.js)  Cache v56
+ - One Activity page: hero, Moments carousel (photo/video/text cards, + add), Calls card (voice/video buttons, stats, history), Our Space shortcut tiles (Memories photo, Love notes, Mood, Dates, Surprise, Places, Music, Questions, Lists).
+ - The old Status and Calls views are no longer in the tab bar.
