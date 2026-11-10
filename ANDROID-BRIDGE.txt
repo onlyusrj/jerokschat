@@ -257,6 +257,7 @@ Limits (be honest with yourself)
 * A call that RINGS while the app is closed needs a high-priority push (FCM) + full-screen-intent activity. That is a bigger native feature and is not included here.
 
 
-E) Portrait only (v78)
-----------------------
-Manifest, on your <activity>:  android:screenOrientation="portrait"
+E) Portrait everywhere, landscape only in Love Maze 3D (v78/v79)
+------------------------------------------------------
+Do NOT hard-code screenOrientation in AndroidManifest. Install the plugin instead:  npm i @capacitor/screen-orientation  then  npx cap sync
+The app locks portrait and unlocks while Love Maze is open (index.html, v79 script). On the web/PWA, the phone-upright cover handles landscape.

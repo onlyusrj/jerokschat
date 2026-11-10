@@ -57,7 +57,15 @@
     '#vGames .gv-card{all:unset;cursor:pointer;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:128px;padding:16px 10px;border-radius:22px;background:var(--panel);border:1px solid var(--line);text-align:center;box-shadow:0 8px 22px rgba(36,20,70,.10)}',
     '#vGames .gv-card .gi{font-size:38px;line-height:1}#vGames .gv-card b{font-size:15px;color:var(--ink)}',
     '#vGames .gv-card:active{transform:scale(.95)}',
-    '@media(min-width:640px){#vGames .gv-grid{grid-template-columns:repeat(3,1fr)}}'
+    '@media(min-width:640px){#vGames .gv-grid{grid-template-columns:repeat(3,1fr)}}',
+    '.actseg{position:relative;display:flex;flex:0 0 auto;margin:10px 16px 6px;padding:4px;border-radius:999px;border:1px solid var(--sbd,var(--line));background:var(--scard,var(--panel));box-shadow:var(--ssh,none);-webkit-backdrop-filter:var(--sblur,none);backdrop-filter:var(--sblur,none)}',
+    '.actseg button{all:unset;position:relative;z-index:1;flex:1;text-align:center;padding:9px 0;font:600 14px system-ui;color:var(--dim);cursor:pointer;border-radius:999px;-webkit-tap-highlight-color:transparent}.actseg button.on{color:#fff}',
+    '.actseg .ap{position:absolute;z-index:0;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:linear-gradient(135deg,var(--acc),color-mix(in srgb,var(--acc) 55%,#ff9ecb));box-shadow:0 6px 14px color-mix(in srgb,var(--acc) 40%,transparent);transition:transform .38s cubic-bezier(.3,1.5,.5,1)}.actseg[data-on=calls] .ap{transform:translateX(100%)}',
+    'html.mode-reg #tn_space{display:none!important}',
+    '.liq{position:fixed;inset:0;z-index:85;pointer-events:none;overflow:hidden}html.liq-on #tabNav{z-index:90}',
+    '.liq i{position:absolute;top:-28%;bottom:-28%;left:-25vw;width:150vw;border-radius:50%;background:linear-gradient(120deg,color-mix(in srgb,var(--acc) 60%,transparent),color-mix(in srgb,#ff9ecb 50%,transparent) 55%,color-mix(in srgb,#8fb4ff 48%,transparent));-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);box-shadow:inset 0 0 50px rgba(255,255,255,.35)}',
+    '.liq i+i{opacity:.65;border-radius:46% 54% 50% 50%}.liq.fr i{animation:liqR .66s cubic-bezier(.6,0,.25,1) forwards}.liq.fl i{animation:liqL .66s cubic-bezier(.6,0,.25,1) forwards}.liq i+i{animation-delay:.07s!important}',
+    '@keyframes liqR{from{translate:100% 0;scale:.45 1}50%{scale:1.1 1}to{translate:-125% 0;scale:.5 1}}@keyframes liqL{from{translate:-125% 0;scale:.45 1}50%{scale:1.1 1}to{translate:100% 0;scale:.5 1}}'
   ].join('\n');
   document.head.appendChild(css);
 
@@ -69,11 +77,13 @@
     settings: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7.03 7.03 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.5.5 0 0 0-.61.22L2.74 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.26.42.5.42h3.84c.24 0 .45-.18.49-.42l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/></svg>',
     games: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.58 16.09l-1.09-7.66A3.996 3.996 0 0 0 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66A2.995 2.995 0 0 0 5.4 19.5c.78 0 1.5-.3 2.04-.83L9.12 17h5.76l1.68 1.67c.54.53 1.26.83 2.04.83 1.8 0 3.2-1.57 2.98-3.41zM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1zm4.5 2a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm2-3a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>'
   };
+  /* v81: Home | Our Space | Activity (Status + Calls) | Games | Settings. Our Space is now part of the swipe order. */
+  ICONS.space = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>';
   var TABS = [
-    { id: 'vList', key: 'chats', label: 'Chats' },
-    { id: 'vStatus', key: 'status', label: 'Status' },
+    { id: 'vList', key: 'chats', label: 'Home' },
+    { id: 'coupleHub', key: 'space', label: 'Our Space' },
+    { id: 'vStatus', alt: 'vCalls', key: 'status', label: 'Activity' },
     { id: 'vGames', key: 'games', label: 'Games' },
-    { id: 'vCalls', key: 'calls', label: 'Calls' },
     { id: 'vSet', key: 'settings', label: 'Settings' }
   ];
   var nav = el('div'); nav.id = 'tabNav'; nav.setAttribute('role', 'tablist');
@@ -82,62 +92,88 @@
   }).join('') + '</div>';
   document.body.appendChild(nav);
   var pill = nav.querySelector('.tn-pill');
-  /* v64: "Our Space" tab right after Chats (opens the couple hub overlay) */
-  var spBtn = el('button'); spBtn.type = 'button'; spBtn.id = 'tn_space'; spBtn.setAttribute('role', 'tab'); spBtn.setAttribute('aria-label', 'Our Space');
-  spBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>Our Space';
-  var chBtn = nav.querySelector('#tn_chats'); if (chBtn) chBtn.after(spBtn);
   var root = document.documentElement;
+  var isReg = function () { return root.classList.contains('mode-reg'); };
   var hubOpen = function () { var h = $('coupleHub'); return !!(h && h.classList.contains('on')); };
-  spBtn.addEventListener('click', function () { if (hubOpen()) return; var u = $('usb'); if (u) u.click(); });
-
-  var tabIndex = function (id) { for (var i = 0; i < TABS.length; i++) if (TABS[i].id === id) return i; return -1; };
+  var tabIndex = function (id) { for (var i = 0; i < TABS.length; i++) if (TABS[i].id === id || TABS[i].alt === id) return i; return -1; };
   var curView = function () { var v = document.querySelector('.view.on'); return v ? v.id : ''; };
+  var curIdx = function () { return hubOpen() ? 1 : tabIndex(curView()); };
+  var viewIdx = function (v) { return v.id === 'coupleHub' ? 1 : tabIndex(v.id); };
+  function step(i, d) { var j = i + d; while (j >= 0 && j < TABS.length && isReg() && j === 1) j += d; return (j >= 0 && j < TABS.length) ? j : -1; }
 
+  var lastAct = 'status';
+  function goAct(seg) {
+    if (hubOpen()) { var hc = $('hubClose'); if (hc) hc.click(); }
+    lastAct = seg === 'calls' ? 'calls' : 'status';
+    if (lastAct === 'calls') U().show('vCalls'); else { var b = $('listStatus'); if (b) b.click(); else U().show('vStatus'); }
+  }
   function goTab(i) {
     var t = TABS[i]; if (!t) return;
-    if (t.id === 'vList') { U().show('vList'); }
-    else if (t.id === 'vStatus') { var b = $('listStatus'); if (b) b.click(); else U().show('vStatus'); }
-    else if (t.id === 'vCalls') { U().show('vCalls'); }
-    else if (t.id === 'vSet') { var sb = $('setb'); if (sb) sb.click(); else U().show('vSet'); }
+    if (i === 1) { if (!hubOpen()) { var u = $('usb'); if (u) u.click(); } return; }
+    if (hubOpen()) { var hc = $('hubClose'); if (hc) hc.click(); }
+    if (i === 0) U().show('vList');
+    else if (i === 2) goAct(lastAct);
+    else if (i === 4) { var sb = $('setb'); if (sb) sb.click(); else U().show('vSet'); }
     else { buildGames(); U().show('vGames'); }
   }
   nav.addEventListener('click', function (e) {
     var b = e.target.closest ? e.target.closest('button[data-i]') : null; if (!b) return;
-    var i = +b.getAttribute('data-i'); if (hubOpen()) { var hc = $('hubClose'); if (hc) hc.click(); if (tabIndex(curView()) === i) return; } else if (tabIndex(curView()) === i) { var sc = document.querySelector('#' + TABS[i].id + ' #cl,#' + TABS[i].id + ' .status-list,#vGames .gv-grid'); if (sc && sc.scrollTo) sc.scrollTo({ top: 0, behavior: 'smooth' }); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    var i = +b.getAttribute('data-i');
+    if (i === curIdx()) { if (i === 1) return; var sc = document.querySelector('#' + TABS[i].id + ' #cl,#' + TABS[i].id + ' .status-list,#vGames .gv-grid'); if (sc && sc.scrollTo) sc.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     goTab(i);
   });
 
+  /* Status | Calls switch inside the Activity page */
+  function setupAct() {
+    ['vStatus', 'vCalls'].forEach(function (id) {
+      var v = $(id); if (!v || v.querySelector('.actseg')) return;
+      var bar = v.querySelector('.bar'), tt = bar && bar.querySelector('b'); if (tt) tt.textContent = 'Activity';
+      var s = el('div'); s.className = 'actseg'; s.innerHTML = '<span class="ap"></span><button type="button" data-s="status">◉ Status</button><button type="button" data-s="calls">📞 Calls</button>';
+      s.addEventListener('click', function (e) { var b = e.target.closest('button[data-s]'); if (b && b.dataset.s !== (curView() === 'vCalls' ? 'calls' : 'status')) goAct(b.dataset.s); });
+      if (bar) bar.after(s); else v.prepend(s);
+    });
+  }
+  setupAct();
+
   function syncNav() {
-    var id = curView(), i = tabIndex(id);
+    var id = curView(), i = curIdx(), reg = isReg(), n = reg ? 4 : 5, hub = !reg && hubOpen();
     var lock = $('lock'), locked = lock && lock.classList.contains('on');
-    var reg = root.classList.contains('mode-reg'), n = reg ? 5 : 6, hub = !reg && hubOpen();
     if (root.classList.contains('hub-open') !== hub) root.classList.toggle('hub-open', hub);
     nav.classList.toggle('on', i >= 0 && !locked);
     if (i >= 0) {
-      var pos = hub ? 1 : (i + (!reg && i >= 1 ? 1 : 0));
       pill.style.width = 'calc(100% / ' + n + ')';
-      pill.style.transform = 'translateX(' + (pos * 100) + '%)';
+      pill.style.transform = 'translateX(' + ((reg && i > 1 ? i - 1 : i) * 100) + '%)';
       nav.querySelectorAll('button').forEach(function (b) {
-        var on = b === spBtn ? hub : (!hub && +b.getAttribute('data-i') === i);
-        b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false');
+        var on = +b.getAttribute('data-i') === i; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false');
       });
     }
+    document.querySelectorAll('.actseg').forEach(function (s) { var c = id === 'vCalls'; s.dataset.on = c ? 'calls' : 'status'; s.querySelectorAll('button').forEach(function (b) { b.classList.toggle('on', (b.dataset.s === 'calls') === c); }); });
   }
 
-  /* ===================================================== screen transitions */
-  var prevId = curView();
+  /* ===================================================== screen transitions (slide + liquid wave) */
+  var prevId = curView(), prevIdx = curIdx(), dragging = false;
+  function liquid(dir) {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+    var o = el('div'); o.className = 'liq ' + dir; o.innerHTML = '<i></i><i></i>'; document.body.appendChild(o); root.classList.add('liq-on');
+    setTimeout(function () { o.remove(); if (!document.querySelector('.liq')) root.classList.remove('liq-on'); }, 800);
+  }
   function animate(v, prev) {
     var a = tabIndex(prev), b = tabIndex(v.id), cls = 'vt-up';
-    if (a >= 0 && b >= 0) cls = b > a ? 'vt-fr' : 'vt-fl';
-    else if (b >= 0 && a < 0) cls = 'vt-fl';       // coming back to a tab
-    else if (a >= 0 && b < 0) cls = 'vt-fr';       // going deeper from a tab (chat, settings, period…)
+    if (a >= 0 && b >= 0) cls = a === b ? (v.id === 'vCalls' ? 'vt-fr' : 'vt-fl') : (b > a ? 'vt-fr' : 'vt-fl');
+    else if (b >= 0 && a < 0) cls = 'vt-fl';
+    else if (a >= 0 && b < 0) cls = 'vt-fr';
     else if (prev === 'vChat') cls = 'vt-fl';
     v.classList.remove('vt-fr', 'vt-fl', 'vt-up'); void v.offsetWidth; v.classList.add(cls);
     clearTimeout(v.__vt); v.__vt = setTimeout(function () { v.classList.remove(cls); }, 360);
   }
   function onViewChange() {
-    var now = curView();
-    if (now && now !== prevId) { var v = $(now); if (v && !dragging) animate(v, prevId); prevId = now; }
+    var now = curView(), idx = curIdx();
+    if (now && now !== prevId) { var v = $(now); if (v && !dragging) animate(v, prevId); }
+    if (!dragging && idx >= 0 && prevIdx >= 0) {
+      if (idx !== prevIdx) liquid(idx > prevIdx ? 'fr' : 'fl');
+      else if (idx === 2 && now && prevId && now !== prevId) liquid(now === 'vCalls' ? 'fr' : 'fl');
+    }
+    if (now) prevId = now; if (idx >= 0) prevIdx = idx;
     syncNav();
   }
   var mo = new MutationObserver(onViewChange);
@@ -148,8 +184,8 @@
   new MutationObserver(syncNav).observe(root, { attributes: true, attributeFilter: ['class'] });
   syncNav();
 
-  /* ===================================================== swipe between tabs */
-  var dragging = false, sx = 0, sy = 0, st = 0, dx = 0, locked = false, dragView = null, cancelled = false;
+  /* ===================================================== swipe between tabs (Home <-> Our Space <-> Activity <-> Games <-> Settings) */
+  var sx = 0, sy = 0, st = 0, dx = 0, locked = false, dragView = null, cancelled = false;
   function blockedTarget(t) {
     for (var n = t; n && n !== document.body; n = n.parentElement) {
       var tag = n.tagName;
@@ -159,16 +195,15 @@
     return false;
   }
   function overlayOpen() {
-    var o = document.querySelectorAll('.ov.on,#coupleHub.on,.hub-view.on,.cscr.on');
+    var o = document.querySelectorAll('.ov.on,.cscr.on');
     for (var i = 0; i < o.length; i++) if (getComputedStyle(o[i]).display !== 'none') return true;
-    var hub = $('coupleHub'); if (hub && getComputedStyle(hub).display !== 'none') return true;
     return false;
   }
   document.addEventListener('touchstart', function (e) {
     dragging = false; locked = false; cancelled = false; dx = 0;
     if (e.touches.length !== 1) { cancelled = true; return; }
-    var id = curView(); if (tabIndex(id) < 0 || overlayOpen() || blockedTarget(e.target)) { cancelled = true; return; }
-    var t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); dragView = $(id);
+    var i = curIdx(); if (i < 0 || overlayOpen() || blockedTarget(e.target)) { cancelled = true; return; }
+    var t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); dragView = i === 1 ? $('coupleHub') : $(curView());
   }, { passive: true });
   document.addEventListener('touchmove', function (e) {
     if (cancelled || !dragView) return;
@@ -179,20 +214,20 @@
       else return;
     }
     if (e.cancelable) e.preventDefault();
-    var i = tabIndex(dragView.id), edge = (mx > 0 && i === 0) || (mx < 0 && i === TABS.length - 1);
+    var i = viewIdx(dragView), edge = (mx > 0 && step(i, -1) < 0) || (mx < 0 && step(i, 1) < 0);
     dx = edge ? mx * 0.18 : mx * 0.5;
     dragView.style.transform = 'translateX(' + dx + 'px)';
     dragView.style.opacity = String(Math.max(.55, 1 - Math.abs(dx) / 420));
   }, { passive: false });
   function endDrag() {
     if (!dragging || !dragView) { dragView = null; return; }
-    var v = dragView, i = tabIndex(v.id), mx = dx / 0.5, fast = Math.abs(mx) / Math.max(1, Date.now() - st) > 0.45;
-    var go = (Math.abs(mx) > 70 || (fast && Math.abs(mx) > 30)) ? (mx < 0 ? i + 1 : i - 1) : -1;
+    var v = dragView, i = viewIdx(v), mx = dx / 0.5, fast = Math.abs(mx) / Math.max(1, Date.now() - st) > 0.45;
+    var go = (Math.abs(mx) > 70 || (fast && Math.abs(mx) > 30)) ? step(i, mx < 0 ? 1 : -1) : -1;
     v.style.transition = 'transform .22s cubic-bezier(.2,.8,.2,1),opacity .22s ease';
     v.style.transform = ''; v.style.opacity = '';
     setTimeout(function () { v.style.transition = ''; v.style.willChange = ''; }, 260);
     dragging = false; dragView = null; locked = false;
-    if (go >= 0 && go < TABS.length) { v.style.transition = 'none'; goTab(go); }
+    if (go >= 0) { v.style.transition = 'none'; goTab(go); }
   }
   document.addEventListener('touchend', endDrag, { passive: true });
   document.addEventListener('touchcancel', endDrag, { passive: true });
@@ -231,5 +266,5 @@
     setTimeout(function () { var p = $('listPeriod'); if (p) p.click(); }, 60);
   }, true);
 
-  window.__home52 = { goTab: goTab, tabs: TABS };
+  window.__home52 = { goTab: goTab, goAct: goAct, tabs: TABS };
 })();

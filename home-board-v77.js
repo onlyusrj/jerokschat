@@ -99,7 +99,7 @@
   var scrollTo = function (sel) { var e = document.querySelector(sel); if (e && e.offsetParent !== null) e.scrollIntoView({ behavior: 'smooth', block: 'center' }); else toast('That card is hidden. Turn it on in Customize home.'); };
   var ACT = {
     chat: function () { var c = $('cl'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
-    calls: function () { tab(3); }, games: function () { tab(2); }, status: function () { tab(1); },
+    calls: function () { try { window.__home52.goAct('calls'); } catch (e) { } }, games: function () { tab(3); }, status: function () { try { window.__home52.goAct('status'); } catch (e) { } },
     space: function () { var b = $('tn_space'); if (b) b.click(); },
     themes: function () { if (window.__h70 && window.__h70.open) window.__h70.open(); else tab(4); },
     sorry: function () { withChat(function () { if (window.__sorry) window.__sorry.open(); }); },

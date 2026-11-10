@@ -420,3 +420,22 @@ V78 HOME ORDER + NO FLASH + GLASS SETTINGS + PORTRAIT  (edits: index.html, sw.js
  - No more old-home flash: home content stays hidden (splash stays up) until the new board is built, max 4.5 s.
  - Settings page, its sub-pages and dialogs use glass cards (blur, shine). Glass OFF = same shapes with solid cards.
  - Portrait only: manifest, screen lock where allowed, and a 'turn upright' cover in landscape on phones. Android: add android:screenOrientation="portrait" (see ANDROID-BRIDGE.txt E).
+
+
+V79 OUR SPACE GLASS + GAME ENTRY + MAZE LANDSCAPE  (edits: index.html, manifest.json, ANDROID-BRIDGE.txt)
+ - Our Space: glass header, pill tabs, tinted glass cards (solid twin when glass is off).
+ - Game request dialog: glass card with floating icon and pill buttons. Game screen: richer background, glass header, short 'Get ready' intro every time a game opens.
+ - Love Maze 3D may rotate to landscape; everything else stays portrait.
+
+
+V80 HOME EDIT MODE + RICHER SETTINGS  (new: home-edit-v80.js; edits: index.html, sw.js)  Cache v53
+ - Hold any home box ~0.5 s: wiggle mode. Drag to move, drop on another small box to make a Box (folder). Tap a Box to open, rename, take items out.
+ - (-) hides a box, x on a Box dissolves it, the arrows on a photo switch square/wide, + Add brings hidden boxes back or resets the layout.
+ - Layout stored on this phone (onlyus-h80). home-board-v77.js is untouched.
+ - Settings: coloured icon tiles, chevrons, glow hero avatar, gentle entrance.
+
+
+V81 TABS  (edits: home-v52.js, home-board-v77.js, sw.js)  Cache v54
+ - Tabs: Home | Our Space (sparkle icon) | Activity (Status + Calls with a switch) | Games | Settings.
+ - Swiping now follows that order, so Home -> Our Space works. Our Space can be swiped too.
+ - Liquid wave sweep on every tab change / swipe.
